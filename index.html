@@ -1,1 +1,1723 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Radio Foxhunting — UMPSA STEM LAB</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
+  <style>
+    /* ── Token System ─────────────────────────────────────────
+       Layout: sticky chev-bar → hero → live demo → CT1 → CT2 → module grid → concept map → survey → footer
+       Color: deep forest dark-teal background, teal accent, electric blue highlight
+    ──────────────────────────────────────────────────────── */
+    :root {
+      --teal:       #02ADA5;
+      --teal-dark:  #026F6A;
+      --blue:       #0D55A7;
+      --bg:         #08312F;
+      --card:       #102E2B;
+      --card2:      #0D2624;
+      --text:       #E8F4F3;
+      --text-muted: #8CBFBB;
+      --border:     rgba(2,173,165,0.18);
+      --border-str: rgba(2,173,165,0.4);
+      --pill-bg:    rgba(2,173,165,0.15);
+      --shadow:     0 4px 24px rgba(0,0,0,0.45);
+      --radius:     10px;
+      --radius-lg:  16px;
+      --ff-display: 'Space Grotesk', system-ui, sans-serif;
+      --ff-mono:    'Space Mono', 'Courier New', monospace;
+      color-scheme: dark;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--ff-display);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-left:  max(0px, env(safe-area-inset-left,  0px));
+      padding-right: max(0px, env(safe-area-inset-right, 0px));
+    }
+
+    /* ── Utilities ── */
+    .inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-left:  max(16px, env(safe-area-inset-left,  0px));
+      padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+    .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+
+    /* ── Site Nav ── */
+    #sitenav {
+      background: var(--card2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      height: 52px;
+      gap: 0;
+      position: sticky;
+      top: 44px;
+      z-index: 100;
+    }
+    #sitenav .inner {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      max-width: 1100px;
+    }
+    .nav-brand {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--teal);
+      letter-spacing: -.01em;
+      margin-right: auto;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-brand svg { flex-shrink: 0; }
+    .nav-link {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { background: rgba(2,173,165,0.1); color: var(--teal); }
+    .nav-link.active { color: var(--teal); }
+
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-btn {
+      font-size: 13px;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-family: var(--ff-display);
+      display: flex; align-items: center; gap: 5px;
+      transition: background .15s, color .15s;
+    }
+    .nav-dropdown-btn:hover { background: rgba(2,173,165,0.1); color: var(--teal); }
+    .nav-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      background: var(--card);
+      border: 1px solid var(--border-str);
+      border-radius: var(--radius);
+      min-width: 220px;
+      box-shadow: var(--shadow);
+      z-index: 200;
+      display: none;
+      overflow: hidden;
+    }
+    .nav-dropdown.open .nav-dropdown-menu { display: block; }
+    .nav-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      transition: background .12s, color .12s;
+    }
+    .nav-dropdown-item:last-child { border-bottom: none; }
+    .nav-dropdown-item:hover { background: rgba(2,173,165,0.1); color: var(--teal); }
+    .nav-dropdown-item .step-num {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--teal-dark);
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── Hero ── */
+    #hero {
+      background: linear-gradient(165deg, #042E2C 0%, #08312F 40%, #062825 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 72px 0 64px;
+      position: relative;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(2,173,165,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+    }
+    .hero-text { flex: 1; min-width: 0; }
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 24px; height: 2px;
+      background: var(--teal);
+    }
+    .hero-h1 {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -.03em;
+      text-wrap: balance;
+      color: var(--text);
+      margin-bottom: 18px;
+    }
+    .hero-h1 span { color: var(--teal); }
+    .hero-sub {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      max-width: 520px;
+      margin-bottom: 28px;
+    }
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      background: var(--pill-bg);
+      border: 1px solid var(--border-str);
+      color: var(--teal);
+    }
+    .pill.blue { background: rgba(13,85,167,0.18); border-color: rgba(13,85,167,0.4); color: #5B9FE8; }
+
+    /* ── Section headings ── */
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .section-h2 {
+      font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      color: var(--text);
+      margin-bottom: 8px;
+      text-wrap: balance;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      max-width: 600px;
+    }
+
+    /* ── Live Demo Section ── */
+    #demo-section {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .demo-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .demo-canvas-wrap {
+      background: var(--card);
+      border: 1px solid var(--border-str);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 1;
+      max-width: 400px;
+      width: 100%;
+      position: relative;
+    }
+    #signal-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .demo-replay-btn {
+      position: absolute;
+      bottom: 12px; right: 12px;
+      background: rgba(8,49,47,0.85);
+      border: 1px solid var(--border-str);
+      color: var(--teal);
+      font-family: var(--ff-display);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .demo-replay-btn:hover { background: rgba(2,173,165,0.15); }
+    .demo-text h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .demo-text p { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 16px; }
+    .demo-legend { display: flex; flex-direction: column; gap: 10px; }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── CT Activity 1 ── */
+    #ct1-section {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .ct-section {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+    .ct-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: rgba(13,85,167,0.15);
+      border: 1px solid rgba(13,85,167,0.3);
+      border-radius: 4px;
+      padding: 3px 8px;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+    .ct-label.green {
+      color: var(--teal);
+      background: rgba(2,173,165,0.1);
+      border-color: rgba(2,173,165,0.3);
+    }
+    .ct-section h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .ct-section p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
+
+    .dc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+    }
+    .dc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, transform .15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .dc-card:hover { border-color: var(--teal-dark); background: rgba(2,173,165,0.07); transform: translateY(-2px); }
+    .dc-card.open { border-color: var(--teal); background: rgba(2,173,165,0.1); }
+    .dc-card-icon { font-size: 1.6rem; margin-bottom: 10px; display: block; }
+    .dc-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .dc-card-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .dc-card-desc {
+      font-size: 12px;
+      color: var(--teal);
+      margin-top: 10px;
+      line-height: 1.55;
+      display: none;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+    .dc-card.open .dc-card-desc { display: block; }
+    .dc-card-expand {
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--teal-dark);
+      color: var(--text);
+      font-size: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      transition: background .15s, transform .15s;
+    }
+    .dc-card.open .dc-card-expand { background: var(--teal); transform: rotate(45deg); }
+
+    /* ── CT Activity 2 — Algorithm Sequencer ── */
+    #ct2-section {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .algo-tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .algo-tabs::-webkit-scrollbar { display: none; }
+    .algo-tab {
+      flex-shrink: 0;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-family: var(--ff-display);
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .algo-tab:hover { color: var(--teal); }
+    .algo-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+    .algo-panel { display: none; }
+    .algo-panel.active { display: block; }
+    .algo-drop-zone {
+      min-height: 240px;
+      border: 2px dashed var(--border-str);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .algo-drop-zone.drag-over { border-color: var(--teal); background: rgba(2,173,165,0.05); }
+    .algo-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .algo-step {
+      background: var(--card);
+      border: 1px solid var(--border-str);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--text);
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color .12s, background .12s;
+      user-select: none;
+    }
+    .algo-step:hover { border-color: var(--teal); background: rgba(2,173,165,0.07); }
+    .algo-step.placed { opacity: 0.4; cursor: default; pointer-events: none; }
+    .algo-step-num {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--teal-dark);
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .algo-drop-item {
+      background: rgba(2,173,165,0.12);
+      border: 1px solid var(--teal-dark);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--teal);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: grab;
+    }
+    .algo-drop-item .remove-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--teal-dark);
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0 2px;
+    }
+    .algo-drop-item .remove-btn:hover { color: var(--teal); }
+    .algo-drop-placeholder {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 20px;
+      opacity: 0.6;
+    }
+    .algo-actions { display: flex; gap: 8px; }
+    .btn-check {
+      background: var(--teal);
+      color: var(--bg);
+      border: none;
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: var(--ff-display);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-check:hover { background: var(--teal-dark); }
+    .btn-reset {
+      background: none;
+      color: var(--text-muted);
+      border: 1px solid var(--border-str);
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--ff-display);
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .btn-reset:hover { border-color: var(--teal); color: var(--teal); }
+    .algo-feedback {
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-top: 8px;
+      display: none;
+    }
+    .algo-feedback.correct { background: rgba(2,173,165,0.15); color: var(--teal); border: 1px solid var(--teal-dark); display: block; }
+    .algo-feedback.wrong { background: rgba(220,60,60,0.12); color: #F08080; border: 1px solid rgba(220,60,60,0.3); display: block; }
+
+    /* ── Module Cards ── */
+    #modules-section {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .module-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: border-color .15s, transform .15s, box-shadow .15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .module-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--teal-dark);
+      transition: background .15s;
+    }
+    .module-card:hover { border-color: var(--teal-dark); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.35); }
+    .module-card:hover::before { background: var(--teal); }
+    .module-card[data-act="1"]:hover::before { background: #4A9EE0; }
+    .module-card[data-act="2"]:hover::before { background: #7DCF98; }
+    .module-card[data-act="3"]:hover::before { background: #E8A94A; }
+    .module-card[data-act="4"]:hover::before { background: #D97B6C; }
+    .module-icon { font-size: 2rem; margin-bottom: 14px; display: block; }
+    .module-step {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-family: var(--ff-mono);
+    }
+    .module-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+    .module-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      flex: 1;
+      margin-bottom: 16px;
+    }
+    .module-progress-dots {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-str); }
+    .dot.filled { background: var(--teal); }
+    .module-link-btn {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--teal);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: auto;
+    }
+    .module-link-btn svg { transition: transform .15s; }
+    .module-card:hover .module-link-btn svg { transform: translateX(3px); }
+
+    /* ── Concept Map ── */
+    #concept-map {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .concept-table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    table.concept-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 700px;
+    }
+    .concept-table th, .concept-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .concept-table th:first-child,
+    .concept-table td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: var(--text);
+      width: 150px;
+    }
+    .concept-table thead th {
+      background: var(--card2);
+      font-size: 10px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--teal);
+      font-weight: 700;
+      border-bottom: 1px solid var(--border-str);
+    }
+    .concept-table tbody tr:hover td { background: rgba(2,173,165,0.04); }
+    .concept-table tbody tr:last-child td { border-bottom: none; }
+    .star { color: var(--teal); font-size: 13px; }
+    .dot-fill { color: var(--text); font-size: 11px; }
+    .row-label-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--teal-dark);
+      color: var(--text);
+      font-size: 9px;
+      font-weight: 700;
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
+
+    /* ── Survey Banner ── */
+    #survey-banner {
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .survey-inner {
+      background: linear-gradient(135deg, #0D2624 0%, #0A2B28 100%);
+      border: 1px solid var(--teal-dark);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .survey-icon {
+      font-size: 2.2rem;
+      flex-shrink: 0;
+    }
+    .survey-text { flex: 1; min-width: 180px; }
+    .survey-text h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .survey-text p { font-size: 13px; color: var(--text-muted); }
+    .survey-btn {
+      flex-shrink: 0;
+      background: var(--teal);
+      color: var(--bg);
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .survey-btn:hover { background: var(--teal-dark); }
+
+    /* ── Home Progress ── */
+    #home-progress {
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .home-progress-bar {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .progress-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .progress-track {
+      flex: 1;
+      min-width: 120px;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    #home-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal-dark), var(--teal));
+      border-radius: 3px;
+      width: 0%;
+      transition: width .8s cubic-bezier(.4,0,.2,1);
+    }
+    #progress-summary {
+      font-size: 13px;
+      color: var(--teal);
+      font-weight: 700;
+      font-family: var(--ff-mono);
+      flex-shrink: 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .hero-inner { flex-direction: column; gap: 32px; }
+      .demo-layout { grid-template-columns: 1fr; }
+      .demo-canvas-wrap { max-width: 100%; }
+    }
+
+    @media (max-width: 520px) {
+      #hero { padding: 48px 0 40px; }
+      .module-grid { grid-template-columns: 1fr 1fr; }
+      .dc-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 380px) {
+      .module-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Chev Bar ── */
+    .chev {
+      display: flex;
+      width: 100%;
+      height: 44px;
+      position: sticky;
+      top: 0;
+      z-index: 300;
+    }
+    .chev > div {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      color: #fff;
+      cursor: default;
+      user-select: none;
+    }
+    .chev-see     { background: #2E5FAF; cursor: pointer; }
+    .chev-think   { background: #B82828; }
+    .chev-explore { background: #D99A10; }
+    .chev-marvel  { background: #1FA898; }
+    .chev-see:hover { background: #2551a0; }
+
+    /* ── Footer ── */
+    .site-footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 40px 24px 28px;
+      margin-top: 48px;
+    }
+    .footer-center {
+      max-width: 860px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .footer-stem {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: .04em;
+      margin-bottom: 6px;
+    }
+    .footer-title {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .footer-nav {
+      font-size: 13px;
+      color: var(--teal);
+      margin-bottom: 20px;
+      line-height: 2;
+    }
+    .footer-nav a {
+      color: var(--teal);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      margin: 0 2px;
+    }
+    .footer-nav a:hover { color: #fff; }
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .footer-copy a {
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 8px;
+      font-size: 15px;
+      vertical-align: middle;
+    }
+    .footer-copy a:hover { color: var(--teal); }
+  </style>
+</head>
+<body>
+
+<!-- ── Chev Bar ────────────────────────────────── -->
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+      </div>
+
+<!-- ── Site Nav ─────────────────────────────────── -->
+<nav id="sitenav" aria-label="Site navigation">
+  <div class="inner">
+    <a class="nav-brand" href="index.html">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <circle cx="11" cy="11" r="10" stroke="#02ADA5" stroke-width="1.5"/>
+        <circle cx="11" cy="11" r="6" stroke="#02ADA5" stroke-width="1" stroke-dasharray="2 2"/>
+        <circle cx="11" cy="11" r="2.5" fill="#02ADA5"/>
+        <line x1="11" y1="1" x2="11" y2="4.5" stroke="#02ADA5" stroke-width="1.5"/>
+        <line x1="11" y1="17.5" x2="11" y2="21" stroke="#02ADA5" stroke-width="1.5"/>
+        <line x1="1" y1="11" x2="4.5" y2="11" stroke="#02ADA5" stroke-width="1.5"/>
+        <line x1="17.5" y1="11" x2="21" y2="11" stroke="#02ADA5" stroke-width="1.5"/>
+      </svg>
+      Radio Foxhunting
+    </a>
+
+    <div class="nav-dropdown" id="steps-dropdown">
+      <button class="nav-dropdown-btn" onclick="toggleDropdown('steps-dropdown')" aria-expanded="false" aria-haspopup="true">
+        Steps
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+          <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div class="nav-dropdown-menu" role="menu">
+        <a class="nav-dropdown-item" href="module-0.html" role="menuitem">
+          <span class="step-num">1</span> Orientation &amp; Safety
+        </a>
+        <a class="nav-dropdown-item" href="module-1.html" role="menuitem">
+          <span class="step-num">2</span> Morse Code Basics
+        </a>
+        <a class="nav-dropdown-item" href="module-2.html" role="menuitem">
+          <span class="step-num">3</span> Map &amp; Compass Reading
+        </a>
+        <a class="nav-dropdown-item" href="module-3.html" role="menuitem">
+          <span class="step-num">4</span> Yagi Antenna Build
+        </a>
+        <a class="nav-dropdown-item" href="module-4.html" role="menuitem">
+          <span class="step-num">5</span> Foxhunting Field Run
+        </a>
+      </div>
+    </div>
+
+    <a class="nav-link active" href="index.html">Home</a>
+    <a class="nav-link" href="#concept-map">Concept Map</a>
+  </div>
+</nav>
+
+<!-- ── Hero ──────────────────────────────────────── -->
+<section id="hero" aria-labelledby="hero-h1">
+  <div class="inner hero-inner">
+    <div class="hero-text">
+      <p class="hero-eyebrow">JOTA JOTI 2026 &middot; UMPSA STEM LAB</p>
+      <h1 class="hero-h1" id="hero-h1">Radio <span>Foxhunting</span></h1>
+      <p class="hero-sub">Hunt hidden 144&thinsp;MHz beacons across the field using a Yagi antenna, a compass, and a topographic map. Five transmitters. One day. Every scout a hunter.</p>
+      <div class="hero-pills">
+        <span class="pill">📻 144 MHz Band</span>
+        <span class="pill">🦊 5 Beacons</span>
+        <span class="pill">⏱ 1-Day Workshop</span>
+        <span class="pill blue">⚜ Scout Friendly</span>
+      </div>
+      <!-- Register CTA -->
+      <div style="margin-top:1.25rem;display:flex;gap:.75rem;flex-wrap:wrap;">
+        <a href="register.html" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--teal);color:#041e1c;font-weight:800;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none;font-size:.95rem;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+          ✏️ Register &amp; Start
+        </a>
+        <a href="module-0.html" style="display:inline-flex;align-items:center;gap:.4rem;background:transparent;border:1.5px solid var(--teal);color:var(--teal);font-weight:700;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none;font-size:.95rem;transition:opacity .15s;" onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'">
+          → Jump to Module 0
+        </a>
+      </div>
+      <p style="color:var(--text-muted);font-size:.82rem;margin-top:1.5rem;">Already completed? <a href="certificate.html" style="color:var(--teal);font-weight:600;text-decoration:none;">View your certificate →</a></p>
+    </div>
+    <div style="flex-shrink:0;">
+      <div style="display:flex;flex-direction:column;gap:12px;min-width:220px;">
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;">
+          <div style="font-size:10px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">ARDF Format</div>
+          <div style="font-size:1.3rem;font-weight:700;color:var(--teal);font-family:var(--ff-mono);">80m / 2m Band</div>
+        </div>
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;">
+          <div style="font-size:10px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">Beacon Cycle</div>
+          <div style="font-size:1.3rem;font-weight:700;color:var(--text);font-family:var(--ff-mono);">12s on / 60s MO</div>
+        </div>
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;">
+          <div style="font-size:10px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">Team Size</div>
+          <div style="font-size:1.3rem;font-weight:700;color:var(--text);font-family:var(--ff-mono);">2–4 Scouts</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Live Demo ─────────────────────────────────── -->
+<section id="demo-section" aria-labelledby="demo-h2">
+  <div class="inner">
+    <p class="section-label">Interactive Demo</p>
+    <h2 class="section-h2" id="demo-h2">Signal Direction Visualiser</h2>
+    <p class="section-sub">Watch how a hunter takes bearings from multiple positions to triangulate the hidden transmitter.</p>
+    <div class="demo-layout">
+      <div class="demo-canvas-wrap">
+        <canvas id="signal-canvas" width="400" height="400" aria-label="Animated signal strength diagram showing radio wave propagation and direction finding"></canvas>
+        <button class="demo-replay-btn" onclick="startAnimation()" aria-label="Replay animation">↻ Replay</button>
+      </div>
+      <div class="demo-text">
+        <h3>How Direction Finding Works</h3>
+        <p>A hidden transmitter (the "fox") broadcasts a short Morse identifier every 12 seconds. You rotate your Yagi antenna until you find the direction of maximum signal — that's your bearing.</p>
+        <p>From two or more positions, your bearing lines intersect at the fox's location. The closer you get, the more you attenuate the signal to avoid overload.</p>
+        <div class="demo-legend">
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#FF7A45;box-shadow:0 0 6px #FF7A45;"></span>
+            Fox Transmitter (hidden beacon)
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:var(--teal);box-shadow:0 0 6px var(--teal);"></span>
+            Your Receiver position
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#5B9FE8;"></span>
+            Signal Bearing (plotted line)
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:rgba(2,173,165,0.3);"></span>
+            Wavefront rings (signal propagation)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CT Activity 1: Decomposition ──────────────── -->
+<section id="think" aria-labelledby="ct1-h2">
+  <div id="ct1-section">
+    <div class="inner">
+      <p class="section-label">Computational Thinking</p>
+      <h2 class="section-h2" id="ct1-h2">Activity 1 — Decompose the Foxhunt</h2>
+      <p class="section-sub">A foxhunt is complex. Break it into its core components. Click each card to reveal how it works.</p>
+      <div class="ct-section">
+        <span class="ct-label">Computational Thinking &middot; Decomposition</span>
+        <h3>What parts make up a foxhunt?</h3>
+        <p>Every system can be broken into smaller, manageable pieces. Identify the 8 components of ARDF and understand what each one does.</p>
+        <div class="dc-grid" id="dc-grid">
+          <!-- Cards injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CT Activity 2: Algorithm Sequencer ────────── -->
+<section id="ct2-section" aria-labelledby="ct2-h2">
+  <div class="inner">
+    <p class="section-label">Computational Thinking</p>
+    <h2 class="section-h2" id="ct2-h2">Activity 2 — Algorithm Sequencer</h2>
+    <p class="section-sub">Put the steps in the right order. Drag and drop each step into the correct sequence, then check your answer.</p>
+    <div class="ct-section">
+      <span class="ct-label green">Computational Thinking &middot; Algorithm Design</span>
+      <h3>Sequence the procedure</h3>
+      <p>Select a phase below and arrange its steps in the correct order for a successful foxhunt.</p>
+
+      <div class="algo-tabs" role="tablist">
+        <button class="algo-tab active" role="tab" aria-selected="true" onclick="switchTab(0)" id="tab-0">Signal Detection</button>
+        <button class="algo-tab" role="tab" aria-selected="false" onclick="switchTab(1)" id="tab-1">Map Plotting</button>
+        <button class="algo-tab" role="tab" aria-selected="false" onclick="switchTab(2)" id="tab-2">Close In</button>
+        <button class="algo-tab" role="tab" aria-selected="false" onclick="switchTab(3)" id="tab-3">Find &amp; Punch</button>
+      </div>
+
+      <div id="algo-panels">
+        <!-- Panels injected by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Module Cards ──────────────────────────────── -->
+<section id="modules-section" aria-labelledby="modules-h2">
+  <div class="inner">
+    <p class="section-label">Workshop Modules</p>
+    <h2 class="section-h2" id="modules-h2">Five Steps to the Fox</h2>
+    <p class="section-sub">Each module builds on the last. Complete them in order for best results. Progress is saved in your browser.</p>
+    <div class="module-grid">
+
+      <a class="module-card" href="module-0.html" data-act="0">
+        <span class="module-icon">🧭</span>
+        <div class="module-step">Step 1 of 5</div>
+        <div class="module-title">Orientation &amp; Safety</div>
+        <div class="module-desc">Site rules, team roles, radio regulations, and emergency procedures. Every scout must complete this before field work.</div>
+        <div class="module-progress-dots">
+          <span class="dot" data-mod="0-0"></span>
+          <span class="dot" data-mod="0-1"></span>
+          <span class="dot" data-mod="0-2"></span>
+        </div>
+        <span class="module-link-btn">Begin module <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </a>
+
+      <a class="module-card" href="module-1.html" data-act="1">
+        <span class="module-icon">📡</span>
+        <div class="module-step">Step 2 of 5</div>
+        <div class="module-title">Morse Code Basics</div>
+        <div class="module-desc">Learn the fox identifiers (MO, MOE, MOI, MOS, MOH, MO5) and decode short Morse sequences by ear and by sight.</div>
+        <div class="module-progress-dots">
+          <span class="dot" data-mod="1-0"></span>
+          <span class="dot" data-mod="1-1"></span>
+          <span class="dot" data-mod="1-2"></span>
+        </div>
+        <span class="module-link-btn">Begin module <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </a>
+
+      <a class="module-card" href="module-2.html" data-act="2">
+        <span class="module-icon">🗺️</span>
+        <div class="module-step">Step 3 of 5</div>
+        <div class="module-title">Map &amp; Compass Reading</div>
+        <div class="module-desc">Read contour lines, take magnetic bearings, plot triangulation lines, and navigate between control points.</div>
+        <div class="module-progress-dots">
+          <span class="dot" data-mod="2-0"></span>
+          <span class="dot" data-mod="2-1"></span>
+          <span class="dot" data-mod="2-2"></span>
+        </div>
+        <span class="module-link-btn">Begin module <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </a>
+
+      <a class="module-card" href="module-3.html" data-act="3">
+        <span class="module-icon">📻</span>
+        <div class="module-step">Step 4 of 5</div>
+        <div class="module-title">Yagi Antenna Build</div>
+        <div class="module-desc">Construct a 3-element 144 MHz Yagi, understand front-to-back ratio, and practice using the attenuator near strong signals.</div>
+        <div class="module-progress-dots">
+          <span class="dot" data-mod="3-0"></span>
+          <span class="dot" data-mod="3-1"></span>
+          <span class="dot" data-mod="3-2"></span>
+        </div>
+        <span class="module-link-btn">Begin module <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </a>
+
+      <a class="module-card" href="module-4.html" data-act="4">
+        <span class="module-icon">🦊</span>
+        <div class="module-step">Step 5 of 5</div>
+        <div class="module-title">Foxhunting Field Run</div>
+        <div class="module-desc">Deploy all five skills in the field. Find all 5 beacons, punch your control card, and return within the time limit.</div>
+        <div class="module-progress-dots">
+          <span class="dot" data-mod="4-0"></span>
+          <span class="dot" data-mod="4-1"></span>
+          <span class="dot" data-mod="4-2"></span>
+        </div>
+        <span class="module-link-btn">Begin module <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Concept Map ────────────────────────────────── -->
+<section id="concept-map" aria-labelledby="map-h2">
+  <div class="inner" style="padding-block:64px;">
+    <p class="section-label">Curriculum</p>
+    <h2 class="section-h2" id="map-h2">Concept Coverage Map</h2>
+    <p class="section-sub">★ = introduced in this module &nbsp;&nbsp;● = reinforced &nbsp;&nbsp;Each row is one module.</p>
+    <div class="concept-table-wrap">
+      <table class="concept-table">
+        <thead>
+          <tr>
+            <th scope="col">Module</th>
+            <th scope="col">Radio Prop.</th>
+            <th scope="col">Morse Code</th>
+            <th scope="col">Map Reading</th>
+            <th scope="col">Compass</th>
+            <th scope="col">Antenna Theory</th>
+            <th scope="col">Signal Dir.</th>
+            <th scope="col">ARDF Rules</th>
+            <th scope="col">Safety</th>
+            <th scope="col">Teamwork</th>
+            <th scope="col">Field Strategy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="row-label-num">1</span>Orientation</td>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+            <td><span class="star">★</span></td>
+            <td><span class="star">★</span></td>
+            <td><span class="star">★</span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><span class="row-label-num">2</span>Morse Code</td>
+            <td><span class="star">★</span></td>
+            <td><span class="star">★</span></td>
+            <td></td><td></td><td></td><td></td>
+            <td><span class="dot-fill">●</span></td>
+            <td></td>
+            <td><span class="dot-fill">●</span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><span class="row-label-num">3</span>Map Reading</td>
+            <td></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="star">★</span></td>
+            <td><span class="star">★</span></td>
+            <td></td>
+            <td><span class="star">★</span></td>
+            <td><span class="dot-fill">●</span></td>
+            <td></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="star">★</span></td>
+          </tr>
+          <tr>
+            <td><span class="row-label-num">4</span>Yagi Antenna</td>
+            <td><span class="dot-fill">●</span></td>
+            <td></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="star">★</span></td>
+            <td><span class="dot-fill">●</span></td>
+            <td></td>
+            <td><span class="dot-fill">●</span></td>
+            <td></td>
+            <td><span class="dot-fill">●</span></td>
+          </tr>
+          <tr>
+            <td><span class="row-label-num">5</span>Field Run</td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="dot-fill">●</span></td>
+            <td><span class="dot-fill">●</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── Survey Banner ─────────────────────────────── -->
+<div id="survey-banner">
+  <div class="inner">
+    <div class="survey-inner">
+      <span class="survey-icon">📋</span>
+      <div class="survey-text">
+        <h3>Before you start — complete the pre-survey</h3>
+        <p>Helps your facilitator understand your current knowledge of radio and navigation. Takes 3 minutes.</p>
+      </div>
+      <a class="survey-btn" href="survey-pre.html">Start Pre-Survey →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── Home Progress ─────────────────────────────── -->
+<div id="home-progress">
+  <div class="inner">
+    <div class="home-progress-bar">
+      <span class="progress-label">Workshop progress</span>
+      <div class="progress-track">
+        <div id="home-bar-fill"></div>
+      </div>
+      <span id="progress-summary">0 / 5 modules</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer ────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a> &middot;
+      <a href="module-0.html">Module 0</a> &middot;
+      <a href="module-1.html">Module 1</a> &middot;
+      <a href="module-2.html">Module 2</a> &middot;
+      <a href="module-3.html">Module 3</a> &middot;
+      <a href="module-4.html">Module 4</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative
+      <a href="https://umpsa.edu.my" target="_blank" aria-label="UMPSA website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" aria-label="Email">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Dropdown ── */
+function toggleDropdown(id) {
+  const el = document.getElementById(id);
+  const btn = el.querySelector('[aria-expanded]');
+  const open = el.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', e => {
+  document.querySelectorAll('.nav-dropdown.open').forEach(d => {
+    if (!d.contains(e.target)) {
+      d.classList.remove('open');
+      d.querySelector('[aria-expanded]').setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+
+
+
+/* ── Canvas Signal Animation ── */
+const canvas = document.getElementById('signal-canvas');
+const ctx = canvas.getContext('2d');
+let animFrame, animT = 0;
+const W = 400, H = 400;
+const fox = { x: 210, y: 180 };
+let hunterAngle = 0;
+let rings = [];
+let bearings = [];
+let phase = 0; // 0=init, 1=rings, 2=hunter, 3=bearings
+
+function startAnimation() {
+  cancelAnimationFrame(animFrame);
+  animT = 0; rings = []; bearings = []; phase = 0; hunterAngle = 0;
+  animate();
+}
+
+function animate() {
+  animT++;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#102E2B';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(2,173,165,0.07)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x <= W; x += 32) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y <= H; y += 32) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // Phase control
+  if (animT % 18 === 0 && animT < 200) rings.push({ r: 0, opacity: 1 });
+  if (animT > 60) phase = 1;
+  if (animT > 120) phase = 2;
+
+  // Rings
+  rings.forEach((ring, i) => {
+    ring.r += 2.2;
+    ring.opacity = Math.max(0, 1 - ring.r / 160);
+    ctx.beginPath();
+    ctx.arc(fox.x, fox.y, ring.r, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(255,122,69,${ring.opacity * 0.55})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  });
+  rings = rings.filter(r => r.opacity > 0);
+
+  // Fox transmitter
+  const foxGlow = 0.6 + 0.4 * Math.sin(animT * 0.08);
+  ctx.beginPath();
+  ctx.arc(fox.x, fox.y, 10 + 4 * foxGlow, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(255,122,69,${0.15 * foxGlow})`;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(fox.x, fox.y, 8, 0, Math.PI * 2);
+  ctx.fillStyle = '#FF7A45';
+  ctx.fill();
+  // Fox icon
+  ctx.fillStyle = '#FFF';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🦊', fox.x, fox.y);
+
+  // Label fox
+  ctx.font = '10px Space Mono, monospace';
+  ctx.fillStyle = 'rgba(255,122,69,0.9)';
+  ctx.textAlign = 'left';
+  ctx.fillText('Fox TX', fox.x + 14, fox.y - 10);
+
+  // Hunter
+  if (phase >= 1) {
+    if (animT > 120 && animT < 300) hunterAngle += 0.018;
+    const hR = 130;
+    const hx = fox.x + Math.cos(hunterAngle) * hR;
+    const hy = fox.y + Math.sin(hunterAngle) * hR;
+
+    // Bearing line
+    const bear = Math.atan2(fox.y - hy, fox.x - hx);
+    ctx.beginPath();
+    ctx.moveTo(hx, hy);
+    ctx.lineTo(fox.x + Math.cos(bear) * 12, fox.y + Math.sin(bear) * 12);
+    ctx.strokeStyle = 'rgba(91,159,232,0.55)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Hunter dot
+    ctx.beginPath();
+    ctx.arc(hx, hy, 7, 0, Math.PI * 2);
+    ctx.fillStyle = '#02ADA5';
+    ctx.fill();
+
+    // Arrow on hunter
+    const arrowLen = 16;
+    ctx.save();
+    ctx.translate(hx, hy);
+    ctx.rotate(bear);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(arrowLen, 0);
+    ctx.strokeStyle = '#02ADA5';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(arrowLen, 0);
+    ctx.lineTo(arrowLen - 5, -4);
+    ctx.lineTo(arrowLen - 5, 4);
+    ctx.closePath();
+    ctx.fillStyle = '#02ADA5';
+    ctx.fill();
+    ctx.restore();
+
+    // Label hunter
+    ctx.font = '10px Space Mono, monospace';
+    ctx.fillStyle = 'rgba(2,173,165,0.9)';
+    ctx.textAlign = 'right';
+    ctx.fillText('RX', hx - 12, hy - 10);
+
+    // Record bearings
+    if (animT % 80 === 0 && bearings.length < 3) {
+      bearings.push({ x: hx, y: hy, angle: bear });
+    }
+
+    // Draw past bearings
+    bearings.forEach(b => {
+      ctx.beginPath();
+      ctx.moveTo(b.x, b.y);
+      ctx.lineTo(fox.x + Math.cos(b.angle) * 12, fox.y + Math.sin(b.angle) * 12);
+      ctx.strokeStyle = 'rgba(91,159,232,0.25)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 5]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+    // Signal Bearing label
+    ctx.font = '10px Space Mono, monospace';
+    ctx.fillStyle = 'rgba(91,159,232,0.8)';
+    ctx.textAlign = 'center';
+    ctx.fillText('Signal Bearing', fox.x, fox.y + 100);
+  }
+
+  // Compass rose (corner)
+  drawCompass(ctx, 32, 32, 18);
+
+  animFrame = requestAnimationFrame(animate);
+}
+
+function drawCompass(ctx, cx, cy, r) {
+  ctx.save();
+  ctx.font = `${r * 0.55}px Space Mono, monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const dirs = [['N',0],['E',90],['S',180],['W',270]];
+  dirs.forEach(([d, deg]) => {
+    const rad = (deg - 90) * Math.PI / 180;
+    ctx.fillStyle = d === 'N' ? '#FF7A45' : 'rgba(232,244,243,0.5)';
+    ctx.fillText(d, cx + Math.cos(rad) * (r + 7), cy + Math.sin(rad) * (r + 7));
+  });
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(2,173,165,0.3)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.restore();
+}
+
+startAnimation();
+
+/* ── Decomposition Cards ── */
+const dcData = [
+  { icon: '📻', title: 'Radio Signal', hint: 'Beacon transmits at 2m band', desc: 'The hidden fox transmitter broadcasts at 144 MHz (2-meter band). Each of the 5 foxes sends a unique Morse identifier (MO, MOE, MOI, MOS, MOH) cyclically every minute.' },
+  { icon: '📡', title: 'Antenna', hint: 'Yagi picks up directional signal', desc: 'A 3-element Yagi antenna has high directional gain (8–10 dBi). Rotate it to find the azimuth of maximum received signal strength — that is your bearing.' },
+  { icon: '🧭', title: 'Bearing', hint: 'Compass direction to the fox', desc: 'Note the compass bearing (in degrees) where the signal is strongest. Plot this line from your current map position. Two bearings from different spots triangulate the fox.' },
+  { icon: '🗺️', title: 'Map', hint: 'Plot positions on topo map', desc: 'A 1:10 000 topographic map of the hunt area. Use a protractor and pencil to draw bearing lines. The intersection of two or more lines gives the probable fox location.' },
+  { icon: '🔇', title: 'Attenuator', hint: 'Reduce signal when close', desc: 'When you are within ~50 m the signal saturates the receiver. Inline attenuators (20–30 dB) reduce the strength so you can still identify the signal null accurately.' },
+  { icon: '🕺', title: 'Body Shield', hint: 'Human body absorbs 144 MHz', desc: 'Your body absorbs 2m signals effectively. Turn slowly on the spot — when the signal drops to a minimum, the fox is directly behind you. This is the body-null technique.' },
+  { icon: '⏱️', title: 'Timing', hint: '5 beacons, 12s each, 60s MO', desc: 'Each of 5 foxes transmits for 12 seconds in turn, then a 60-second master oscillator (MO) beacon plays. Full cycle = 120 seconds. Learn the cycle to know which fox is transmitting.' },
+  { icon: '🏁', title: 'Find Fox', hint: 'Converge and punch control card', desc: 'At the physical transmitter location, a mechanical punch is attached. Stamp your control card with the correct hole pattern to prove you found it. Return to finish before time expires.' },
+];
+
+const dcGrid = document.getElementById('dc-grid');
+dcData.forEach((card, i) => {
+  const el = document.createElement('div');
+  el.className = 'dc-card';
+  el.setAttribute('role', 'button');
+  el.setAttribute('tabindex', '0');
+  el.setAttribute('aria-expanded', 'false');
+  el.innerHTML = `
+    <span class="dc-card-icon">${card.icon}</span>
+    <div class="dc-card-expand" aria-hidden="true">+</div>
+    <div class="dc-card-title">${card.title}</div>
+    <div class="dc-card-hint">${card.hint}</div>
+    <div class="dc-card-desc">${card.desc}</div>
+  `;
+  el.addEventListener('click', () => {
+    const wasOpen = el.classList.contains('open');
+    dcGrid.querySelectorAll('.dc-card').forEach(c => {
+      c.classList.remove('open');
+      c.setAttribute('aria-expanded', 'false');
+    });
+    if (!wasOpen) {
+      el.classList.add('open');
+      el.setAttribute('aria-expanded', 'true');
+    }
+  });
+  el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); } });
+  dcGrid.appendChild(el);
+});
+
+/* ── Algorithm Sequencer ── */
+const algoData = [
+  {
+    title: 'Signal Detection',
+    steps: [
+      'Power on receiver and set frequency to 144.500 MHz',
+      'Listen for Morse identifier to determine which fox is transmitting',
+      'Rotate Yagi 360° and note compass bearing of maximum signal',
+      'Record bearing in field notebook with timestamp',
+      'Move to second position at least 50 m away and repeat',
+    ],
+    correct: [0,1,2,3,4]
+  },
+  {
+    title: 'Map Plotting',
+    steps: [
+      'Mark your current position on the map using landmarks',
+      'Place protractor on map, align with north, draw bearing line',
+      'Move to second position and take another bearing',
+      'Draw second bearing line — intersection is fox location',
+      'Estimate distance to fox and plan route avoiding obstacles',
+    ],
+    correct: [0,1,2,3,4]
+  },
+  {
+    title: 'Close In',
+    steps: [
+      'Approach estimated fox area with attenuator inline',
+      'Listen for signal null using body-shield technique',
+      'Reduce power on attenuator as signal strengthens',
+      'Identify precise null direction, walk 10 m and recheck',
+      'Locate physical transmitter using 1 dB step attenuator',
+    ],
+    correct: [0,1,2,3,4]
+  },
+  {
+    title: 'Find & Punch',
+    steps: [
+      'Confirm fox identity from its Morse identifier',
+      'Locate the control punch attached to the transmitter',
+      'Stamp control card in the correct box for this fox number',
+      'Note time found in field notebook',
+      'Navigate to next planned fox using bearing and map',
+    ],
+    correct: [0,1,2,3,4]
+  }
+];
+
+// Shuffle helper
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let algoState = algoData.map(d => ({ placed: [], shuffled: shuffle(d.steps.map((s,i) => ({text:s, origIdx:i}))) }));
+
+function renderAlgoPanels() {
+  const container = document.getElementById('algo-panels');
+  container.innerHTML = '';
+  algoData.forEach((data, pi) => {
+    const panel = document.createElement('div');
+    panel.className = 'algo-panel' + (pi === 0 ? ' active' : '');
+    panel.id = 'algo-panel-' + pi;
+
+    const state = algoState[pi];
+    const placed = state.placed;
+    const shuffled = state.shuffled;
+
+    // Drop zone
+    const dz = document.createElement('div');
+    dz.className = 'algo-drop-zone';
+    if (placed.length === 0) {
+      dz.innerHTML = '<div class="algo-drop-placeholder">Drag steps here in the correct order ↕</div>';
+    } else {
+      placed.forEach((item, idx) => {
+        const di = document.createElement('div');
+        di.className = 'algo-drop-item';
+        di.setAttribute('draggable', 'true');
+        di.dataset.pi = pi;
+        di.dataset.idx = idx;
+        di.innerHTML = `<span class="algo-step-num">${idx+1}</span>${item.text}<button class="remove-btn" aria-label="Remove step" onclick="removeAlgoStep(${pi},${idx})">×</button>`;
+        dz.appendChild(di);
+      });
+    }
+
+    // Bank
+    const bank = document.createElement('div');
+    bank.className = 'algo-bank';
+    shuffled.forEach((item, si) => {
+      if (state.placed.some(p => p.origIdx === item.origIdx)) return;
+      const btn = document.createElement('div');
+      btn.className = 'algo-step';
+      btn.setAttribute('draggable', 'true');
+      btn.setAttribute('tabindex', '0');
+      btn.dataset.pi = pi;
+      btn.dataset.si = si;
+      btn.innerHTML = `<span class="algo-step-num">?</span>${item.text}`;
+      btn.addEventListener('click', () => addAlgoStep(pi, si));
+      btn.addEventListener('keydown', e => { if (e.key === 'Enter') addAlgoStep(pi, si); });
+      bank.appendChild(btn);
+    });
+
+    // Actions
+    const actions = document.createElement('div');
+    actions.className = 'algo-actions';
+    actions.innerHTML = `
+      <button class="btn-check" onclick="checkAlgo(${pi})">✓ Check order</button>
+      <button class="btn-reset" onclick="resetAlgo(${pi})">↺ Reset</button>
+      <div class="algo-feedback" id="algo-feedback-${pi}"></div>
+    `;
+
+    panel.appendChild(dz);
+    panel.appendChild(bank);
+    panel.appendChild(actions);
+    container.appendChild(panel);
+  });
+}
+
+function addAlgoStep(pi, si) {
+  const item = algoState[pi].shuffled[si];
+  if (!item) return;
+  if (algoState[pi].placed.some(p => p.origIdx === item.origIdx)) return;
+  algoState[pi].placed.push(item);
+  renderAlgoPanels();
+  switchTab(pi, false);
+}
+
+function removeAlgoStep(pi, idx) {
+  algoState[pi].placed.splice(idx, 1);
+  const fb = document.getElementById('algo-feedback-' + pi);
+  if (fb) { fb.className = 'algo-feedback'; fb.textContent = ''; }
+  renderAlgoPanels();
+  switchTab(pi, false);
+}
+
+function checkAlgo(pi) {
+  const placed = algoState[pi].placed;
+  const correct = algoData[pi].correct;
+  const fb = document.getElementById('algo-feedback-' + pi);
+  if (!fb) return;
+  if (placed.length < correct.length) {
+    fb.className = 'algo-feedback wrong';
+    fb.textContent = `Place all ${correct.length} steps first (${placed.length}/${correct.length} placed).`;
+    return;
+  }
+  const isCorrect = placed.every((item, i) => item.origIdx === correct[i]);
+  if (isCorrect) {
+    fb.className = 'algo-feedback correct';
+    fb.textContent = '✓ Perfect sequence! That is the correct ARDF procedure.';
+  } else {
+    fb.className = 'algo-feedback wrong';
+    fb.textContent = '✗ Not quite — check the logical order of operations and try again.';
+  }
+}
+
+function resetAlgo(pi) {
+  algoState[pi].placed = [];
+  algoState[pi].shuffled = shuffle(algoData[pi].steps.map((s,i) => ({text:s, origIdx:i})));
+  const fb = document.getElementById('algo-feedback-' + pi);
+  if (fb) { fb.className = 'algo-feedback'; fb.textContent = ''; }
+  renderAlgoPanels();
+  switchTab(pi, false);
+}
+
+let currentTab = 0;
+function switchTab(idx, scroll = false) {
+  currentTab = idx;
+  document.querySelectorAll('.algo-tab').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+    t.setAttribute('aria-selected', i === idx);
+  });
+  document.querySelectorAll('.algo-panel').forEach((p, i) => {
+    p.classList.toggle('active', i === idx);
+  });
+}
+
+renderAlgoPanels();
+
+/* ── Progress Tracker (localStorage) ── */
+function loadProgress() {
+  try {
+    const data = JSON.parse(localStorage.getItem('rf_progress') || '{}');
+    let completed = 0;
+    for (let m = 0; m < 5; m++) {
+      const modProgress = data['mod_' + m] || [];
+      for (let d = 0; d < 3; d++) {
+        const dot = document.querySelector(`[data-mod="${m}-${d}"]`);
+        if (dot && modProgress[d]) dot.classList.add('filled');
+      }
+      if (modProgress.filter(Boolean).length >= 3) completed++;
+    }
+    const pct = (completed / 5) * 100;
+    setTimeout(() => {
+      const fill = document.getElementById('home-bar-fill');
+      const summary = document.getElementById('progress-summary');
+      if (fill) fill.style.width = pct + '%';
+      if (summary) summary.textContent = completed + ' / 5 modules';
+    }, 300);
+  } catch(e) {}
+}
+loadProgress();
+</script>
+<script>
+/* ── Triple-click SEE → teacher notes ── */
+(function(){
+  var box = document.getElementById('see-box');
+  if (!box) return;
+  var clicks = 0, timer;
+  box.addEventListener('click', function() {
+    clicks++;
+    clearTimeout(timer);
+    timer = setTimeout(function() { clicks = 0; }, 800);
+    if (clicks >= 3) {
+      clicks = 0;
+      window.location.href = 'teacher-index.html';
+    }
+  });
+})();
+</script>
+<script src="tracker.js"></script>
+</body>
+</html>
