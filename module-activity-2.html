@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Map Activities — Radio Foxhunting</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  :root {
+    --teal:#02ADA5; --teal-dim:#017e78; --teal-glow:rgba(2,173,165,0.18);
+    --bg:#08312F; --bg2:#0b3d3a; --bg3:#0f4a46;
+    --text:#d4f0ee; --text-muted:#7bbfba; --border:rgba(2,173,165,0.25);
+    --card-bg:rgba(11,61,58,0.85); --radius:10px;
+    --ok:#2ecc71; --err:#e74c3c; --warn:#f39c12;
+    --font:'Segoe UI',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6;min-height:100vh;}
+
+  /* nav / hero / progress shared */
+  .sitenav{background:#041f1e;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:52px;position:sticky;top:0;z-index:100;}
+  .sitenav .brand{font-weight:800;font-size:1rem;color:var(--teal);text-decoration:none;}
+  .sitenav select{background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:.82rem;cursor:pointer;}
+  .hero{background:linear-gradient(160deg,#041f1e 0%,var(--bg) 60%);padding:2.5rem 1.25rem 2rem;border-bottom:1px solid var(--border);}
+  .hero-inner{max-width:860px;margin:0 auto;}
+  .eyebrow{font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem;}
+  .hero h1{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:800;line-height:1.15;margin-bottom:.5rem;}
+  .hero .subtitle{color:var(--text-muted);font-size:.95rem;max-width:620px;}
+  .progress-wrap{padding:.6rem 1.25rem;background:#041f1e;border-bottom:1px solid var(--border);}
+  .progress-row{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:.75rem;font-size:.75rem;color:var(--text-muted);}
+  .progress-track{flex:1;height:5px;background:var(--bg3);border-radius:999px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--teal);border-radius:999px;}
+
+  /* layout */
+  .content{max-width:860px;margin:0 auto;padding:2rem 1.25rem 3rem;display:flex;flex-direction:column;gap:1.75rem;}
+  .section-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;}
+  .section-card h2{font-size:1.1rem;font-weight:700;color:var(--teal);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+  .section-card h2::before{content:'';display:inline-block;width:3px;height:1em;background:var(--teal);border-radius:2px;}
+  .section-card h3{font-size:.92rem;font-weight:700;color:var(--text);margin:.9rem 0 .4rem;}
+  .section-card p{color:var(--text-muted);margin-bottom:.6rem;font-size:.9rem;}
+
+  /* calibration banners */
+  .calibration{background:rgba(2,173,165,0.1);border:1px dashed var(--teal);border-radius:8px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;font-size:.88rem;}
+  .calibration .icon{font-size:1.4rem;flex-shrink:0;}
+  .calibration strong{color:var(--teal);}
+
+  /* fill in blanks */
+  .fib-list{list-style:none;display:flex;flex-direction:column;gap:.85rem;margin-top:.75rem;}
+  .fib-item{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;font-size:.9rem;color:var(--text-muted);}
+  .fib-item input[type=text]{background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:4px 8px;font-size:.88rem;width:120px;outline:none;transition:border-color .2s;}
+  .fib-item input:focus{border-color:var(--teal);}
+  .fib-item .result{font-size:.8rem;font-weight:700;min-width:20px;}
+  .fib-item .result.ok{color:var(--ok);}
+  .fib-item .result.err{color:var(--err);}
+
+  /* debug */
+  .debug-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:.85rem;}
+  .debug-card .scenario{font-size:.9rem;color:var(--text);margin-bottom:.6rem;padding:.6rem;background:#020f0e;border-radius:5px;border-left:3px solid var(--warn);}
+  .debug-card textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:.5rem .75rem;font-size:.82rem;min-height:80px;resize:vertical;outline:none;font-family:var(--font);}
+  .debug-card textarea:focus{border-color:var(--teal);}
+
+  /* code challenge */
+  .code-block{background:#020f0e;border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;font-size:.8rem;color:#a8d8d5;margin:.75rem 0;line-height:1.55;font-family:'Fira Mono',monospace;}
+  .code-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:.6rem .75rem;font-size:.8rem;min-height:120px;resize:vertical;outline:none;font-family:'Fira Mono',monospace;}
+  .code-input:focus{border-color:var(--teal);}
+  .feedback-bar{margin-top:.6rem;padding:.5rem .75rem;border-radius:5px;font-size:.82rem;font-weight:600;display:none;}
+  .feedback-bar.ok{display:block;background:rgba(46,204,113,0.12);border:1px solid #2ecc71;color:#2ecc71;}
+  .feedback-bar.err{display:block;background:rgba(231,76,60,0.12);border:1px solid #e74c3c;color:#e74c3c;}
+
+  /* MCQ */
+  .mcq-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:.75rem;}
+  .mcq-item .q{font-size:.92rem;font-weight:600;margin-bottom:.6rem;}
+  .mcq-item label{display:flex;align-items:center;gap:.5rem;padding:.3rem .5rem;border-radius:5px;cursor:pointer;font-size:.88rem;color:var(--text-muted);transition:background .15s;}
+  .mcq-item label:hover{background:var(--teal-glow);}
+  .mcq-item input[type=radio]{accent-color:var(--teal);}
+  .mcq-item .mcq-feedback{font-size:.8rem;font-weight:700;margin-top:.4rem;min-height:1em;}
+  .mcq-item .mcq-feedback.ok{color:var(--ok);}
+  .mcq-item .mcq-feedback.err{color:var(--err);}
+
+  /* journal */
+  .journal-item{margin-bottom:1rem;}
+  .journal-item label{font-size:.88rem;color:var(--text);display:block;margin-bottom:.35rem;}
+  .journal-item textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:.5rem .75rem;font-size:.85rem;min-height:70px;resize:vertical;outline:none;font-family:var(--font);}
+  .journal-item textarea:focus{border-color:var(--teal);}
+
+  /* buttons */
+  .btn{display:inline-block;padding:.5rem 1.2rem;border-radius:6px;font-size:.88rem;font-weight:700;border:none;cursor:pointer;transition:opacity .2s;}
+  .btn-teal{background:var(--teal);color:#041f1e;}
+  .btn-outline{background:none;color:var(--teal);border:1px solid var(--teal);}
+  .btn:hover{opacity:.85;}
+  .btn-row{display:flex;gap:.6rem;margin-top:.85rem;flex-wrap:wrap;}
+
+  /* score panel */
+  .score-panel{background:var(--teal-glow);border:1px solid var(--teal);border-radius:8px;padding:1rem;text-align:center;margin-top:1rem;display:none;}
+  .score-panel .score-num{font-size:2rem;font-weight:800;color:var(--teal);}
+  .score-panel p{color:var(--text-muted);font-size:.88rem;}
+
+  /* submit */
+  .submit-section{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;}
+  .submit-section h2{font-size:1.1rem;font-weight:700;color:var(--teal);margin-bottom:.75rem;}
+  .gs-form{display:flex;flex-direction:column;gap:.65rem;}
+  .gs-form label{font-size:.85rem;color:var(--text-muted);}
+  .gs-form input,.gs-form select{background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:.45rem .75rem;font-size:.88rem;outline:none;width:100%;}
+  .gs-form input:focus,.gs-form select:focus{border-color:var(--teal);}
+
+  /* nav / footer */
+  .stepnav{max-width:860px;margin:0 auto;padding:0 1.25rem 1.5rem;display:flex;justify-content:space-between;}
+  .step-link{color:var(--teal);text-decoration:none;font-size:.88rem;font-weight:600;display:flex;align-items:center;gap:.4rem;padding:.45rem .8rem;border:1px solid var(--border);border-radius:6px;transition:background .2s;}
+  .step-link:hover{background:var(--teal-glow);}
+  footer{background:#020f0e;border-top:1px solid var(--border);padding:1.25rem;text-align:center;font-size:.78rem;color:var(--text-muted);}
+  footer a{color:var(--teal);text-decoration:none;}
+
+  .tier-badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.72rem;font-weight:700;margin-left:.4rem;}
+  .tier-1{background:rgba(46,204,113,0.15);color:#2ecc71;}
+  .tier-2{background:rgba(243,156,18,0.15);color:#f39c12;}
+  .tier-3{background:rgba(231,76,60,0.15);color:#e74c3c;}
+  .tier-4{background:rgba(155,89,182,0.15);color:#9b59b6;}
+  .info-box{background:var(--teal-glow);border-left:3px solid var(--teal);border-radius:0 6px 6px 0;padding:.65rem .9rem;font-size:.85rem;color:var(--text);margin:.6rem 0;}
+  .info-box strong{color:var(--teal);}
+</style>
+</head>
+<body>
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+
+<!-- SITENAV -->
+<nav class="sitenav">
+  <a href="index.html" class="brand">Radio Foxhunting</a>
+  <div class="steps-dropdown">
+    <button class="steps-btn" id="stepsToggle"><span data-bm="Modul &#9661;">Modules &or;</span></button>
+    <div class="steps-menu" id="stepsMenu">
+      <a href="module-0.html">0 · Orientation</a>
+      <a href="module-1.html">1 · Morse Code</a>
+      <a href="module-2.html" class="current">2 · Map Reading</a>
+      <a href="module-3.html">3 · Yagi Antenna</a>
+      <a href="module-4.html">4 · Field Guide</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow" data-bm="Modul 2 daripada 5 — Aktiviti">Module 2 of 5 — Activities</p>
+    <h1 data-bm="Aktiviti Membaca Peta &amp; Triangulasi">Map Reading &amp; Triangulation Activities</h1>
+    <p class="subtitle"><span data-bm="Cabaran berperingkat daripada isi tempat kosong hingga pengkodan. Selesaikan semua peringkat untuk mendapatkan lencana Pembaca Peta anda.">Tiered challenges from fill-in-blanks through coding. Complete all tiers to earn your Map Reader badge.</span></p>
+  </div>
+</header>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-row">
+    <span>Progress</span>
+    <div class="progress-track"><div class="progress-fill" id="mainProgress" style="width:0%"></div></div>
+    <span id="mainPct">0%</span>
+  </div>
+</div>
+
+<main class="content">
+
+  <!-- PRE-CALIBRATION -->
+  <div class="calibration">
+    <span class="icon">🧭</span>
+    <div><strong>Pre-Activity Check</strong> — Confirm you have completed the Map Reading module before starting these activities. If you haven't, <a href="module-2.html" style="color:var(--teal)">go back and read it first</a>.</div>
+  </div>
+
+  <!-- TIER 1: Fill-in-Blanks -->
+  <section class="section-card">
+    <h2 data-bm="Tier 1 — Isi Tempat Kosong <span class=&quot;tier-badge tier-1&quot;>Asas</span>">Tier 1 — Fill in the Blanks <span class="tier-badge tier-1">Foundational</span></h2>
+    <p>Complete each sentence with the correct term. Press Check to see your answers.</p>
+    <ul class="fib-list" id="fibList">
+      <li class="fib-item" data-answers="steep,steep terrain,steep hill">
+        <span>Contour lines that are close together indicate</span>
+        <input type="text" placeholder="…" aria-label="Answer 1">
+        <span class="result"></span>
+        <span>terrain.</span>
+      </li>
+      <li class="fib-item" data-answers="degrees">
+        <span>A compass bearing is measured in</span>
+        <input type="text" placeholder="…" aria-label="Answer 2">
+        <span class="result"></span>
+        <span>from 0 to 360.</span>
+      </li>
+      <li class="fib-item" data-answers="2,3,two,three,2 or 3">
+        <span>The triangulation technique uses at least</span>
+        <input type="text" placeholder="…" aria-label="Answer 3">
+        <span class="result"></span>
+        <span>bearings.</span>
+      </li>
+      <li class="fib-item" data-answers="first,left-right,left to right,easting first">
+        <span>Easting is read</span>
+        <input type="text" placeholder="…" aria-label="Answer 4">
+        <span class="result"></span>
+        <span>on a grid (before northing).</span>
+      </li>
+      <li class="fib-item" data-answers="fox,fox position,fox's position">
+        <span>When two bearing lines cross, you have found the</span>
+        <input type="text" placeholder="…" aria-label="Answer 5">
+        <span class="result"></span>
+        <span>position.</span>
+      </li>
+      <li class="fib-item" data-answers="true,magnetic,true north,magnetic north">
+        <span>Magnetic declination is the angle between</span>
+        <input type="text" placeholder="…" aria-label="Answer 6a" style="width:90px">
+        <span>north and</span>
+        <input type="text" placeholder="…" aria-label="Answer 6b" style="width:90px">
+        <span class="result"></span>
+        <span>north.</span>
+      </li>
+      <li class="fib-item" data-answers="6,six">
+        <span>A 6-figure grid reference has</span>
+        <input type="text" placeholder="…" aria-label="Answer 7">
+        <span class="result"></span>
+        <span>digits.</span>
+      </li>
+    </ul>
+    <div class="btn-row">
+      <button class="btn btn-teal" onclick="checkFIB()" data-bm="Semak Jawapan">Check Answers</button>
+      <button class="btn btn-outline" onclick="resetFIB()" data-bm="Tetapkan Semula">Reset</button>
+    </div>
+    <div id="fibScore" class="score-panel">
+      <div class="score-num" id="fibScoreNum">0/7</div>
+      <p id="fibScoreMsg"></p>
+    </div>
+  </section>
+
+  <!-- TIER 2: Debug -->
+  <section class="section-card">
+    <h2 data-bm="Tier 2 — Nyahpepijat Senario <span class=&quot;tier-badge tier-2&quot;>Gunaan</span>">Tier 2 — Debug the Scenario <span class="tier-badge tier-2">Applied</span></h2>
+    <p>Read each scenario, identify the problem, and explain how to fix it.</p>
+
+    <div class="debug-card">
+      <div class="scenario">📋 <strong>Scenario 1:</strong> You took two identical bearings of 045° from the <em>same location</em>. Why can't you triangulate? Fix the method.</div>
+      <textarea id="debug1" placeholder="Explain the problem and the fix…" aria-label="Debug scenario 1 answer"></textarea>
+    </div>
+    <div class="debug-card">
+      <div class="scenario">📋 <strong>Scenario 2:</strong> Your map shows scale 1:25 000. You measured 4 cm on the map. How far is that in real life? Show your working.</div>
+      <textarea id="debug2" placeholder="Show your calculation step by step…" aria-label="Debug scenario 2 answer"></textarea>
+    </div>
+    <div class="debug-card">
+      <div class="scenario">📋 <strong>Scenario 3:</strong> You recorded a bearing of 450°. What's wrong? Give the correct value.</div>
+      <textarea id="debug3" placeholder="Identify the error and correct it…" aria-label="Debug scenario 3 answer"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-teal" onclick="showDebugHints()" data-bm="Tunjukkan Jawapan Model">Reveal Model Answers</button>
+    </div>
+    <div id="debugHints" style="display:none;margin-top:.85rem;">
+      <div class="info-box">
+        <strong>Scenario 1:</strong> Two bearings from the <em>same</em> location cannot triangulate — they are the same line. Fix: move to a second position at least 50 m away before taking the second bearing. Lines from different positions are needed to intersect.
+      </div>
+      <div class="info-box">
+        <strong>Scenario 2:</strong> Scale 1:25 000 means 1 cm = 250 m. Working: 4 cm × 250 m = <strong>1,000 m = 1 km</strong>.
+      </div>
+      <div class="info-box">
+        <strong>Scenario 3:</strong> Bearings must be 0°–359°. 450° is invalid because the compass only goes to 360°. Fix: 450° − 360° = <strong>090°</strong> (East).
+      </div>
+    </div>
+  </section>
+
+  <!-- TIER 3: Bearing Plotter -->
+  <section class="section-card" id="tier3">
+    <h2 data-bm="Tier 3 — Pemetaan Baringan <span class=&quot;tier-badge tier-3&quot;>Peta &amp; Navigasi</span>">Tier 3 — Bearing Plotter <span class="tier-badge tier-3">Map &amp; Navigate</span></h2>
+    <p>Two scouts have taken compass bearings to the hidden fox transmitter. Plot their bearing lines on the grid and <strong>click the map square where the lines cross</strong> to mark the fox position.</p>
+    <div class="info-box" style="margin-bottom:1rem;">
+      <strong>📍 Scout A</strong> is at grid <strong>B8</strong> and reports bearing <strong>031°</strong><br>
+      <strong>📍 Scout B</strong> is at grid <strong>I8</strong> and reports bearing <strong>321°</strong><br>
+      <em style="font-size:.85rem;color:var(--text-muted);">Tip: trace each line from the scout in the direction of their bearing — where the lines cross is the fox!</em>
+    </div>
+    <div id="plotterWrap" style="overflow:auto;max-width:100%;">
+      <svg id="bearingGrid" viewBox="0 0 420 420" width="420" height="420"
+           style="max-width:100%;height:auto;border-radius:8px;background:#0a1a18;cursor:crosshair;touch-action:none;">
+        <defs>
+          <pattern id="smallGrid" width="39" height="39" patternUnits="userSpaceOnUse" x="30" y="30">
+            <path d="M 39 0 L 0 0 0 39" fill="none" stroke="rgba(2,173,165,.15)" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect x="30" y="30" width="390" height="390" fill="url(#smallGrid)"/>
+        <rect x="30" y="30" width="390" height="390" fill="none" stroke="rgba(2,173,165,.35)" stroke-width="1"/>
+        <text x="49"  y="22" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">A</text>
+        <text x="88"  y="22" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">B</text>
+        <text x="127" y="22" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">C</text>
+        <text x="166" y="22" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">D</text>
+        <text x="205" y="22" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">E</text>
+        <text x="244" y="22" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">F</text>
+        <text x="283" y="22" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">G</text>
+        <text x="322" y="22" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">H</text>
+        <text x="361" y="22" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">I</text>
+        <text x="400" y="22" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">J</text>
+        <text x="22" y="53"  fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">1</text>
+        <text x="22" y="92"  fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">2</text>
+        <text x="22" y="131" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">3</text>
+        <text x="22" y="170" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">4</text>
+        <text x="22" y="209" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">5</text>
+        <text x="22" y="248" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">6</text>
+        <text x="22" y="287" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">7</text>
+        <text x="22" y="326" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">8</text>
+        <text x="22" y="365" fill="#8aaba8" font-size="11" text-anchor="middle" font-family="monospace">9</text>
+        <text x="22" y="404" fill="#8aaba8" font-size="9"  text-anchor="middle" font-family="monospace">10</text>
+        <line id="lineA" x1="0" y1="0" x2="0" y2="0" stroke="#02ADA5" stroke-width="2" stroke-dasharray="6,3" opacity="0.85"/>
+        <line id="lineB" x1="0" y1="0" x2="0" y2="0" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,3" opacity="0.85"/>
+        <circle cx="89"  cy="323" r="7" fill="#02ADA5" stroke="#071412" stroke-width="2"/>
+        <text    x="89"  y="312" fill="#02ADA5" font-size="10" text-anchor="middle" font-weight="bold">A</text>
+        <circle cx="362" cy="323" r="7" fill="#f59e0b" stroke="#071412" stroke-width="2"/>
+        <text    x="362" y="312" fill="#f59e0b" font-size="10" text-anchor="middle" font-weight="bold">B</text>
+        <g id="playerMark" style="display:none;">
+          <circle r="10" fill="rgba(255,50,50,.25)" stroke="#ff3232" stroke-width="2"/>
+          <line x1="-10" y1="0" x2="10" y2="0" stroke="#ff3232" stroke-width="1.5"/>
+          <line x1="0" y1="-10" x2="0" y2="10" stroke="#ff3232" stroke-width="1.5"/>
+        </g>
+        <g id="foxMark" style="display:none;">
+          <circle r="12" fill="rgba(255,120,0,.2)" stroke="#ff7800" stroke-width="2"/>
+          <text x="0" y="4" font-size="14" text-anchor="middle">&#x1F98A;</text>
+        </g>
+      </svg>
+    </div>
+    <p style="font-size:.82rem;color:var(--text-muted);margin:.5rem 0 .25rem;">Your mark: <span id="markCoords" style="color:var(--teal);">— click the map —</span></p>
+    <div class="btn-row">
+      <button class="btn btn-teal" onclick="checkBearingPlot()" data-bm="Semak Tanda Saya ✓">Check My Mark ✓</button>
+      <button class="btn btn-outline" onclick="resetBearingPlot()">Reset</button>
+    </div>
+    <div id="plotFeedback" class="feedback-bar" style="display:none;"></div>
+    <div id="plotResult" class="info-box" style="display:none;" aria-live="polite"></div>
+  </section>
+
+  <!-- TIER 4: Cocked Hat Analyser -->
+  <section class="section-card" id="tier4">
+    <h2 data-bm="Tier 4 — Penganalisis Segitiga Kesilapan <span class=&quot;tier-badge tier-4&quot;>Analisis</span>">Tier 4 — Cocked Hat Analyser <span class="tier-badge tier-4">Analysis</span></h2>
+    <p>When <strong>three</strong> bearing lines are used, they rarely meet at a single point — they form a small triangle called a <strong>"cocked hat"</strong>. This is normal and is caused by small measurement errors.</p>
+    <div class="info-box" style="margin-bottom:1rem;">
+      The diagram below shows three bearing lines from three different scouts. They form a cocked hat triangle. <strong>Click inside the triangle</strong> to mark your best estimate of the fox position, then answer the debrief questions.
+    </div>
+    <div style="overflow:auto;max-width:100%;">
+      <svg id="cockedHatSvg" viewBox="0 0 380 320" width="380" height="320"
+           style="max-width:100%;height:auto;border-radius:8px;background:#0a1a18;cursor:crosshair;">
+        <line x1="20"  y1="40"  x2="300" y2="290" stroke="#02ADA5" stroke-width="2" stroke-dasharray="8,4" opacity="0.7"/>
+        <text x="18"  y="35" fill="#02ADA5" font-size="11" font-family="monospace">Scout 1</text>
+        <line x1="360" y1="50"  x2="80"  y2="295" stroke="#f59e0b" stroke-width="2" stroke-dasharray="8,4" opacity="0.7"/>
+        <text x="285" y="45" fill="#f59e0b" font-size="11" font-family="monospace">Scout 2</text>
+        <line x1="100" y1="310" x2="260" y2="40"  stroke="#a78bfa" stroke-width="2" stroke-dasharray="8,4" opacity="0.7"/>
+        <text x="262" y="36" fill="#a78bfa" font-size="11" font-family="monospace">Scout 3</text>
+        <polygon points="168,115 195,138 152,148" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="172" y="185" fill="rgba(255,255,255,.3)" font-size="10" text-anchor="middle">click inside the triangle ↑</text>
+        <g id="hatMark" style="display:none;">
+          <circle r="8" fill="rgba(255,50,50,.25)" stroke="#ff3232" stroke-width="2"/>
+          <line x1="-8" y1="0" x2="8" y2="0" stroke="#ff3232" stroke-width="1.5"/>
+          <line x1="0" y1="-8" x2="0" y2="8" stroke="#ff3232" stroke-width="1.5"/>
+        </g>
+      </svg>
+    </div>
+    <p style="font-size:.82rem;color:var(--text-muted);margin:.5rem 0 .25rem;">Your estimate: <span id="hatCoords" style="color:var(--teal);">— click the diagram —</span></p>
+    <div style="margin-top:1.2rem;">
+      <label style="display:block;font-weight:600;margin-bottom:.4rem;color:var(--text);">
+        Why do three bearing lines form a triangle instead of meeting at one point? <span style="color:var(--text-muted);font-weight:400;">(min 10 words)</span>
+      </label>
+      <textarea id="hatQ1" rows="3" style="width:100%;max-width:100%;background:#0d2320;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.6rem .8rem;font-size:.9rem;resize:vertical;" placeholder="Bearing lines form a triangle because…" data-bm-ph="Garisan baringan membentuk segitiga kerana…"></textarea>
+    </div>
+    <div style="margin-top:1rem;">
+      <label style="display:block;font-weight:600;margin-bottom:.4rem;color:var(--text);">
+        If the cocked hat is very large, what should you do? <span style="color:var(--text-muted);font-weight:400;">(min 10 words)</span>
+      </label>
+      <textarea id="hatQ2" rows="3" style="width:100%;max-width:100%;background:#0d2320;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.6rem .8rem;font-size:.9rem;resize:vertical;" placeholder="If the cocked hat is too large I would…" data-bm-ph="Jika segitiga kesilapan terlalu besar, saya akan…"></textarea>
+    </div>
+    <div class="btn-row" style="margin-top:1rem;">
+      <button class="btn btn-teal" onclick="checkCockedHat()" data-bm="Hantar Analisis ✓">Submit Analysis ✓</button>
+      <button class="btn btn-outline" onclick="resetCockedHat()">Reset</button>
+    </div>
+    <div id="hatFeedback" class="feedback-bar" style="display:none;"></div>
+    <div id="hatResult" class="info-box" style="display:none;" aria-live="polite"></div>
+  </section>
+
+    <!-- CONCEPT CHECK MCQ -->
+  <section class="section-card">
+    <h2>Concept Check — Quick Quiz</h2>
+    <p>5 multiple-choice questions. Select your answer and click Check.</p>
+
+    <div class="mcq-item">
+      <div class="q">1. What is a contour line?</div>
+      <label><input type="radio" name="q1" value="a"> A line marking a road boundary</label>
+      <label><input type="radio" name="q1" value="b"> A line connecting points of equal elevation</label>
+      <label><input type="radio" name="q1" value="c"> A line showing river flow direction</label>
+      <label><input type="radio" name="q1" value="d"> A line between two grid squares</label>
+      <div class="mcq-feedback" id="fb1"></div>
+    </div>
+
+    <div class="mcq-item">
+      <div class="q">2. What is the minimum number of bearings needed to triangulate a fox position?</div>
+      <label><input type="radio" name="q2" value="a"> 1</label>
+      <label><input type="radio" name="q2" value="b"> 2</label>
+      <label><input type="radio" name="q2" value="c"> 4</label>
+      <label><input type="radio" name="q2" value="d"> 8</label>
+      <div class="mcq-feedback" id="fb2"></div>
+    </div>
+
+    <div class="mcq-item">
+      <div class="q">3. Bearing 270° points in which direction?</div>
+      <label><input type="radio" name="q3" value="a"> North</label>
+      <label><input type="radio" name="q3" value="b"> South</label>
+      <label><input type="radio" name="q3" value="c"> East</label>
+      <label><input type="radio" name="q3" value="d"> West</label>
+      <div class="mcq-feedback" id="fb3"></div>
+    </div>
+
+    <div class="mcq-item">
+      <div class="q">4. What does map scale 1:25 000 mean?</div>
+      <label><input type="radio" name="q4" value="a"> 1 cm = 25 m</label>
+      <label><input type="radio" name="q4" value="b"> 1 cm = 250 m</label>
+      <label><input type="radio" name="q4" value="c"> 1 cm = 2.5 km</label>
+      <label><input type="radio" name="q4" value="d"> 1 cm = 25 km</label>
+      <div class="mcq-feedback" id="fb4"></div>
+    </div>
+
+    <div class="mcq-item">
+      <div class="q">5. "Go along the corridor then up the stairs" helps you remember…</div>
+      <label><input type="radio" name="q5" value="a"> How to hold a compass</label>
+      <label><input type="radio" name="q5" value="b"> The 8-point compass directions</label>
+      <label><input type="radio" name="q5" value="c"> Easting before Northing when reading grid references</label>
+      <label><input type="radio" name="q5" value="d"> How to fold a map correctly</label>
+      <div class="mcq-feedback" id="fb5"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-teal" onclick="checkMCQ()">Check Answers</button>
+      <button class="btn btn-outline" onclick="resetMCQ()">Reset</button>
+    </div>
+    <div id="mcqScore" class="score-panel">
+      <div class="score-num" id="mcqScoreNum">0/5</div>
+      <p id="mcqScoreMsg"></p>
+    </div>
+  </section>
+
+  <!-- JOURNAL -->
+  <section class="section-card">
+    <h2>Reflection Journal</h2>
+    <p>Answer at least 3 of the 5 prompts. Use full sentences. There are no wrong answers — be honest and thoughtful.</p>
+    <div class="journal-item">
+      <label for="j1">1. Why is triangulation more accurate when you use more bearings?</label>
+      <textarea id="j1" placeholder="Your answer…" data-bm-ph="Jawapan anda…"></textarea>
+    </div>
+    <div class="journal-item">
+      <label for="j2">2. How is map-reading similar to solving a puzzle?</label>
+      <textarea id="j2" placeholder="Your answer…"></textarea>
+    </div>
+    <div class="journal-item">
+      <label for="j3">3. What challenges might you face when reading a map in a dense forest?</label>
+      <textarea id="j3" placeholder="Your answer…"></textarea>
+    </div>
+    <div class="journal-item">
+      <label for="j4">4. How does understanding terrain help you predict where a fox might hide?</label>
+      <textarea id="j4" placeholder="Your answer…"></textarea>
+    </div>
+    <div class="journal-item">
+      <label for="j5">5. Connect map reading to a real-world job or skill that you know about.</label>
+      <textarea id="j5" placeholder="Your answer…"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="saveJournal()" data-bm="Simpan Setempat">Save Locally</button>
+    </div>
+    <div id="journalSaved" class="feedback-bar"></div>
+  </section>
+
+  <!-- POST-CALIBRATION -->
+  <div class="calibration">
+    <span class="icon">✅</span>
+    <div><strong>Activities Complete!</strong> Review your answers, then submit to Google Sheets below.</div>
+  </div>
+
+  <!-- GOOGLE SHEETS SUBMIT -->
+  <section class="submit-section">
+    <h2>Submit to Google Sheets</h2>
+    <p style="color:var(--text-muted);font-size:.85rem;margin-bottom:1rem;">Your teacher uses the linked spreadsheet to track completion. Fill in your details and click Submit.</p>
+    <form class="gs-form" id="gsForm" onsubmit="submitToGS(event)">
+      <label>Full Name
+        <input type="text" id="gsName" placeholder="e.g. Ahmad bin Musa" required>
+      </label>
+      <label>Scout Troop / Group
+        <input type="text" id="gsTroop" placeholder="e.g. 1st Kuantan Scout Troop">
+      </label>
+      <label>Callsign (if licensed)
+        <input type="text" id="gsCall" placeholder="e.g. 9M2XXX">
+      </label>
+      <label>Completion Status
+        <select id="gsStatus">
+          <option value="All tiers">All tiers completed</option>
+          <option value="T1-T3">Tiers 1–3 completed</option>
+          <option value="T1-T2">Tiers 1–2 completed</option>
+          <option value="T1 only">Tier 1 only</option>
+        </select>
+      </label>
+      <div class="btn-row">
+        <button type="submit" onclick="if(window.rfMarkActivity)rfMarkActivity(2)" class="btn btn-teal">Submit to Google Sheets →</button>
+      </div>
+      <div id="gsMsg" class="feedback-bar"></div>
+    </form>
+  </section>
+
+</main>
+
+<!-- STEPNAV -->
+<nav class="stepnav">
+  <a href="module-2.html" class="step-link">← Map Reading Notes</a>
+  <a href="module-3.html" class="step-link">Yagi Antenna →</a>
+</nav>
+
+<footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a> &middot;
+      <a href="module-0.html">Module 0</a> &middot;
+      <a href="module-1.html">Module 1</a> &middot;
+      <a href="module-2.html">Module 2</a> &middot;
+      <a href="module-3.html">Module 3</a> &middot;
+      <a href="module-4.html">Module 4</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative
+      <a href="https://ee.ump.edu.my/hazlina/" target="_blank" aria-label="Personal website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" aria-label="Email">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Triple-click See → teacher */
+(function(){
+  var c=0,t;
+  document.getElementById('see-box').addEventListener('click',function(){
+    c++; clearTimeout(t);
+    t=setTimeout(function(){c=0;},600);
+    if(c>=3){c=0;window.location.href='teacher-2.html';}
+  });
+})();
+
+/* Progress tracker */
+var totalTasks = 7 + 5 + 2; // FIB + MCQ + T3 + T4
+var completedTasks = 0;
+function updateProgress() {
+  var pct = Math.round((completedTasks / totalTasks) * 100);
+  document.getElementById('mainProgress').style.width = pct + '%';
+  document.getElementById('mainPct').textContent = pct + '%';
+}
+
+/* ── FIB ── */
+function checkFIB() {
+  var items = document.querySelectorAll('#fibList .fib-item');
+  var correct = 0;
+  items.forEach(function(item) {
+    var inputs = item.querySelectorAll('input[type=text]');
+    var result = item.querySelector('.result');
+    var answers = (item.dataset.answers || '').split(',').map(function(a){return a.trim().toLowerCase();});
+    // For q6 we have two inputs
+    var val = Array.from(inputs).map(function(i){return i.value.trim().toLowerCase();}).join(',');
+    // Check single-input items normally
+    if(inputs.length === 1) {
+      var ok = answers.indexOf(val) !== -1;
+      result.textContent = ok ? '✓' : '✗';
+      result.className = 'result ' + (ok ? 'ok' : 'err');
+      if(ok) correct++;
+    } else {
+      // Two inputs: check true/magnetic in either order
+      var v0 = inputs[0].value.trim().toLowerCase();
+      var v1 = inputs[1].value.trim().toLowerCase();
+      var ok2 = (v0 === 'true' && v1 === 'magnetic') || (v0 === 'magnetic' && v1 === 'true');
+      result.textContent = ok2 ? '✓' : '✗';
+      result.className = 'result ' + (ok2 ? 'ok' : 'err');
+      if(ok2) correct++;
+    }
+  });
+  var panel = document.getElementById('fibScore');
+  panel.style.display = 'block';
+  document.getElementById('fibScoreNum').textContent = correct + '/7';
+  var msgs = ['Keep studying the module!','Good start — review missed items.','Getting there!','Solid work!','Almost perfect!','Almost perfect!','Nearly there!','Excellent — full marks! 🎉'];
+  document.getElementById('fibScoreMsg').textContent = msgs[correct] || msgs[7];
+  completedTasks = Math.max(completedTasks, correct);
+  updateProgress();
+}
+function resetFIB() {
+  document.querySelectorAll('#fibList input[type=text]').forEach(function(i){i.value='';});
+  document.querySelectorAll('#fibList .result').forEach(function(r){r.textContent='';r.className='result';});
+  document.getElementById('fibScore').style.display='none';
+}
+
+/* ── Debug hints ── */
+function showDebugHints() {
+  document.getElementById('debugHints').style.display = 'block';
+}
+
+/* ── Bearing Plotter (Tier 3) ── */
+var BP = {
+  OA: {x:89, y:323}, OB: {x:362, y:323}, FOX: {x:206, y:128},
+  bearA: 31, bearB: 321, markX: null, markY: null
+};
+function initBP(){
+  var svg = document.getElementById('bearingGrid');
+  if(!svg) return;
+  drawBearingLines();
+  svg.addEventListener('click', function(e){
+    var rect = svg.getBoundingClientRect();
+    BP.markX = (e.clientX - rect.left) * (420 / rect.width);
+    BP.markY = (e.clientY - rect.top)  * (420 / rect.height);
+    var col = String.fromCharCode(65 + Math.floor((BP.markX - 30) / 39));
+    var row = 1 + Math.floor((BP.markY - 30) / 39);
+    document.getElementById('markCoords').textContent = col + row;
+    var pm = document.getElementById('playerMark');
+    pm.style.display=''; pm.setAttribute('transform','translate('+BP.markX+','+BP.markY+')');
+  });
+}
+function drawBearingLines(){
+  function ep(ox,oy,bd){ var r=bd*Math.PI/180,dx=Math.sin(r),dy=-Math.cos(r);
+    return {x1:ox+dx*(-600),y1:oy+dy*(-600),x2:ox+dx*600,y2:oy+dy*600}; }
+  var la=ep(BP.OA.x,BP.OA.y,BP.bearA), lb=ep(BP.OB.x,BP.OB.y,BP.bearB);
+  var lA=document.getElementById('lineA'), lB=document.getElementById('lineB');
+  lA.setAttribute('x1',la.x1);lA.setAttribute('y1',la.y1);lA.setAttribute('x2',la.x2);lA.setAttribute('y2',la.y2);
+  lB.setAttribute('x1',lb.x1);lB.setAttribute('y1',lb.y1);lB.setAttribute('x2',lb.x2);lB.setAttribute('y2',lb.y2);
+}
+function checkBearingPlot(){
+  var fb=document.getElementById('plotFeedback'), res=document.getElementById('plotResult');
+  fb.style.display='none'; res.style.display='none';
+  if(BP.markX===null){ fb.className='feedback-bar err'; fb.style.display='block'; fb.textContent='Click on the map first to place your fox marker.'; return; }
+  var dx=BP.markX-BP.FOX.x, dy=BP.markY-BP.FOX.y, dist=Math.sqrt(dx*dx+dy*dy);
+  var fm=document.getElementById('foxMark');
+  fm.style.display=''; fm.setAttribute('transform','translate('+BP.FOX.x+','+BP.FOX.y+')');
+  if(dist <= 58){
+    fb.className='feedback-bar ok'; fb.style.display='block'; fb.textContent='\u2713 Correct fix! Your mark is within range of the true intersection.';
+    res.style.display='block'; res.innerHTML='<strong>\uD83D\uDCE1 Fox found at grid E3!</strong> The two bearing lines from Scout A (031\u00b0) and Scout B (321\u00b0) cross at approximately column E, row 3. Great triangulation!';
+    completedTasks = Math.max(completedTasks, 13); updateProgress();
+  } else {
+    fb.className='feedback-bar err'; fb.style.display='block'; fb.textContent='\u2717 Not quite \u2014 try tracing the bearing lines more carefully from each scout.';
+  }
+}
+function resetBearingPlot(){
+  BP.markX=null; BP.markY=null;
+  document.getElementById('markCoords').textContent='\u2014 click the map \u2014';
+  var pm=document.getElementById('playerMark'); if(pm)pm.style.display='none';
+  var fm=document.getElementById('foxMark'); if(fm)fm.style.display='none';
+  var fb=document.getElementById('plotFeedback'); if(fb)fb.style.display='none';
+  var res=document.getElementById('plotResult'); if(res)res.style.display='none';
+}
+
+/* ── Cocked Hat (Tier 4) ── */
+var CHAT_VERTS=[{x:168,y:115},{x:195,y:138},{x:152,y:148}];
+var hatMarkX=null, hatMarkY=null;
+function initHat(){
+  var svg=document.getElementById('cockedHatSvg');
+  if(!svg) return;
+  svg.addEventListener('click',function(e){
+    var rect=svg.getBoundingClientRect();
+    hatMarkX=(e.clientX-rect.left)*(380/rect.width);
+    hatMarkY=(e.clientY-rect.top)*(320/rect.height);
+    document.getElementById('hatCoords').textContent='x='+Math.round(hatMarkX)+' y='+Math.round(hatMarkY);
+    var hm=document.getElementById('hatMark');
+    hm.style.display=''; hm.setAttribute('transform','translate('+hatMarkX+','+hatMarkY+')');
+  });
+}
+/* ── Init on DOM ready ── */
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', function(){ initBP(); initHat(); });
+} else {
+  initBP(); initHat();
+}
+function countWords(s){ return s.trim().split(/\s+/).filter(function(w){return w.length>0;}).length; }
+function checkCockedHat(){
+  var fb=document.getElementById('hatFeedback'), res=document.getElementById('hatResult');
+  fb.style.display='none'; res.style.display='none';
+  var cx=(CHAT_VERTS[0].x+CHAT_VERTS[1].x+CHAT_VERTS[2].x)/3;
+  var cy=(CHAT_VERTS[0].y+CHAT_VERTS[1].y+CHAT_VERTS[2].y)/3;
+  var inZone = hatMarkX!==null && Math.sqrt(Math.pow(hatMarkX-cx,2)+Math.pow(hatMarkY-cy,2))<70;
+  var q1=document.getElementById('hatQ1').value;
+  var q2=document.getElementById('hatQ2').value;
+  var errs=[];
+  if(hatMarkX===null) errs.push('click inside the cocked hat triangle');
+  else if(!inZone) errs.push('your mark is outside the triangle area');
+  if(countWords(q1)<10) errs.push('Question 1 needs at least 10 words ('+countWords(q1)+' so far)');
+  if(countWords(q2)<10) errs.push('Question 2 needs at least 10 words ('+countWords(q2)+' so far)');
+  if(errs.length){ fb.className='feedback-bar err'; fb.style.display='block'; fb.textContent='\u2717 Please fix: '+errs.join('; ')+'.'; return; }
+  fb.className='feedback-bar ok'; fb.style.display='block'; fb.textContent='\u2713 Analysis complete! Well done.';
+  res.style.display='block'; res.innerHTML='<strong>\uD83C\uDFAF Good analysis!</strong> The best estimate is the <em>centroid</em> of the cocked hat. A large cocked hat means re-take bearings from better positions or at a different time.';
+  completedTasks=Math.max(completedTasks,14); updateProgress();
+  try{ localStorage.setItem('fox_hat_q1_mod2',q1); localStorage.setItem('fox_hat_q2_mod2',q2); }catch(e){}
+}
+function resetCockedHat(){
+  hatMarkX=null; hatMarkY=null;
+  document.getElementById('hatCoords').textContent='\u2014 click the diagram \u2014';
+  var hm=document.getElementById('hatMark'); if(hm)hm.style.display='none';
+  document.getElementById('hatQ1').value=''; document.getElementById('hatQ2').value='';
+  var fb=document.getElementById('hatFeedback'); if(fb)fb.style.display='none';
+  var res=document.getElementById('hatResult'); if(res)res.style.display='none';
+}
+/* ── MCQ ── */
+var mcqAnswers = {q1:'b',q2:'b',q3:'d',q4:'b',q5:'c'};
+var mcqExplain = {
+  q1:'A contour line connects all points at the same elevation, forming the characteristic hill and valley shapes on a topo map.',
+  q2:'You need at least 2 bearing lines to get one intersection point. More bearings improve accuracy.',
+  q3:'West is 270° (N=0°, E=90°, S=180°, W=270°).',
+  q4:'1:25 000 means 1 unit on the map = 25 000 units in reality. So 1 cm = 25 000 cm = 250 m.',
+  q5:'The mnemonic reminds you to read Easting (horizontal/corridor) before Northing (vertical/stairs).'
+};
+function checkMCQ() {
+  var score = 0;
+  Object.keys(mcqAnswers).forEach(function(q) {
+    var sel = document.querySelector('input[name='+q+']:checked');
+    var fb = document.getElementById('fb'+q.slice(1));
+    if(!sel){ fb.textContent='Please select an answer.'; fb.className='mcq-feedback'; return; }
+    if(sel.value === mcqAnswers[q]) {
+      score++;
+      fb.textContent='✓ Correct — '+mcqExplain[q];
+      fb.className='mcq-feedback ok';
+    } else {
+      fb.textContent='✗ Not quite — '+mcqExplain[q];
+      fb.className='mcq-feedback err';
+    }
+  });
+  var panel = document.getElementById('mcqScore');
+  panel.style.display='block';
+  document.getElementById('mcqScoreNum').textContent = score+'/5';
+  var msgs=['Review the module notes.','Keep going!','Halfway there!','Great progress!','Almost perfect!','Perfect score! 🎉'];
+  document.getElementById('mcqScoreMsg').textContent = msgs[score];
+  completedTasks = Math.max(completedTasks, 7 + score); updateProgress();
+}
+function resetMCQ() {
+  document.querySelectorAll('.mcq-item input[type=radio]').forEach(function(r){r.checked=false;});
+  document.querySelectorAll('.mcq-feedback').forEach(function(f){f.textContent='';f.className='mcq-feedback';});
+  document.getElementById('mcqScore').style.display='none';
+}
+
+/* ── Journal save ── */
+function saveJournal() {
+  var data = {};
+  [1,2,3,4,5].forEach(function(i){ data['j'+i]=document.getElementById('j'+i).value; });
+  try{ localStorage.setItem('fox_journal_mod2', JSON.stringify(data)); }catch(e){}
+  var fb=document.getElementById('journalSaved');
+  fb.className='feedback-bar ok'; fb.style.display='block';
+  fb.textContent='Journal saved locally in your browser.';
+}
+
+/* Restore journal */
+(function(){
+  try{
+    var saved=JSON.parse(localStorage.getItem('fox_journal_mod2')||'{}');
+    [1,2,3,4,5].forEach(function(i){ if(saved['j'+i]) document.getElementById('j'+i).value=saved['j'+i]; });
+  }catch(e){}
+})();
+
+/* ── GS Submit ── */
+function submitToGS(e) {
+  e.preventDefault();
+  var name=document.getElementById('gsName').value;
+  var troop=document.getElementById('gsTroop').value;
+  var call=document.getElementById('gsCall').value;
+  var status=document.getElementById('gsStatus').value;
+  // Build Google Form pre-fill URL — replace FORM_ID with actual form ID
+  var FORM_ID = 'YOUR_GOOGLE_FORM_ID';
+  var url='https://docs.google.com/forms/d/e/'+FORM_ID+'/formResponse?'
+    +'entry.1='+encodeURIComponent(name)
+    +'&entry.2='+encodeURIComponent(troop)
+    +'&entry.3='+encodeURIComponent(call)
+    +'&entry.4='+encodeURIComponent(status)
+    +'&entry.5=Module 2 - Map Reading';
+  var fb=document.getElementById('gsMsg');
+  if(FORM_ID==='YOUR_GOOGLE_FORM_ID'){
+    fb.className='feedback-bar err'; fb.style.display='block';
+    fb.textContent='Google Form ID not yet configured — contact your teacher for the submission link.';
+    return;
+  }
+  window.open(url,'_blank');
+  fb.className='feedback-bar ok'; fb.style.display='block';
+  fb.textContent='Submission opened. Confirm in the new tab.';
+}
+</script>
+<script>
+/* ── Triple-click SEE → teacher notes ── */
+(function(){
+  var box = document.getElementById('see-box');
+  if (!box) return;
+  var clicks = 0, timer;
+  box.addEventListener('click', function() {
+    clicks++;
+    clearTimeout(timer);
+    timer = setTimeout(function() { clicks = 0; }, 800);
+    if (clicks >= 3) {
+      clicks = 0;
+      window.location.href = 'teacher-2.html';
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  var btn=document.getElementById('stepsToggle');
+  var menu=document.getElementById('stepsMenu');
+  if(btn&&menu){
+    btn.addEventListener('click',function(e){e.stopPropagation();menu.classList.toggle('open');});
+    document.addEventListener('click',function(){menu.classList.remove('open');});
+  }
+})();
+</script>
+
+<script>
+/* ── lang.js inlined ── */
+/**
+ * lang.js  — Radio Foxhunting LMS bilingual engine (EN / BM)
+ * Injects a language toggle into .sitenav, applies data-bm attributes.
+ * Sets window.rfLang = 'en' | 'bm' for activity scripts.
+ */
+(function () {
+  'use strict';
+  var lang = 'en';
+  try { lang = localStorage.getItem('rf_lang') || 'en'; } catch (e) {}
+  window.rfLang = lang;
+
+  function applyLang(l) {
+    window.rfLang = l;
+    document.querySelectorAll('[data-bm]').forEach(function (el) {
+      if (!el.hasAttribute('data-en')) el.setAttribute('data-en', el.innerHTML);
+      el.innerHTML = (l === 'bm') ? el.getAttribute('data-bm') : el.getAttribute('data-en');
+    });
+    document.querySelectorAll('[data-bm-ph]').forEach(function (el) {
+      if (!el.hasAttribute('data-en-ph')) el.setAttribute('data-en-ph', el.placeholder);
+      el.placeholder = (l === 'bm') ? el.getAttribute('data-bm-ph') : el.getAttribute('data-en-ph');
+    });
+    var btn = document.getElementById('rf-lang-btn');
+    if (btn) btn.textContent = (l === 'bm') ? 'EN' : 'BM';
+    document.documentElement.lang = (l === 'bm') ? 'ms' : 'en';
+  }
+
+  function injectToggle() {
+    var nav = document.querySelector('.sitenav') || document.querySelector('nav');
+    if (!nav || document.getElementById('rf-lang-btn')) return;
+    var btn = document.createElement('button');
+    btn.id = 'rf-lang-btn';
+    btn.textContent = (lang === 'bm') ? 'EN' : 'BM';
+    btn.title = 'Toggle language / Tukar bahasa';
+    btn.style.cssText = 'background:rgba(2,173,165,.15);border:1px solid var(--teal);color:var(--teal);border-radius:6px;padding:.28rem .72rem;font-size:.78rem;font-weight:800;cursor:pointer;letter-spacing:.06em;margin-left:auto;flex-shrink:0;transition:background .15s;';
+    btn.addEventListener('click', function () {
+      lang = (lang === 'en') ? 'bm' : 'en';
+      try { localStorage.setItem('rf_lang', lang); } catch (e) {}
+      applyLang(lang);
+    });
+    nav.style.display = 'flex';
+    nav.style.alignItems = 'center';
+    nav.appendChild(btn);
+  }
+
+  function init() { injectToggle(); applyLang(lang); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else { init(); }
+})();
+</script>
+<script>
+/* ── tracker.js inlined ── */
+/**
+ * Radio Foxhunting LMS — Analytics Tracker v2
+ * • Sends events to Google Sheets via Apps Script
+ * • Tracks geolocation (IP-based), device type, completion milestones
+ * • Manages completion state in localStorage
+ */
+(function () {
+  'use strict';
+
+  // ── Config ────────────────────────────────────────────────────────────────
+  var SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+  // ── Page / module detection ───────────────────────────────────────────────
+  function getModule() {
+    var p = window.location.pathname.split('/').pop() || 'index.html';
+    if (p === 'index.html' || p === '') return 'Home';
+    var m = p.match(/module-(\d+)\.html/);   if (m) return 'M' + m[1];
+    var a = p.match(/module-activity-(\d+)/); if (a) return 'Activity-M' + a[1];
+    var t = p.match(/teacher-(\d+)/);         if (t) return 'Teacher-M' + t[1];
+    if (p === 'teacher-index.html') return 'Teacher-Hub';
+    if (p === 'survey-pre.html')  return 'Survey-Pre';
+    if (p === 'survey-post.html') return 'Survey-Post';
+    if (p === 'register.html')    return 'Register';
+    if (p === 'certificate.html') return 'Certificate';
+    return p.replace('.html', '');
+  }
+
+  function getLang() {
+    try { var b=document.querySelector('.lang-btn.active'); return b?b.textContent.trim():'EN'; } catch(e){return 'EN';}
+  }
+
+  // ── Session / participant ─────────────────────────────────────────────────
+  function getSessionId() {
+    try {
+      var id = localStorage.getItem('rf_sid');
+      if (!id) { id = 'rf_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); localStorage.setItem('rf_sid', id); }
+      return id;
+    } catch(e) { return 'rf_' + Date.now(); }
+  }
+
+  function getParticipant() {
+    try {
+      var p = JSON.parse(localStorage.getItem('rf_participant') || '{}');
+      return { participant_name: p.full_name||'', participant_id: p.matric_no||'', level: p.level||'', school_code: p.school_code||'', home_state: p.home_state||'' };
+    } catch(e) { return {}; }
+  }
+
+  // ── Device info ───────────────────────────────────────────────────────────
+  function getDevice() {
+    var ua = navigator.userAgent;
+    var device = /Mobi|Android/i.test(ua) ? 'Mobile' : /iPad|Tablet/i.test(ua) ? 'Tablet' : 'Desktop';
+    var os = /Windows/i.test(ua)?'Windows':/Mac/i.test(ua)?'Mac':/Android/i.test(ua)?'Android':/iPhone|iPad/i.test(ua)?'iOS':/Linux/i.test(ua)?'Linux':'Other';
+    return { device: device, os: os };
+  }
+
+  // ── Geolocation (IP-based, fetched once per session) ─────────────────────
+  function getGeoCache() {
+    try { return JSON.parse(localStorage.getItem('rf_geo') || 'null'); } catch(e){return null;}
+  }
+  function fetchGeo(cb) {
+    var cached = getGeoCache();
+    if (cached) { cb(cached); return; }
+    try {
+      fetch('https://ipapi.co/json/', {mode:'cors'})
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var geo = { country: d.country_name||'', region: d.region||'', city: d.city||'', isp: d.org||'' };
+          try { localStorage.setItem('rf_geo', JSON.stringify(geo)); } catch(e){}
+          cb(geo);
+        })
+        .catch(function(){ cb({}); });
+    } catch(e) { cb({}); }
+  }
+
+  // ── Send event ────────────────────────────────────────────────────────────
+  function send(eventName, extra, geo) {
+    if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
+    var payload = Object.assign({
+      survey: 'analytics',
+      event: eventName,
+      module: getModule(),
+      lang: getLang(),
+      session_id: getSessionId(),
+      timestamp: new Date().toISOString(),
+      referrer: document.referrer ? (document.referrer.split('/').pop()||'direct') : 'direct'
+    }, getParticipant(), getDevice(), geo||{}, extra||{});
+    try { fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload), keepalive:true }); }
+    catch(e) {}
+  }
+
+  // ── Completion tracking in localStorage ──────────────────────────────────
+  var mod = getModule();
+
+  // Mark module as visited
+  if (mod.match(/^M\d+$/)) {
+    try {
+      var visited = JSON.parse(localStorage.getItem('rf_visited_modules') || '[]');
+      var mNum = parseInt(mod.replace('M',''));
+      if (visited.indexOf(mNum) === -1) { visited.push(mNum); localStorage.setItem('rf_visited_modules', JSON.stringify(visited)); }
+    } catch(e) {}
+  }
+
+  // Mark activity as submitted (called by activity submit buttons)
+  window.rfMarkActivity = function(num) {
+    try {
+      var done = JSON.parse(localStorage.getItem('rf_activities_done') || '[]');
+      if (done.indexOf(num) === -1) { done.push(num); localStorage.setItem('rf_activities_done', JSON.stringify(done)); }
+    } catch(e) {}
+  };
+
+  // Mark post-survey done
+  window.rfMarkPostDone = function() {
+    try { localStorage.setItem('rf_post_done', '1'); } catch(e) {}
+  };
+
+  // Check full completion: visited M0-M4 + activities 1-4 + post-survey
+  window.rfIsComplete = function() {
+    try {
+      var visited = JSON.parse(localStorage.getItem('rf_visited_modules') || '[]');
+      var acts = JSON.parse(localStorage.getItem('rf_activities_done') || '[]');
+      var post = localStorage.getItem('rf_post_done') === '1';
+      var allModules = [0,1,2,3,4].every(function(n){ return visited.indexOf(n) !== -1; });
+      var allActs = [1,2,3,4].every(function(n){ return acts.indexOf(n) !== -1; });
+      return allModules && allActs && post;
+    } catch(e) { return false; }
+  };
+
+  // ── Auto fire page_view with geo ──────────────────────────────────────────
+  fetchGeo(function(geo) {
+    send('page_view', {}, geo);
+  });
+
+  // ── Time on page ──────────────────────────────────────────────────────────
+  var t0 = Date.now();
+  window.addEventListener('beforeunload', function() {
+    var s = Math.round((Date.now()-t0)/1000);
+    if (s > 3) send('time_spent', {seconds:s});
+  });
+
+  // ── Forward nav click ─────────────────────────────────────────────────────
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest('a[href],button');
+    if (!el) return;
+    var href = el.getAttribute('href') || '';
+    if ((href.match(/module-\d+\.html/) || href === 'index.html') && mod.match(/^(M\d+|Activity-M\d+)$/)) {
+      send('module_forward', {target: href});
+    }
+  });
+
+  window.rfTrack = send;
+})();
+</script>
+</body>
+</html>

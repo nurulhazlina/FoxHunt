@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teacher Guide — Module 2 Map Reading</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  :root {
+    --teal:#02ADA5; --teal-dim:#017e78; --teal-glow:rgba(2,173,165,0.1);
+    --bg:#f4fafa; --bg2:#e8f6f5; --bg3:#d0eeec;
+    --text:#0d2e2c; --text-muted:#2d6b68; --border:rgba(2,173,165,0.3);
+    --card-bg:#fff; --radius:10px;
+    --ok:#1a9b57; --err:#c0392b; --warn:#d68910;
+    --font:'Segoe UI',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.65;}
+
+  /* Gate */
+  
+  
+  
+  
+  
+  
+  
+  
+
+  /* Nav */
+  .chev-bar{background:#041f1e;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:2px;padding:0 1rem;height:36px;font-size:.78rem;}
+  .chev-bar span{color:#7bbfba;padding:4px 10px;border-radius:4px;cursor:default;user-select:none;}
+  .chev-bar span.active{background:var(--teal);color:#041f1e;font-weight:700;}
+  .chev-bar .sep{color:rgba(2,173,165,0.3);}
+  .sitenav{background:#041f1e;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:52px;position:sticky;top:0;z-index:100;}
+  .sitenav .brand{font-weight:800;font-size:1rem;color:var(--teal);text-decoration:none;}
+  .teacher-badge{background:rgba(2,173,165,0.2);border:1px solid var(--teal);color:var(--teal);padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;}
+
+  /* Hero */
+  .hero{background:linear-gradient(135deg,#02353330 0%,var(--bg) 100%);border-bottom:2px solid var(--teal);padding:2.5rem 1.25rem 2rem;}
+  .hero-inner{max-width:900px;margin:0 auto;}
+  .eyebrow{font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:.4rem;}
+  .hero h1{font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:800;color:var(--text);margin-bottom:.4rem;}
+  .hero .subtitle{color:var(--text-muted);font-size:.92rem;}
+
+  /* Content */
+  .content{max-width:900px;margin:0 auto;padding:2rem 1.25rem 3rem;display:flex;flex-direction:column;gap:1.75rem;}
+  .section-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:0 2px 8px rgba(2,173,165,0.06);}
+  .section-card h2{font-size:1.1rem;font-weight:800;color:var(--teal);margin-bottom:1rem;border-bottom:2px solid var(--bg3);padding-bottom:.5rem;}
+  .section-card h3{font-size:.95rem;font-weight:700;color:var(--text);margin:1rem 0 .4rem;}
+  .section-card p{color:var(--text-muted);font-size:.9rem;margin-bottom:.5rem;}
+  .section-card ul,.section-card ol{padding-left:1.3rem;color:var(--text-muted);font-size:.9rem;}
+  .section-card li{margin-bottom:.35rem;}
+
+  /* Objective grid */
+  .obj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin-top:.75rem;}
+  .obj-item{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:.7rem .9rem;font-size:.85rem;color:var(--text);}
+  .obj-item strong{display:block;color:var(--teal);font-size:.72rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:.25rem;}
+
+  /* Answer key */
+  .answer-block{background:var(--bg2);border-left:4px solid var(--teal);border-radius:0 7px 7px 0;padding:.75rem 1rem;margin-bottom:.75rem;font-size:.88rem;}
+  .answer-block .q-label{font-weight:700;color:var(--text);margin-bottom:.25rem;}
+  .answer-block .answer{color:var(--ok);font-weight:700;}
+  .answer-block .explain{color:var(--text-muted);margin-top:.2rem;}
+  .answer-block .accept{color:#888;font-style:italic;font-size:.82rem;}
+
+  /* Table */
+  .data-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.75rem;}
+  .data-table th{background:var(--bg3);color:var(--teal);text-align:left;padding:.45rem .65rem;border:1px solid var(--border);}
+  .data-table td{padding:.4rem .65rem;border:1px solid var(--border);color:var(--text-muted);}
+  .data-table tr:nth-child(even) td{background:var(--bg2);}
+
+  /* Canvas */
+  canvas{display:block;margin:.75rem auto 0;border-radius:8px;border:1px solid var(--border);background:#041f1e;cursor:crosshair;}
+  .canvas-label{text-align:center;font-size:.78rem;color:var(--text-muted);margin-top:.3rem;}
+
+  /* Code */
+  pre{background:#041f1e;border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;font-size:.8rem;color:#a8d8d5;margin:.75rem 0;line-height:1.55;}
+  code{font-family:'Fira Mono','Consolas',monospace;}
+
+  /* Rubric */
+  .rubric-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:.5rem;}
+  .rubric-table th{background:var(--bg3);color:var(--teal);padding:.4rem .6rem;border:1px solid var(--border);text-align:left;}
+  .rubric-table td{padding:.4rem .6rem;border:1px solid var(--border);vertical-align:top;}
+  .rubric-table tr:nth-child(even) td{background:var(--bg2);}
+
+  /* Mistakes */
+  .mistake-card{background:#fff5f5;border:1px solid #e74c3c;border-radius:7px;padding:.75rem;margin-bottom:.65rem;}
+  .mistake-card .m-title{font-weight:700;color:#c0392b;font-size:.88rem;margin-bottom:.25rem;}
+  .mistake-card p{color:#555;font-size:.85rem;}
+
+  /* Info */
+  .info-box{background:var(--teal-glow);border-left:3px solid var(--teal);border-radius:0 6px 6px 0;padding:.65rem .9rem;font-size:.85rem;color:var(--text);margin:.6rem 0;}
+  .info-box strong{color:var(--teal);}
+
+  /* GS Schema */
+  .schema-table{width:100%;border-collapse:collapse;font-size:.82rem;}
+  .schema-table th{background:var(--bg3);color:var(--teal);padding:.4rem .6rem;border:1px solid var(--border);text-align:left;}
+  .schema-table td{padding:.4rem .6rem;border:1px solid var(--border);color:var(--text-muted);}
+
+  footer{background:#041f1e;padding:1.25rem;text-align:center;font-size:.78rem;color:#7bbfba;}
+  footer a{color:var(--teal);text-decoration:none;}
+  .back-link{color:var(--teal);text-decoration:none;font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem;}
+  .back-link:hover{text-decoration:underline;}
+
+  @media(max-width:600px){.obj-grid{grid-template-columns:1fr;}}
+  /* ── Module nav ── */
+  .mod-nav{background:#031714;border-bottom:1px solid rgba(2,173,165,.2);display:flex;align-items:center;gap:4px;padding:0 1.25rem;height:38px;flex-wrap:wrap;}
+  .mod-nav-label{font-size:.72rem;font-weight:700;color:#7bbfba;margin-right:.5rem;white-space:nowrap;}
+  .mod-nav-item{font-size:.78rem;font-weight:600;color:#7bbfba;text-decoration:none;padding:3px 10px;border-radius:4px;border:1px solid transparent;transition:all .15s;}
+  .mod-nav-item:hover{background:rgba(2,173,165,.15);color:var(--teal);}
+  .mod-nav-item.active{background:var(--teal);color:#041f1e;border-color:var(--teal);}
+</style>
+</head>
+<body>
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+<!-- GATE removed -->
+
+<!-- MODULE NAV -->
+<nav class="mod-nav">
+  <span class="mod-nav-label">📋 Teacher Guides:</span>
+  <a href="teacher-0.html" class="mod-nav-item">M0 Orientation</a>
+  <a href="teacher-1.html" class="mod-nav-item">M1 Morse Code</a>
+  <a href="teacher-2.html" class="mod-nav-item active">M2 Map Reading</a>
+  <a href="teacher-3.html" class="mod-nav-item">M3 Yagi Antenna</a>
+  <a href="teacher-4.html" class="mod-nav-item">M4 Field Strategy</a>
+</nav>
+
+<!-- SITENAV -->
+<nav class="sitenav">
+  <a href="module-2.html" class="brand">🦊 Radio Foxhunting</a>
+  <div style="display:flex;align-items:center;gap:.75rem;">
+    <a href="module-2.html" class="back-link">← Student View</a>
+    <span class="teacher-badge">Teacher View</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Module 2 of 5 — Teacher Guide</p>
+    <h1>Map Reading &amp; Triangulation — Facilitator Notes</h1>
+    <p class="subtitle">Answer keys, demo instructions, rubrics, common mistakes, and Google Sheets schema for Module 2.</p>
+    <a href="module-2.html" class="back-link" style="margin-top:.75rem;display:inline-flex;">← Back to Student Page</a>
+  </div>
+</header>
+
+<main class="content">
+
+  <!-- TEACHING OBJECTIVES -->
+  <section class="section-card">
+    <h2>Teaching Objectives</h2>
+    <p>By the end of this module, scouts should be able to:</p>
+    <div class="obj-grid">
+      <div class="obj-item"><strong>Knowledge</strong>Explain what a contour line represents and how spacing indicates slope steepness.</div>
+      <div class="obj-item"><strong>Knowledge</strong>Define magnetic declination and explain why it matters for navigation.</div>
+      <div class="obj-item"><strong>Skill</strong>Read a compass bearing in degrees (0–359°) and convert to cardinal directions.</div>
+      <div class="obj-item"><strong>Skill</strong>Perform a two-bearing and three-bearing triangulation on a map.</div>
+      <div class="obj-item"><strong>Skill</strong>Read a 6-figure grid reference using the Easting-before-Northing rule.</div>
+      <div class="obj-item"><strong>Coding</strong>Translate the triangulation algorithm into JavaScript using trigonometry.</div>
+    </div>
+    <div class="info-box" style="margin-top:1rem;"><strong>Syllabus links:</strong> ARDF/JOTA mathematics (trigonometry), Geography (map reading), Computer Science (algorithm design).</div>
+  </section>
+
+  <!-- DEMO GUIDE -->
+  <section class="section-card">
+    <h2>Demo Guide — Interactive Compass Canvas</h2>
+    <p>The compass canvas on the student page responds to mouse clicks and hover. Use this as a whole-class demo by projecting the student page.</p>
+    <h3>How to Run the Demo</h3>
+    <ol style="color:var(--text-muted);font-size:.9rem;padding-left:1.2rem;line-height:2;">
+      <li>Open <code>module-2.html</code> on the projector.</li>
+      <li>Hover over the compass — the bearing line follows the cursor in real time.</li>
+      <li>Click on a direction — the bearing locks and the readout displays degrees + cardinal name.</li>
+      <li>Ask scouts: "What bearing is North-East?" (answer: 045°). Click to confirm.</li>
+      <li>Ask: "If the fox is due south, what bearing should I record?" (answer: 180°).</li>
+    </ol>
+    <canvas id="teacherCompass" width="260" height="260" title="Live compass demo"></canvas>
+    <p class="canvas-label">Live compass demo — hover to preview bearings</p>
+    <h3>Triangulation Animation</h3>
+    <p>The triangulation canvas below the compass animates automatically. Click it to pause/resume. Use it to explain:</p>
+    <ul style="color:var(--text-muted);font-size:.9rem;padding-left:1.2rem;">
+      <li>Why bearings from a <em>single</em> point cannot fix a position</li>
+      <li>How the intersection point becomes the estimated fox location</li>
+      <li>Why 90° between bearing lines gives the best fix</li>
+    </ul>
+  </section>
+
+  <!-- T1 ANSWERS -->
+  <section class="section-card">
+    <h2>Tier 1 — Fill-in-Blanks Answer Key</h2>
+
+    <div class="answer-block">
+      <div class="q-label">Q1. Contour lines that are close together indicate ___ terrain.</div>
+      <div class="answer">✓ steep</div>
+      <div class="explain">Contour interval stays constant; close lines = rapid elevation change = steep ground.</div>
+    </div>
+    <div class="answer-block">
+      <div class="q-label">Q2. A compass bearing is measured in ___ from 0 to 360.</div>
+      <div class="answer">✓ degrees</div>
+      <div class="explain">Compass bearings use the full 360° circle, measured clockwise from North.</div>
+    </div>
+    <div class="answer-block">
+      <div class="q-label">Q3. The triangulation technique uses at least ___ bearings.</div>
+      <div class="answer">✓ 2 (accept: 2 or 3)</div>
+      <div class="explain">Two lines can intersect at one point. Three lines give a "cocked hat" with a probability zone. Both are valid.</div>
+    </div>
+    <div class="answer-block">
+      <div class="q-label">Q4. Easting is read ___ on a grid.</div>
+      <div class="answer">✓ first (accept: left-right, before northing, left to right)</div>
+      <div class="explain">Easting (horizontal/corridor) is always read before Northing (vertical/stairs) in the MGRS system.</div>
+    </div>
+    <div class="answer-block">
+      <div class="q-label">Q5. When two bearing lines cross, you have found the ___ position.</div>
+      <div class="answer">✓ fox (accept: fox's position, fox position)</div>
+      <div class="explain">The intersection of two bearing lines is the estimated transmitter (fox) location.</div>
+    </div>
+    <div class="answer-block">
+      <div class="q-label">Q6. Magnetic declination is the angle between ___ north and ___ north.</div>
+      <div class="answer">✓ true / magnetic (either order)</div>
+      <div class="explain">True North = geographic pole; Magnetic North = compass needle direction. The angle between them varies by location and year.</div>
+    </div>
+    <div class="answer-block">
+      <div class="q-label">Q7. A 6-figure grid reference has ___ digits.</div>
+      <div class="answer">✓ 6</div>
+      <div class="explain">Three digits easting + three digits northing = six digits total, giving ~100 m accuracy.</div>
+    </div>
+  </section>
+
+  <!-- T2 ANSWERS -->
+  <section class="section-card">
+    <h2>Tier 2 — Debug Scenario Model Answers</h2>
+
+    <div class="answer-block">
+      <div class="q-label">Scenario 1 — Same-position bearings</div>
+      <div class="answer">Problem: Same location produces only one line, not two. Triangulation requires two <em>different</em> positions.</div>
+      <div class="explain"><strong>Fix:</strong> Move to a second observation point at least 50 m away before taking the second bearing. The two lines must come from different positions to create an intersection. Award marks for: identifying "same position" as the flaw, explaining that two lines are needed, and describing the correct method.</div>
+    </div>
+    <div class="answer-block">
+      <div class="q-label">Scenario 2 — Map scale calculation</div>
+      <div class="answer">Scale 1:25 000 → 1 cm = 250 m. Working: 4 cm × 250 m/cm = <strong>1,000 m = 1 km</strong>.</div>
+      <div class="explain">Award partial marks for correct method with arithmetic errors. Full marks require showing the working and the unit conversion.</div>
+    </div>
+    <div class="answer-block">
+      <div class="q-label">Scenario 3 — Invalid bearing 450°</div>
+      <div class="answer">Error: 450° exceeds the 0–359° range. Correct: 450° − 360° = <strong>090°</strong> (due East).</div>
+      <div class="explain">Accept "90°" or "090°". Scouts should recognise that bearings always reduce to the 0–359° range by subtracting 360°.</div>
+    </div>
+  </section>
+
+  <!-- T3 ANSWER -->
+  <section class="section-card">
+    <h2>Tier 3 — Code Answer &amp; Marking Criteria</h2>
+
+    <h3>Model Solution</h3>
+<pre><code>function triangulate(obs1, bearing1, obs2, bearing2) {
+  // Convert bearings (degrees clockwise from N) to radians
+  var r1 = bearing1 * Math.PI / 180;
+  var r2 = bearing2 * Math.PI / 180;
+
+  // Direction vectors: sin for x (east), -cos for y (north-up on screen)
+  var dx1 = Math.sin(r1), dy1 = -Math.cos(r1);
+  var dx2 = Math.sin(r2), dy2 = -Math.cos(r2);
+
+  // Solve obs1 + t1*d1 = obs2 + t2*d2 for t1
+  var denom = dx1 * dy2 - dy1 * dx2;
+  if (Math.abs(denom) < 1e-10) return null; // parallel / same bearing
+
+  var t1 = ((obs2.x - obs1.x) * dy2 - (obs2.y - obs1.y) * dx2) / denom;
+  return {
+    x: obs1.x + t1 * dx1,
+    y: obs1.y + t1 * dy1
+  };
+}</code></pre>
+
+    <h3>Marking Criteria</h3>
+    <table class="data-table">
+      <thead><tr><th>Criterion</th><th>Marks</th><th>Evidence Required</th></tr></thead>
+      <tbody>
+        <tr><td>Radian conversion (<code>* Math.PI / 180</code>)</td><td>2</td><td>Present and applied to both bearings</td></tr>
+        <tr><td>Direction vector calculation</td><td>2</td><td><code>Math.sin</code> for dx, <code>-Math.cos</code> (or equivalent) for dy</td></tr>
+        <tr><td>Line intersection solution</td><td>3</td><td>Correct parametric equation or equivalent geometry</td></tr>
+        <tr><td>Parallel-line guard (<code>denom</code> check)</td><td>1</td><td>Any check that prevents division by zero</td></tr>
+        <tr><td>Return of <code>{x, y}</code></td><td>2</td><td>Returns an object (or equivalent) with x and y coordinates</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>10</strong></td><td></td></tr>
+      </tbody>
+    </table>
+    <div class="info-box" style="margin-top:.75rem;"><strong>Partial credit:</strong> Award 3–4 marks if the scout correctly converts bearings and sets up direction vectors, even without solving the intersection. Award 1–2 marks for any use of trigonometry with a rationale.</div>
+  </section>
+
+  <!-- T4 RUBRIC -->
+  <section class="section-card">
+    <h2>Tier 4 — Extension Task Rubric</h2>
+    <p>Tier 4 is an open-ended creative task. Use holistic marking.</p>
+    <table class="rubric-table">
+      <thead><tr><th>Band</th><th>Marks</th><th>Descriptor</th></tr></thead>
+      <tbody>
+        <tr><td>Distinction</td><td>9–10</td><td>Third bearing computed, all three intersections found, triangle drawn on canvas, area calculated correctly, code is well-commented. Bonus for centroid.</td></tr>
+        <tr><td>Merit</td><td>7–8</td><td>Third bearing computed, triangle drawn (possibly with minor area error), logic is sound.</td></tr>
+        <tr><td>Pass</td><td>5–6</td><td>Third bearing partially implemented; triangle attempted but may not render correctly.</td></tr>
+        <tr><td>Attempt</td><td>1–4</td><td>Student engaged with the problem; some code written with clear intent but not functional.</td></tr>
+        <tr><td>Not attempted</td><td>0</td><td>No response.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- CONCEPT CHECK KEY -->
+  <section class="section-card">
+    <h2>Concept Check — Answer Key</h2>
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Question</th><th>Answer</th><th>Explanation</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>What is a contour line?</td><td>B — Connects equal elevation</td><td>Core definition; check scouts can apply it to describe slope steepness.</td></tr>
+        <tr><td>2</td><td>Minimum bearings for triangulation?</td><td>B — 2</td><td>Two lines create one intersection. Three improve accuracy ("cut on 3").</td></tr>
+        <tr><td>3</td><td>Bearing 270° = which direction?</td><td>D — West</td><td>N=0, E=90, S=180, W=270. Common error: confusing with magnetic heading.</td></tr>
+        <tr><td>4</td><td>What does 1:25 000 mean?</td><td>B — 1 cm = 250 m</td><td>1 cm × 25 000 = 25 000 cm = 250 m. Distractors test place value errors.</td></tr>
+        <tr><td>5</td><td>"Corridor then stairs" remembers…</td><td>C — Easting before Northing</td><td>The corridor (horizontal) = Easting; stairs (vertical) = Northing.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- JOURNAL RUBRIC -->
+  <section class="section-card">
+    <h2>Reflection Journal — Marking Rubric</h2>
+    <p>Score each completed prompt out of 4. Require at least 3 of 5 prompts answered.</p>
+    <table class="rubric-table">
+      <thead><tr><th>Score</th><th>Descriptor</th></tr></thead>
+      <tbody>
+        <tr><td>4 — Excellent</td><td>Demonstrates deep understanding; makes a clear connection to a concept from the module; uses precise vocabulary (e.g., "bearing", "triangulation", "cocked hat").</td></tr>
+        <tr><td>3 — Good</td><td>Shows understanding with a relevant example; minor vocabulary imprecision acceptable.</td></tr>
+        <tr><td>2 — Developing</td><td>Relevant attempt but lacks depth or clarity; connects to the topic without explaining how.</td></tr>
+        <tr><td>1 — Attempted</td><td>Response is present but superficial or off-topic.</td></tr>
+        <tr><td>0</td><td>No response or completely irrelevant.</td></tr>
+      </tbody>
+    </table>
+    <h3>Expected themes per prompt</h3>
+    <ol style="color:var(--text-muted);font-size:.88rem;padding-left:1.2rem;line-height:2;">
+      <li>More bearings → smaller uncertainty triangle → more confidence in fox location.</li>
+      <li>Puzzle analogy: assembling partial clues (bearings) to find a hidden answer (fox).</li>
+      <li>Forest challenges: signal blockage by trees, difficulty getting clean bearing, unclear landmarks.</li>
+      <li>Terrain prediction: high ground, ridgelines, open clearings are preferred fox locations.</li>
+      <li>Job connections: surveying, military navigation, search-and-rescue, GIS, aviation.</li>
+    </ol>
+  </section>
+
+  <!-- COMMON MISTAKES -->
+  <section class="section-card">
+    <h2>Common Mistakes &amp; How to Address Them</h2>
+
+    <div class="mistake-card">
+      <div class="m-title">Confusing True North with Magnetic North</div>
+      <p>Scouts often treat compass bearing as pointing exactly to geographic north. <strong>Fix:</strong> Demonstrate with a map that shows the declination diagram. For JOTA-JOTI in Malaysia (~0.7° E), the error is negligible, but the conceptual distinction matters.</p>
+    </div>
+    <div class="mistake-card">
+      <div class="m-title">Taking bearings from the same position</div>
+      <p>Scouts record two bearings without moving between positions. <strong>Fix:</strong> Emphasise: "New position = new bearing." Use the triangulation animation to show why a single point cannot give a fix.</p>
+    </div>
+    <div class="mistake-card">
+      <div class="m-title">Reversing Easting and Northing</div>
+      <p>Writing Northing first. <strong>Fix:</strong> Drill the corridor/stairs mnemonic until automatic. Practice reading 5–6 references aloud before the field session.</p>
+    </div>
+    <div class="mistake-card">
+      <div class="m-title">Bearing out of range (e.g. recording 400°)</div>
+      <p>Scouts add increments past 360° without resetting. <strong>Fix:</strong> Teach: always reduce modulo 360. A bearing of 400° = 040°.</p>
+    </div>
+    <div class="mistake-card">
+      <div class="m-title">Near-parallel bearing lines</div>
+      <p>Two bearings that are nearly the same (e.g., 042° and 046°) produce a very uncertain, elongated intersection zone. <strong>Fix:</strong> Instruct scouts to seek observation points where the angle between lines is close to 90°.</p>
+    </div>
+  </section>
+
+  <!-- TIPS FOR SCOUTS -->
+  <section class="section-card">
+    <h2>Tips for Running the Field Session</h2>
+    <ul style="padding-left:1.2rem;color:var(--text-muted);font-size:.9rem;line-height:2;">
+      <li>Prepare a 1:25 000 or 1:10 000 printout of the foxhunting area with a 100 m grid overlay.</li>
+      <li>Pre-mark 3 observation posts (OP-A, OP-B, OP-C) on the map, at roughly 90° angles to the planned fox position.</li>
+      <li>Have scouts work in pairs: one holds the map, one takes the bearing and calls it out.</li>
+      <li>Require scouts to record time alongside each bearing so you can discuss signal variation over time.</li>
+      <li>After the exercise, compare estimated fox grid references against the actual transmitter location and measure the error.</li>
+      <li>Discuss why teams with more bearings (closer to "cut on 3") tend to have smaller errors.</li>
+    </ul>
+    <div class="info-box"><strong>Timing:</strong> Allow 15 min for Module 2 study, 30 min for activities, 20 min for the field demo. Total: ~65 min.</div>
+  </section>
+
+  <!-- GS SCHEMA -->
+  <section class="section-card">
+    <h2>Google Sheets Schema</h2>
+    <p>Create a Google Form with the following fields and link it to a Sheets response spreadsheet. Replace <code>YOUR_GOOGLE_FORM_ID</code> in <code>module-activity-2.html</code> with your form's ID.</p>
+    <table class="schema-table">
+      <thead><tr><th>Column</th><th>Form Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>Timestamp</td><td>Auto</td><td>Generated by Google Forms</td></tr>
+        <tr><td>B</td><td>Full Name</td><td>Short answer</td><td>entry.1</td></tr>
+        <tr><td>C</td><td>Scout Troop / Group</td><td>Short answer</td><td>entry.2</td></tr>
+        <tr><td>D</td><td>Callsign</td><td>Short answer</td><td>entry.3 — optional</td></tr>
+        <tr><td>E</td><td>Completion Status</td><td>Dropdown</td><td>entry.4 — T1-T4 / T1-T3 / T1-T2 / T1</td></tr>
+        <tr><td>F</td><td>Module</td><td>Hidden/prefilled</td><td>entry.5 — "Module 2 - Map Reading"</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box" style="margin-top:.75rem;"><strong>Tip:</strong> Add conditional formatting to column E — colour cells green for "All tiers", yellow for "T1-T3", orange for "T1-T2", red for "T1 only".</div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a> &middot;
+      <a href="module-0.html">Module 0</a> &middot;
+      <a href="module-1.html">Module 1</a> &middot;
+      <a href="module-2.html">Module 2</a> &middot;
+      <a href="module-3.html">Module 3</a> &middot;
+      <a href="module-4.html">Module 4</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative
+      <a href="https://ee.ump.edu.my/hazlina/" target="_blank" aria-label="Personal website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" aria-label="Email">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Gate removed ── */
+initDemo();
+
+/* ── Mini compass demo ── */
+function initDemo(){
+  var canvas=document.getElementById('teacherCompass');
+  if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var cx=130,cy=130,r=118;
+  function toRad(d){return d*Math.PI/180;}
+  function draw(b){
+    ctx.clearRect(0,0,260,260);
+    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.strokeStyle='#02ADA5';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='rgba(2,173,165,0.05)';ctx.fill();
+    for(var i=0;i<360;i+=10){
+      var rad=toRad(i-90);
+      var inner=r-(i%30===0?14:8);
+      ctx.beginPath();ctx.moveTo(cx+Math.cos(rad)*inner,cy+Math.sin(rad)*inner);
+      ctx.lineTo(cx+Math.cos(rad)*(r-2),cy+Math.sin(rad)*(r-2));
+      ctx.strokeStyle=i%90===0?'#02ADA5':'#1a5f5a';ctx.lineWidth=1;ctx.stroke();
+    }
+    var dirs=['N','E','S','W'];var ddeg=[0,90,180,270];
+    dirs.forEach(function(l,i){
+      var rad2=toRad(ddeg[i]-90);
+      ctx.font='bold 13px sans-serif';ctx.fillStyle=l==='N'?'#ff6b6b':'#02ADA5';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(l,cx+Math.cos(rad2)*(r-24),cy+Math.sin(rad2)*(r-24));
+    });
+    if(b!==null){
+      var brad=toRad(b-90);
+      ctx.beginPath();ctx.moveTo(cx,cy);
+      ctx.lineTo(cx+Math.cos(brad)*(r-6),cy+Math.sin(brad)*(r-6));
+      ctx.strokeStyle='#ff6b6b';ctx.lineWidth=2;ctx.stroke();
+      ctx.font='bold 14px sans-serif';ctx.fillStyle='#ff6b6b';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(b+'°',cx,cy+20);
+    }
+    ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fillStyle='#02ADA5';ctx.fill();
+  }
+  canvas.addEventListener('mousemove',function(e){
+    var rect=canvas.getBoundingClientRect();
+    var mx=(e.clientX-rect.left)*(260/rect.width)-cx;
+    var my=(e.clientY-rect.top)*(260/rect.height)-cy;
+    var deg=Math.atan2(my,mx)*180/Math.PI+90;
+    if(deg<0)deg+=360;if(deg>=360)deg-=360;
+    draw(Math.round(deg));
+  });
+  canvas.addEventListener('mouseleave',function(){draw(null);});
+  draw(null);
+}
+</script>
+<script>
+/* ── Triple-click SEE → teacher notes ── */
+(function(){
+  var box = document.getElementById('see-box');
+  if (!box) return;
+  var clicks = 0, timer;
+  box.addEventListener('click', function() {
+    clicks++;
+    clearTimeout(timer);
+    timer = setTimeout(function() { clicks = 0; }, 800);
+    if (clicks >= 3) {
+      clicks = 0;
+      window.location.href = 'teacher-2.html';
+    }
+  });
+})();
+</script>
+</body>
+</html>

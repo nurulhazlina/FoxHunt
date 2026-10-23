@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Post-Workshop Survey — Radio Foxhunting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --bg:#071412;--surface:#0d1f1d;--surface2:#122221;
+  --border:rgba(2,173,165,.18);--border-str:rgba(2,173,165,.35);
+  --text:#e0efee;--muted:#7bbfba;--teal:#02ADA5;--teal-glow:rgba(2,173,165,.12);
+  --green:#2a9e5e;--pill:#0d1f1d;--font:'Space Grotesk',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;padding-bottom:3rem;}
+.topbar{background:#041e1c;border-bottom:2px solid var(--teal);padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar .brand{font-weight:800;font-size:1rem;color:var(--teal);text-decoration:none;}
+.badge{background:rgba(2,173,165,.2);border:1px solid var(--teal);color:var(--teal);padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;}
+.lang-row{display:flex;gap:.5rem;}
+.lang-btn{background:transparent;border:1px solid var(--border-str);color:var(--muted);padding:2px 10px;border-radius:4px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:var(--font);}
+.lang-btn.active{background:var(--teal);color:#041e1c;border-color:var(--teal);}
+.hero{background:linear-gradient(135deg,rgba(2,53,51,.22) 0%,var(--bg) 100%);border-bottom:2px solid var(--teal);padding:2rem 1.25rem 1.75rem;}
+.hero-inner{max-width:680px;margin:0 auto;}
+.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:.35rem;}
+.hero h1{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:800;margin-bottom:.35rem;}
+.hero p{color:var(--muted);font-size:.9rem;}
+.wrap{max-width:680px;margin:2rem auto;padding:0 1.25rem;}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1.25rem;}
+.section-title{font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+.q{margin-bottom:1.25rem;}
+.q:last-child{margin-bottom:0;}
+.q-label{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:.55rem;display:block;}
+.q-label .req{color:var(--teal);}
+.q-hint{font-size:.78rem;color:var(--muted);margin-bottom:.5rem;}
+
+/* MCQ options */
+.mcq{display:flex;flex-direction:column;gap:.4rem;}
+.mcq label{display:flex;align-items:flex-start;gap:.6rem;background:var(--pill);border:1px solid var(--border-str);color:var(--muted);padding:.5rem .85rem;border-radius:6px;font-size:.85rem;cursor:pointer;transition:all .15s;line-height:1.4;}
+.mcq label:hover{background:var(--teal-glow);border-color:var(--teal);color:var(--text);}
+.mcq input[type=radio]{display:none;}
+.mcq label:has(input:checked){background:var(--teal);color:#041e1c;border-color:var(--teal);font-weight:700;}
+.mcq .opt-letter{font-weight:800;min-width:1.2rem;color:inherit;}
+
+/* Pill group */
+.pill-group{display:flex;flex-wrap:wrap;gap:.45rem;}
+.pill-group label{display:flex;align-items:center;gap:.4rem;background:var(--pill);border:1px solid var(--border-str);color:var(--muted);padding:.35rem .85rem;border-radius:999px;font-size:.82rem;cursor:pointer;transition:all .15s;}
+.pill-group label:hover{background:var(--teal-glow);border-color:var(--teal);color:var(--text);}
+.pill-group input[type=radio],.pill-group input[type=checkbox]{display:none;}
+.pill-group label:has(input:checked){background:var(--teal);color:#041e1c;border-color:var(--teal);font-weight:700;}
+
+/* Star rating */
+.stars{display:flex;gap:.3rem;flex-direction:row-reverse;width:fit-content;}
+.stars input{display:none;}
+.stars label{font-size:1.6rem;color:#2a4a47;cursor:pointer;transition:color .1s;}
+.stars input:checked ~ label,.stars label:hover,.stars label:hover ~ label{color:var(--teal);}
+
+/* Scale row */
+.scale-row{display:flex;align-items:center;gap:.3rem;flex-wrap:wrap;}
+.scale-row .scale-label{font-size:.75rem;color:var(--muted);min-width:80px;}
+.scale-row .scale-label.right{text-align:right;}
+.scale-nums{display:flex;gap:.3rem;}
+.scale-nums label{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--pill);border:1px solid var(--border-str);color:var(--muted);border-radius:6px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.scale-nums label:hover{background:var(--teal-glow);border-color:var(--teal);color:var(--text);}
+.scale-nums input{display:none;}
+.scale-nums label:has(input:checked){background:var(--teal);color:#041e1c;border-color:var(--teal);}
+
+textarea{width:100%;background:var(--surface2);border:1px solid var(--border-str);color:var(--text);border-radius:6px;padding:.6rem .75rem;font-size:.88rem;font-family:var(--font);resize:vertical;min-height:80px;outline:none;transition:border .15s;}
+textarea:focus{border-color:var(--teal);}
+textarea::placeholder{color:var(--muted);}
+input[type=text]{width:100%;background:var(--surface2);border:1px solid var(--border-str);color:var(--text);border-radius:6px;padding:.55rem .75rem;font-size:.88rem;font-family:var(--font);outline:none;transition:border .15s;}
+input[type=text]:focus{border-color:var(--teal);}
+input[type=text]::placeholder{color:var(--muted);}
+
+.correct-tag{display:inline-block;background:rgba(42,158,94,.15);border:1px solid #2a9e5e;color:#2a9e5e;padding:1px 8px;border-radius:4px;font-size:.72rem;font-weight:700;margin-left:.4rem;vertical-align:middle;}
+.submit-row{text-align:center;margin-top:1.5rem;}
+.btn-submit{background:var(--teal);color:#041e1c;font-weight:800;font-size:1rem;border:none;padding:.75rem 2.5rem;border-radius:8px;cursor:pointer;font-family:var(--font);transition:opacity .15s;}
+.btn-submit:hover{opacity:.88;}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;}
+#status{text-align:center;margin-top:1rem;font-size:.9rem;color:var(--muted);min-height:1.4rem;}
+#status.ok{color:#2a9e5e;}
+#status.err{color:#e07b2a;}
+#success{display:none;text-align:center;padding:3rem 1rem;}
+#success .icon{font-size:3rem;margin-bottom:1rem;}
+#success h2{font-size:1.4rem;font-weight:800;color:var(--teal);margin-bottom:.5rem;}
+#success p{color:var(--muted);font-size:.9rem;}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">🦊 Radio Foxhunting</a>
+  <div style="display:flex;align-items:center;gap:.75rem;">
+    <div class="lang-row">
+      <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="btnBM" onclick="setLang('bm')">BM</button>
+    </div>
+    <span class="badge" data-i18n="badge">Post-Survey</span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow" data-i18n="eyebrow">JOTA JOTI 2026 · UMPSA STEM Lab</p>
+    <h1 data-i18n="h1">How Did It Go? — Tell Us What You Learned</h1>
+    <p data-i18n="subtitle">A quick survey to see what you picked up today. Some questions test what you learned — give it your best shot! Takes about 5 minutes.</p>
+  </div>
+</header>
+
+<div class="wrap">
+<div id="form-area">
+<form id="surveyForm" onsubmit="submitForm(event)">
+
+  <!-- Section 1: ID -->
+  <div class="section">
+    <div class="section-title" data-i18n="s1_title">📋 About You</div>
+    <div class="q">
+      <label class="q-label" data-i18n="q_level">School level <span class="req">*</span></label>
+      <div class="pill-group">
+        <label><input type="radio" name="level" value="Primary" required><span data-i18n="primary">Primary (Std 4–6)</span></label>
+        <label><input type="radio" name="level" value="Secondary"><span data-i18n="secondary">Secondary (Form 1–5)</span></label>
+      </div>
+    </div>
+    <div class="q">
+      <label class="q-label" data-i18n="q_name">Your name or participant ID <span style="color:var(--muted);font-weight:400;font-size:.78rem;" data-i18n="optional">(optional — for matching with pre-survey)</span></label>
+      <input type="text" name="participant_id" placeholder="e.g. Ahmad / A001" data-i18n-ph="ph_name">
+    </div>
+  </div>
+
+  <!-- Section 2: Knowledge Check MCQs -->
+  <div class="section">
+    <div class="section-title" data-i18n="s2_title">🧠 Knowledge Check</div>
+    <p class="q-hint" style="margin-bottom:1rem;" data-i18n="s2_hint">Choose the best answer for each question. These are based on what you learned today!</p>
+
+    <!-- Q1: Morse code -->
+    <div class="q">
+      <label class="q-label" data-i18n="mcq1_q">1. What is Morse code used for? <span class="req">*</span></label>
+      <div class="mcq">
+        <label><input type="radio" name="mcq1" value="a" required><span class="opt-letter">A</span><span data-i18n="mcq1_a">Sending secret codes to spies</span></label>
+        <label><input type="radio" name="mcq1" value="b"><span class="opt-letter">B</span><span data-i18n="mcq1_b">Transmitting messages using dots (·) and dashes (—)</span></label>
+        <label><input type="radio" name="mcq1" value="c"><span class="opt-letter">C</span><span data-i18n="mcq1_c">A type of computer programming language</span></label>
+        <label><input type="radio" name="mcq1" value="d"><span class="opt-letter">D</span><span data-i18n="mcq1_d">Measuring radio signal frequency</span></label>
+      </div>
+    </div>
+
+    <!-- Q2: Triangulation -->
+    <div class="q">
+      <label class="q-label" data-i18n="mcq2_q">2. In radio foxhunting, what does "triangulation" help you do? <span class="req">*</span></label>
+      <div class="mcq">
+        <label><input type="radio" name="mcq2" value="a" required><span class="opt-letter">A</span><span data-i18n="mcq2_a">Build a triangular-shaped antenna</span></label>
+        <label><input type="radio" name="mcq2" value="b"><span class="opt-letter">B</span><span data-i18n="mcq2_b">Find the direction and location of a hidden radio transmitter</span></label>
+        <label><input type="radio" name="mcq2" value="c"><span class="opt-letter">C</span><span data-i18n="mcq2_c">Calculate the exact frequency of a radio signal</span></label>
+        <label><input type="radio" name="mcq2" value="d"><span class="opt-letter">D</span><span data-i18n="mcq2_d">Draw an accurate map of the competition area</span></label>
+      </div>
+    </div>
+
+    <!-- Q3: Yagi antenna -->
+    <div class="q">
+      <label class="q-label" data-i18n="mcq3_q">3. Why is a Yagi antenna useful in radio foxhunting? <span class="req">*</span></label>
+      <div class="mcq">
+        <label><input type="radio" name="mcq3" value="a" required><span class="opt-letter">A</span><span data-i18n="mcq3_a">It is the cheapest antenna to build</span></label>
+        <label><input type="radio" name="mcq3" value="b"><span class="opt-letter">B</span><span data-i18n="mcq3_b">It picks up signals from all directions equally</span></label>
+        <label><input type="radio" name="mcq3" value="c"><span class="opt-letter">C</span><span data-i18n="mcq3_c">It is directional — it receives signals strongest from one direction, helping you find the fox</span></label>
+        <label><input type="radio" name="mcq3" value="d"><span class="opt-letter">D</span><span data-i18n="mcq3_d">It amplifies the transmitter signal so the fox is easier to hear</span></label>
+      </div>
+    </div>
+
+    <!-- Q4: Beacons -->
+    <div class="q">
+      <label class="q-label" data-i18n="mcq4_q">4. How many fox beacons transmit in a standard ARDF Radio Foxhunting event? <span class="req">*</span></label>
+      <div class="mcq">
+        <label><input type="radio" name="mcq4" value="a" required><span class="opt-letter">A</span><span data-i18n="mcq4_a">2</span></label>
+        <label><input type="radio" name="mcq4" value="b"><span class="opt-letter">B</span><span data-i18n="mcq4_b">5</span></label>
+        <label><input type="radio" name="mcq4" value="c"><span class="opt-letter">C</span><span data-i18n="mcq4_c">10</span></label>
+        <label><input type="radio" name="mcq4" value="d"><span class="opt-letter">D</span><span data-i18n="mcq4_d">1</span></label>
+      </div>
+    </div>
+
+    <!-- Q5: Compass bearing -->
+    <div class="q">
+      <label class="q-label" data-i18n="mcq5_q">5. When you take a compass bearing toward a fox signal, what are you measuring? <span class="req">*</span></label>
+      <div class="mcq">
+        <label><input type="radio" name="mcq5" value="a" required><span class="opt-letter">A</span><span data-i18n="mcq5_a">The distance to the fox in metres</span></label>
+        <label><input type="radio" name="mcq5" value="b"><span class="opt-letter">B</span><span data-i18n="mcq5_b">The direction (in degrees) from your position toward the signal source</span></label>
+        <label><input type="radio" name="mcq5" value="c"><span class="opt-letter">C</span><span data-i18n="mcq5_c">The signal strength in decibels</span></label>
+        <label><input type="radio" name="mcq5" value="d"><span class="opt-letter">D</span><span data-i18n="mcq5_d">The frequency the fox is broadcasting on</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: LMS & Workshop Feedback -->
+  <div class="section">
+    <div class="section-title" data-i18n="s3_title">📱 About the Learning Website</div>
+    <p class="q-hint" style="margin-bottom:1rem;" data-i18n="s3_hint">1 = Very poor &nbsp;·&nbsp; 5 = Excellent</p>
+
+    <!-- Ease of use -->
+    <div class="q">
+      <label class="q-label" data-i18n="q_ease">How easy was the website to use? <span class="req">*</span></label>
+      <div class="stars">
+        <input type="radio" name="ease" id="e5" value="5" required><label for="e5">★</label>
+        <input type="radio" name="ease" id="e4" value="4"><label for="e4">★</label>
+        <input type="radio" name="ease" id="e3" value="3"><label for="e3">★</label>
+        <input type="radio" name="ease" id="e2" value="2"><label for="e2">★</label>
+        <input type="radio" name="ease" id="e1" value="1"><label for="e1">★</label>
+      </div>
+    </div>
+
+    <!-- Engagement -->
+    <div class="q">
+      <label class="q-label" data-i18n="q_engage">How engaging and interesting were the activities? <span class="req">*</span></label>
+      <div class="stars">
+        <input type="radio" name="engagement" id="g5" value="5" required><label for="g5">★</label>
+        <input type="radio" name="engagement" id="g4" value="4"><label for="g4">★</label>
+        <input type="radio" name="engagement" id="g3" value="3"><label for="g3">★</label>
+        <input type="radio" name="engagement" id="g2" value="2"><label for="g2">★</label>
+        <input type="radio" name="engagement" id="g1" value="1"><label for="g1">★</label>
+      </div>
+    </div>
+
+    <!-- Confidence after -->
+    <div class="q">
+      <label class="q-label" data-i18n="q_confidence">How confident do you feel about radio foxhunting now? <span class="req">*</span></label>
+      <div class="stars">
+        <input type="radio" name="confidence" id="c5" value="5" required><label for="c5">★</label>
+        <input type="radio" name="confidence" id="c4" value="4"><label for="c4">★</label>
+        <input type="radio" name="confidence" id="c3" value="3"><label for="c3">★</label>
+        <input type="radio" name="confidence" id="c2" value="2"><label for="c2">★</label>
+        <input type="radio" name="confidence" id="c1" value="1"><label for="c1">★</label>
+      </div>
+    </div>
+
+    <!-- Favourite module -->
+    <div class="q">
+      <label class="q-label" data-i18n="q_fav">Which module did you find most interesting? <span class="req">*</span></label>
+      <div class="pill-group">
+        <label><input type="radio" name="fav_module" value="M0 Orientation" required><span data-i18n="m0">M0 · Orientation</span></label>
+        <label><input type="radio" name="fav_module" value="M1 Morse Code"><span data-i18n="m1">M1 · Morse Code</span></label>
+        <label><input type="radio" name="fav_module" value="M2 Map Reading"><span data-i18n="m2">M2 · Map Reading</span></label>
+        <label><input type="radio" name="fav_module" value="M3 Yagi Antenna"><span data-i18n="m3">M3 · Yagi Antenna</span></label>
+        <label><input type="radio" name="fav_module" value="M4 Field Strategy"><span data-i18n="m4">M4 · Field Strategy</span></label>
+      </div>
+    </div>
+
+    <!-- Recommend -->
+    <div class="q">
+      <label class="q-label" data-i18n="q_rec">Would you recommend this workshop to your friends? <span class="req">*</span></label>
+      <div class="pill-group">
+        <label><input type="radio" name="recommend" value="Yes, definitely" required><span data-i18n="yes_def">Yes, definitely!</span></label>
+        <label><input type="radio" name="recommend" value="Maybe"><span data-i18n="maybe">Maybe</span></label>
+        <label><input type="radio" name="recommend" value="Probably not"><span data-i18n="prob_not">Probably not</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Open feedback -->
+  <div class="section">
+    <div class="section-title" data-i18n="s4_title">💬 Your Feedback</div>
+    <div class="q">
+      <label class="q-label" data-i18n="q_like">What did you like most about today's workshop? <span style="color:var(--muted);font-weight:400;font-size:.78rem;" data-i18n="optional">(optional)</span></label>
+      <textarea name="liked" data-i18n-ph="ph_like" placeholder="The Morse code part was fun because…"></textarea>
+    </div>
+    <div class="q">
+      <label class="q-label" data-i18n="q_improve">What could be better? <span style="color:var(--muted);font-weight:400;font-size:.78rem;" data-i18n="optional">(optional)</span></label>
+      <textarea name="improve" data-i18n-ph="ph_improve" placeholder="I wish there was more time for…"></textarea>
+    </div>
+  </div>
+
+  <div class="submit-row">
+    <button class="btn-submit" type="submit" id="submitBtn" data-i18n="submit_btn">Submit Survey →</button>
+  </div>
+  <div id="status"></div>
+</form>
+</div>
+
+<div id="success">
+  <div class="icon">🏆</div>
+  <h2 data-i18n="success_h">Great job — survey complete!</h2>
+  <p data-i18n="success_p">Thank you for completing the Radio Foxhunting workshop. Good luck in future ARDF events!</p>
+  <br>
+  <a href="index.html" style="color:var(--teal);font-weight:700;text-decoration:none;" data-i18n="success_link">← Back to Home</a>
+  <br><br><a href="certificate.html" style="display:inline-block;background:var(--teal);color:#071412;font-weight:700;padding:.75rem 2rem;border-radius:8px;text-decoration:none;font-size:.95rem;margin-top:.5rem;">🎓 View Certificate →</a>
+</div>
+</div>
+
+<script>
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE'; // same URL as pre-survey
+
+const ANSWERS = {mcq1:'b', mcq2:'b', mcq3:'c', mcq4:'b', mcq5:'b'};
+
+const i18n = {
+  en:{
+    badge:'Post-Survey', eyebrow:'JOTA JOTI 2026 · UMPSA STEM Lab',
+    h1:'How Did It Go? — Tell Us What You Learned',
+    subtitle:'A quick survey to see what you picked up today. Some questions test what you learned — give it your best shot! Takes about 5 minutes.',
+    s1_title:'📋 About You', q_level:'School level', primary:'Primary (Std 4–6)', secondary:'Secondary (Form 1–5)',
+    q_name:'Your name or participant ID', optional:'(optional — for matching with pre-survey)', ph_name:'e.g. Ahmad / A001',
+    s2_title:'🧠 Knowledge Check', s2_hint:'Choose the best answer for each question. These are based on what you learned today!',
+    mcq1_q:'1. What is Morse code used for?',
+    mcq1_a:'Sending secret codes to spies', mcq1_b:'Transmitting messages using dots (·) and dashes (—)',
+    mcq1_c:'A type of computer programming language', mcq1_d:'Measuring radio signal frequency',
+    mcq2_q:'2. In radio foxhunting, what does "triangulation" help you do?',
+    mcq2_a:'Build a triangular-shaped antenna', mcq2_b:'Find the direction and location of a hidden radio transmitter',
+    mcq2_c:'Calculate the exact frequency of a radio signal', mcq2_d:'Draw an accurate map of the competition area',
+    mcq3_q:'3. Why is a Yagi antenna useful in radio foxhunting?',
+    mcq3_a:'It is the cheapest antenna to build', mcq3_b:'It picks up signals from all directions equally',
+    mcq3_c:'It is directional — it receives signals strongest from one direction, helping you find the fox',
+    mcq3_d:'It amplifies the transmitter signal so the fox is easier to hear',
+    mcq4_q:'4. How many fox beacons transmit in a standard ARDF Radio Foxhunting event?',
+    mcq4_a:'2', mcq4_b:'5', mcq4_c:'10', mcq4_d:'1',
+    mcq5_q:'5. When you take a compass bearing toward a fox signal, what are you measuring?',
+    mcq5_a:'The distance to the fox in metres',
+    mcq5_b:'The direction (in degrees) from your position toward the signal source',
+    mcq5_c:'The signal strength in decibels', mcq5_d:'The frequency the fox is broadcasting on',
+    s3_title:'📱 About the Learning Website', s3_hint:'1 = Very poor · 5 = Excellent',
+    q_ease:'How easy was the website to use?', q_engage:'How engaging and interesting were the activities?',
+    q_confidence:'How confident do you feel about radio foxhunting now?',
+    q_fav:'Which module did you find most interesting?',
+    m0:'M0 · Orientation', m1:'M1 · Morse Code', m2:'M2 · Map Reading', m3:'M3 · Yagi Antenna', m4:'M4 · Field Strategy',
+    q_rec:'Would you recommend this workshop to your friends?',
+    yes_def:'Yes, definitely!', maybe:'Maybe', prob_not:'Probably not',
+    s4_title:'💬 Your Feedback',
+    q_like:"What did you like most about today's workshop?", ph_like:'The Morse code part was fun because…',
+    q_improve:'What could be better?', ph_improve:'I wish there was more time for…',
+    submit_btn:'Submit Survey →',
+    success_h:'Great job — survey complete!',
+    success_p:'Thank you for completing the Radio Foxhunting workshop. Good luck in future ARDF events!',
+    success_link:'← Back to Home', sending:'Submitting…', err:'Something went wrong — please try again.',
+  },
+  bm:{
+    badge:'Kaji Selidik Pasca', eyebrow:'JOTA JOTI 2026 · UMPSA STEM Lab',
+    h1:'Macam Mana? — Kongsi Apa Yang Kamu Pelajari',
+    subtitle:'Kaji selidik ringkas untuk melihat apa yang kamu pelajari hari ini. Beberapa soalan menguji pengetahuan kamu — cuba sebaik mungkin! Ambil masa kira-kira 5 minit.',
+    s1_title:'📋 Tentang Kamu', q_level:'Peringkat sekolah', primary:'Rendah (Std 4–6)', secondary:'Menengah (Tingkatan 1–5)',
+    q_name:'Nama atau ID peserta kamu', optional:'(pilihan — untuk padanan dengan kaji selidik pra)', ph_name:'cth. Ahmad / A001',
+    s2_title:'🧠 Semakan Pengetahuan', s2_hint:'Pilih jawapan terbaik untuk setiap soalan. Soalan-soalan ini berdasarkan apa yang kamu pelajari hari ini!',
+    mcq1_q:'1. Apakah kegunaan kod Morse?',
+    mcq1_a:'Menghantar kod rahsia kepada pengintip', mcq1_b:'Menghantar mesej menggunakan titik (·) dan garis (—)',
+    mcq1_c:'Sejenis bahasa pengaturcaraan komputer', mcq1_d:'Mengukur frekuensi isyarat radio',
+    mcq2_q:'2. Dalam radio foxhunting, apakah yang "triangulasi" bantu kamu lakukan?',
+    mcq2_a:'Membina antena berbentuk segitiga', mcq2_b:'Mencari arah dan lokasi pemancar radio tersembunyi',
+    mcq2_c:'Mengira frekuensi tepat isyarat radio', mcq2_d:'Melukis peta kawasan pertandingan yang tepat',
+    mcq3_q:'3. Mengapa antena Yagi berguna dalam radio foxhunting?',
+    mcq3_a:'Ia antena yang paling murah untuk dibina', mcq3_b:'Ia menerima isyarat dari semua arah sama rata',
+    mcq3_c:'Ia berarah — ia menerima isyarat paling kuat dari satu arah, membantu kamu mencari rubah',
+    mcq3_d:'Ia menguatkan isyarat pemancar supaya rubah lebih mudah didengar',
+    mcq4_q:'4. Berapa banyak suar rubah yang memancar dalam acara ARDF Radio Foxhunting standard?',
+    mcq4_a:'2', mcq4_b:'5', mcq4_c:'10', mcq4_d:'1',
+    mcq5_q:'5. Apabila kamu mengambil bearing kompas ke arah isyarat rubah, apakah yang kamu ukur?',
+    mcq5_a:'Jarak ke rubah dalam meter',
+    mcq5_b:'Arah (dalam darjah) dari kedudukan kamu ke arah sumber isyarat',
+    mcq5_c:'Kekuatan isyarat dalam desibel', mcq5_d:'Frekuensi yang rubah pacarkan',
+    s3_title:'📱 Tentang Laman Web Pembelajaran', s3_hint:'1 = Sangat buruk · 5 = Cemerlang',
+    q_ease:'Seberapa mudah laman web itu digunakan?', q_engage:'Seberapa menarik dan seronokkah aktiviti itu?',
+    q_confidence:'Seberapa yakin kamu tentang radio foxhunting sekarang?',
+    q_fav:'Modul mana yang paling menarik minat kamu?',
+    m0:'M0 · Orientasi', m1:'M1 · Kod Morse', m2:'M2 · Baca Peta', m3:'M3 · Antena Yagi', m4:'M4 · Strategi Lapangan',
+    q_rec:'Adakah kamu akan mengesyorkan bengkel ini kepada rakan-rakan kamu?',
+    yes_def:'Ya, semestinya!', maybe:'Mungkin', prob_not:'Mungkin tidak',
+    s4_title:'💬 Maklum Balas Kamu',
+    q_like:'Apa yang paling kamu sukai tentang bengkel hari ini?', ph_like:'Bahagian kod Morse menarik kerana…',
+    q_improve:'Apa yang boleh diperbaiki?', ph_improve:'Saya berharap ada lebih masa untuk…',
+    submit_btn:'Hantar Kaji Selidik →',
+    success_h:'Tahniah — kaji selidik selesai!',
+    success_p:'Terima kasih kerana menyertai bengkel Radio Foxhunting. Semoga berjaya dalam acara ARDF akan datang!',
+    success_link:'← Kembali ke Laman Utama', sending:'Menghantar…', err:'Ralat — sila cuba sekali lagi.',
+  }
+};
+
+let lang = 'en';
+function setLang(l) {
+  lang = l;
+  document.getElementById('btnEN').classList.toggle('active', l==='en');
+  document.getElementById('btnBM').classList.toggle('active', l==='bm');
+  const t = i18n[l];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (t[k] !== undefined) el.textContent = t[k];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const k = el.getAttribute('data-i18n-ph');
+    if (t[k]) el.placeholder = t[k];
+  });
+}
+
+function scoreKnowledge(data) {
+  let score = 0;
+  ['mcq1','mcq2','mcq3','mcq4','mcq5'].forEach(q => {
+    if (data[q] === ANSWERS[q]) score++;
+  });
+  return score;
+}
+
+async function submitForm(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const status = document.getElementById('status');
+  btn.disabled = true;
+  status.textContent = i18n[lang].sending;
+  status.className = '';
+
+  const fd = new FormData(e.target);
+  var _p = {};
+  try { _p = JSON.parse(localStorage.getItem('rf_participant') || '{}'); } catch(e){}
+  const payload = {survey:'post', timestamp: new Date().toISOString(), lang,
+    participant_name: _p.full_name || '', participant_id: _p.matric_no || ''};
+  fd.forEach((v,k) => payload[k] = v);
+  payload.knowledge_score = scoreKnowledge(payload) + '/5';
+
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    setTimeout(() => showSuccess(), 800);
+    return;
+  }
+  try {
+    await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify(payload)});
+    showSuccess();
+  } catch(err) {
+    status.textContent = i18n[lang].err;
+    status.className = 'err';
+    btn.disabled = false;
+  }
+}
+
+function showSuccess() {
+  if (window.rfMarkPostDone) rfMarkPostDone();
+  setLang(lang);
+  document.getElementById('form-area').style.display = 'none';
+  document.getElementById('success').style.display = 'block';
+}
+</script>
+
+<!--
+═══════════════════════════════════════════════════════════════════════════════
+  GOOGLE APPS SCRIPT — use the SAME script as pre-survey (one doPost handles both)
+  Add this to the same Apps Script project. The 'survey' field tells it which
+  sheet to write to ('Pre-Survey' or 'Post-Survey').
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheetName = data.survey === 'pre' ? 'Pre-Survey' : 'Post-Survey';
+    let sheet = ss.getSheetByName(sheetName);
+
+    if (!sheet) {
+      sheet = ss.insertSheet(sheetName);
+      if (data.survey === 'pre') {
+        sheet.appendRow(['Timestamp','Lang','Level','Age','Gender',
+          'Heard Morse','Compass','Used Radio','Knows Yagi',
+          'Interest STEM','Interest Radio','Want More','Expectations']);
+      } else {
+        sheet.appendRow(['Timestamp','Lang','Participant ID','Level',
+          'MCQ1','MCQ2','MCQ3','MCQ4','MCQ5','Score /5',
+          'Ease (1-5)','Engagement (1-5)','Confidence (1-5)','Fav Module','Recommend',
+          'Liked','Improve']);
+      }
+    }
+
+    if (data.survey === 'pre') {
+      sheet.appendRow([data.timestamp, data.lang, data.level, data.age, data.gender||'',
+        data.morse, data.compass, data.radio_use, data.yagi,
+        data.interest_stem, data.interest_radio, data.want_learn, data.expectation||'']);
+    } else {
+      sheet.appendRow([data.timestamp, data.lang, data.participant_id||'', data.level,
+        data.mcq1, data.mcq2, data.mcq3, data.mcq4, data.mcq5, data.knowledge_score,
+        data.ease, data.engagement, data.confidence, data.fav_module, data.recommend,
+        data.liked||'', data.improve||'']);
+    }
+    return ContentService.createTextOutput('ok');
+  } catch(err) {
+    return ContentService.createTextOutput('error: ' + err.message);
+  }
+}
+
+═══════════════════════════════════════════════════════════════════════════════
+-->
+</body>
+</html>

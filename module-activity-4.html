@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Field Activities – Radio Foxhunting</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root{--teal:#02ADA5;--teal-dim:#017a74;--teal-glow:rgba(2,173,165,.16);
+      --bg:#08312F;--surface:#0d3f3c;--surface2:#0f3634;--text:#e8f5f4;--text-dim:#7ab8b5;
+      --accent:#f0c040;--danger:#e05050;--ok:#50c850;--radius:10px;--shadow:0 4px 24px rgba(0,0,0,.5)}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;line-height:1.6}
+    .chev{padding:7px 22px 7px 28px;font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+      color:var(--text-dim);cursor:pointer;user-select:none;transition:color .2s,background .2s;position:relative}
+    .chev+.chev::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+      border-top:18px solid transparent;border-bottom:18px solid transparent;border-left:12px solid #041e1c;z-index:1}
+    .chev:hover{color:var(--teal)}.chev.active{color:#fff;background:rgba(2,173,165,.22)}
+    .sitenav{background:#041e1c;display:flex;align-items:center;justify-content:space-between;
+      padding:11px 28px;border-bottom:2px solid var(--teal);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.6)}
+    .brand{font-size:1.05rem;font-weight:800;color:var(--teal);letter-spacing:.06em}
+    .brand::before{content:"🦊 "}
+    .steps-dropdown{position:relative}
+    .steps-btn{background:var(--teal-glow);border:1px solid rgba(2,173,165,.45);color:var(--teal);padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.83rem;font-weight:700}
+    .steps-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);background:#041e1c;border:1px solid rgba(2,173,165,.28);border-radius:10px;min-width:230px;box-shadow:var(--shadow);z-index:200}
+    .steps-menu.open{display:block}
+    .steps-menu a{display:block;padding:10px 16px;color:var(--text-dim);text-decoration:none;font-size:.87rem;border-bottom:1px solid rgba(255,255,255,.05);transition:all .18s}
+    .steps-menu a:last-child{border-bottom:none}
+    .steps-menu a:hover{color:var(--text);background:rgba(2,173,165,.1)}
+    .steps-menu a.current{color:var(--teal);font-weight:700}
+    .hero{background:linear-gradient(135deg,#031a18 0%,#0a3a37 55%,#031a18 100%);padding:52px 28px 44px;text-align:center;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -10%,rgba(2,173,165,.16) 0%,transparent 65%);pointer-events:none}
+    .eyebrow{font-size:.75rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:12px}
+    .hero h1{font-size:clamp(1.7rem,4vw,2.8rem);font-weight:900;line-height:1.1;color:#fff;margin-bottom:12px}
+    .subtitle{font-size:1rem;color:var(--text-dim);max-width:580px;margin:0 auto 22px;line-height:1.65}
+    .pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+    .pill{background:rgba(2,173,165,.14);border:1px solid rgba(2,173,165,.38);color:var(--teal);padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:700;letter-spacing:.04em}
+    .progress-wrap{background:#041e1c;padding:10px 28px;border-bottom:1px solid rgba(2,173,165,.1)}
+    .progress-label{font-size:.72rem;color:var(--text-dim);margin-bottom:5px;display:flex;justify-content:space-between}
+    .progress-track{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),#04d4ca);border-radius:3px}
+    .content{max-width:920px;margin:0 auto;padding:44px 28px}
+    .act-section{margin-bottom:56px}
+    .act-header{display:flex;align-items:center;gap:13px;margin-bottom:20px}
+    .tier-badge{padding:5px 12px;border-radius:6px;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    .t1{background:rgba(2,173,165,.18);color:var(--teal)}.t2{background:rgba(240,192,64,.18);color:var(--accent)}
+    .t3{background:rgba(224,80,80,.18);color:var(--danger)}.t4{background:rgba(200,100,240,.18);color:#c070e0}
+    .act-title{font-size:1.35rem;font-weight:800;color:#fff}
+    .act-desc{color:var(--text-dim);font-size:.9rem;margin-bottom:20px}
+    .calib-card{background:var(--surface);border:1px solid rgba(2,173,165,.18);border-radius:var(--radius);padding:24px}
+    .calib-q{font-weight:700;color:#fff;margin-bottom:14px}
+    .range-wrap{display:flex;align-items:center;gap:14px}
+    .range-wrap input[type=range]{flex:1;accent-color:var(--teal)}
+    .range-val{min-width:28px;text-align:center;font-weight:800;color:var(--teal);font-size:1.1rem}
+    .range-labels{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-dim);margin-top:4px}
+    .fib-list{display:flex;flex-direction:column;gap:18px}
+    .fib-item{background:var(--surface);border:1px solid rgba(2,173,165,.15);border-radius:var(--radius);padding:16px 20px}
+    .fib-q{font-size:.9rem;color:var(--text-dim);margin-bottom:10px;line-height:1.5}
+    .fib-q strong{color:var(--text)}
+    .fib-inputs{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .blank{background:rgba(255,255,255,.05);border:1px solid rgba(2,173,165,.28);border-radius:6px;padding:7px 12px;color:var(--text);font-size:.9rem;width:150px;transition:border-color .2s}
+    .blank:focus{outline:none;border-color:var(--teal)}
+    .blank.correct{border-color:var(--ok);background:rgba(80,200,80,.08)}
+    .blank.wrong{border-color:var(--danger);background:rgba(224,80,80,.08)}
+    .debug-card{background:var(--surface);border:1px solid rgba(240,192,64,.2);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+    .debug-scenario{background:rgba(0,0,0,.3);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:14px;font-size:.88rem;color:var(--text-dim)}
+    .debug-scenario strong{color:var(--text)}
+    .code-block{background:#021412;border:1px solid rgba(2,173,165,.2);border-radius:8px;padding:18px;font-family:'Courier New',monospace;font-size:.82rem;line-height:1.7;color:#b8e8e4;overflow-x:auto;margin-bottom:14px}
+    .code-comment{color:#5a8a87}.code-kw{color:#02ADA5}
+    .ta{background:rgba(255,255,255,.04);border:1px solid rgba(2,173,165,.22);border-radius:8px;padding:12px 14px;color:var(--text);font-size:.9rem;line-height:1.6;resize:vertical;width:100%;min-height:110px;font-family:inherit;transition:border-color .2s}
+    .ta:focus{outline:none;border-color:var(--teal)}
+    .ta.code-ta{font-family:'Courier New',monospace;font-size:.82rem;min-height:150px}
+    .mcq-list{display:flex;flex-direction:column;gap:22px}
+    .mcq-item{background:var(--surface);border:1px solid rgba(2,173,165,.15);border-radius:var(--radius);padding:18px 20px}
+    .mcq-q{font-weight:700;color:#fff;margin-bottom:14px;font-size:.95rem}
+    .mcq-q span{display:inline-block;background:rgba(2,173,165,.18);color:var(--teal);border-radius:50%;width:24px;height:24px;text-align:center;line-height:24px;font-size:.8rem;margin-right:8px}
+    .options{display:flex;flex-direction:column;gap:8px}
+    .opt{display:flex;align-items:center;gap:10px;padding:9px 13px;border:1px solid rgba(255,255,255,.08);border-radius:8px;cursor:pointer;transition:all .2s;font-size:.9rem;color:var(--text-dim)}
+    .opt:hover{border-color:rgba(2,173,165,.35);background:rgba(2,173,165,.06);color:var(--text)}
+    .opt input[type=radio]{accent-color:var(--teal)}
+    .opt.correct{border-color:var(--ok);background:rgba(80,200,80,.1);color:var(--text)}
+    .opt.wrong{border-color:var(--danger);background:rgba(224,80,80,.08)}
+    .mcq-feedback{margin-top:10px;font-size:.84rem;padding:8px 12px;border-radius:7px;display:none}
+    .mcq-feedback.show{display:block}
+    .mcq-feedback.ok{background:rgba(80,200,80,.1);color:var(--ok);border:1px solid rgba(80,200,80,.25)}
+    .mcq-feedback.err{background:rgba(224,80,80,.1);color:var(--danger);border:1px solid rgba(224,80,80,.25)}
+    .journal-list{display:flex;flex-direction:column;gap:16px}
+    .journal-item{background:var(--surface);border:1px solid rgba(2,173,165,.12);border-radius:var(--radius);padding:18px}
+    .journal-q{font-size:.9rem;font-weight:700;color:#fff;margin-bottom:10px}
+    .journal-q span{color:var(--teal);margin-right:6px}
+    .score-display{background:var(--surface);border:2px solid var(--teal);border-radius:var(--radius);padding:22px;text-align:center;margin-top:20px}
+    .score-num{font-size:3rem;font-weight:900;color:var(--teal);line-height:1}
+    .score-label{color:var(--text-dim);font-size:.9rem;margin-top:6px}
+    .submit-section{background:var(--surface);border:1px solid rgba(2,173,165,.2);border-radius:var(--radius);padding:26px;text-align:center}
+    .submit-title{font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:8px}
+    .submit-sub{color:var(--text-dim);font-size:.88rem;margin-bottom:22px}
+    .btn{background:var(--teal);color:#fff;border:none;padding:11px 22px;border-radius:8px;font-size:.93rem;font-weight:800;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+    .btn:hover{background:var(--teal-dim);transform:translateY(-1px)}
+    .btn-out{background:transparent;border:2px solid var(--teal);color:var(--teal)}
+    .btn-out:hover{background:rgba(2,173,165,.1)}
+    .btn-lg{padding:15px 36px;font-size:1.05rem;border-radius:10px}
+    .check-btn{padding:8px 16px;font-size:.8rem;background:rgba(2,173,165,.15);border:1px solid rgba(2,173,165,.3);color:var(--teal);border-radius:6px;cursor:pointer;margin-top:12px;font-weight:700}
+    .check-btn:hover{background:rgba(2,173,165,.25)}
+    .cta-section{text-align:center;padding:52px 28px;background:linear-gradient(0deg,rgba(2,173,165,.06),transparent)}
+    .cta-title{font-size:1.35rem;font-weight:800;color:#fff;margin-bottom:8px}
+    .cta-sub{color:var(--text-dim);margin-bottom:24px}
+    .stepnav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:#041e1c;border-top:1px solid rgba(2,173,165,.15);max-width:920px;margin:0 auto}
+    .stepnav a{display:flex;align-items:center;gap:7px;color:var(--teal);text-decoration:none;font-weight:700;font-size:.88rem;padding:8px 15px;border:1px solid rgba(2,173,165,.28);border-radius:8px;transition:all .2s}
+    .stepnav a:hover{background:rgba(2,173,165,.1)}
+    .step-ghost{color:var(--text-dim);font-size:.83rem}
+    /* Race clock */
+    .race-clock{background:var(--surface);border:2px solid var(--teal);border-radius:var(--radius);padding:18px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+    .clock-time{font-size:2.2rem;font-weight:900;color:var(--teal);font-family:monospace;min-width:80px}
+    .clock-time.warning{color:var(--accent);animation:flash .8s infinite}
+    .clock-time.danger{color:var(--danger);animation:flash .4s infinite}
+    @keyframes flash{0%,100%{opacity:1}50%{opacity:.4}}
+    .clock-label{font-size:.8rem;color:var(--text-dim);font-weight:700}
+    footer{background:#031a18;border-top:1px solid rgba(2,173,165,.1);padding:28px;text-align:center;color:var(--text-dim);font-size:.8rem}
+    .foot-brand{font-weight:800;color:var(--teal);margin-bottom:6px}
+    @media(max-width:640px){.fib-inputs{flex-direction:column}.blank{width:100%}}
+  </style>
+</head>
+<body>
+
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+
+<nav class="sitenav">
+  <span class="brand">Radio Foxhunting</span>
+  <div class="steps-dropdown">
+    <button class="steps-btn" id="stepsToggle"><span data-bm="Langkah ▾">Steps ▾</span></button>
+    <div class="steps-menu" id="stepsMenu">
+      <a href="module-0.html">0 · Orientation</a>
+      <a href="module-1.html">1 · Morse Code</a>
+      <a href="module-2.html">2 · Radio Basics</a>
+      <a href="module-3.html">3 · Yagi Antenna</a>
+      <a href="module-4.html" class="current">4 · Field Guide</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <p class="eyebrow" data-bm="MAKMAL STEM UMPSA · Modul 4 daripada 5 · Aktiviti">UMPSA STEM LAB · Module 4 of 5 · Activities</p>
+  <h1 data-bm="Aktiviti Strategi Lapangan">Field Strategy Activities</h1>
+  <p class="subtitle"><span data-bm="Gunakan strategi pemburuan tiga fasa, nyahpepijat kesilapan lapangan, lengkapkan log rubah, dan refleksi pengalaman pemburuan anda.">Apply the three-phase hunt strategy, debug field mistakes, complete the fox log code, and reflect on your hunt experience.</span></p>
+  <div class="pills">
+    <span class="pill">T1 Field Blanks</span>
+    <span class="pill">T2 Hunt Debug</span>
+    <span class="pill">T3 Log Code</span>
+    <span class="pill">T4 Race Clock</span>
+  </div>
+</section>
+
+<div class="progress-wrap">
+  <div class="progress-label"><span>Activity Progress</span><span id="actProg">0 / 7 blanks completed</span></div>
+  <div class="progress-track"><div class="progress-fill" id="actBar" style="width:0%"></div></div>
+</div>
+
+<main class="content">
+
+  <!-- Pre-calibration -->
+  <section class="act-section" id="precalib">
+    <div class="act-header">
+      <span class="tier-badge t1">Pre-Calibration</span>
+      <span class="act-title" data-bm="Sebelum Bermula">Before We Start</span>
+    </div>
+    <div class="calib-card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <div class="calib-q">How confident are you about field hunting strategy? <small style="color:var(--text-dim)">(1–5)</small></div>
+          <div class="range-wrap">
+            <span style="font-size:.75rem;color:var(--text-dim)">1</span>
+            <input type="range" min="1" max="5" value="2" id="preKnow" oninput="document.getElementById('preKnowVal').textContent=this.value">
+            <span style="font-size:.75rem;color:var(--text-dim)">5</span>
+            <span class="range-val" id="preKnowVal">2</span>
+          </div>
+          <div class="range-labels"><span>No idea</span><span>Ready to hunt!</span></div>
+        </div>
+        <div>
+          <div class="calib-q">Predict: how many foxes will your team find in today's hunt?</div>
+          <div class="range-wrap">
+            <span style="font-size:.75rem;color:var(--text-dim)">0</span>
+            <input type="range" min="0" max="5" value="2" id="prePredict" oninput="document.getElementById('prePredVal').textContent=this.value">
+            <span style="font-size:.75rem;color:var(--text-dim)">5</span>
+            <span class="range-val" id="prePredVal">2</span>
+          </div>
+          <div class="range-labels"><span>0 foxes</span><span>All 5!</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- T1: Fill in Blanks -->
+  <section class="act-section" id="t1">
+    <div class="act-header">
+      <span class="tier-badge t1">Tier 1</span>
+      <span class="act-title" data-bm="Isi Tempat Kosong">Fill in the Blanks</span>
+    </div>
+    <p class="act-desc" data-bm="Lengkapkan setiap pernyataan tentang teknik pemburuan lapangan. Tekan &quot;Semak Jawapan&quot; apabila selesai.">Complete each statement about field hunting technique. Press "Check Answers" when done.</p>
+    <div class="fib-list">
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q1.</strong> Phase 1 of foxhunting uses the <em>blank</em> antenna to get a rough directional bearing from a long distance.</div>
+        <div class="fib-inputs"><input class="blank" id="b1" type="text" placeholder="antenna name…" data-ans="yagi"></div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q2.</strong> Body shielding uses the absorption of your <em>blank</em> to block the signal and find the null direction.</div>
+        <div class="fib-inputs"><input class="blank" id="b2" type="text" placeholder="what blocks signal…" data-ans="body"></div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q3.</strong> When the signal is very strong in Phase 3, switch to a <em>blank</em> antenna.</div>
+        <div class="fib-inputs"><input class="blank" id="b3" type="text" placeholder="small antenna…" data-ans="rubber duck"></div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q4.</strong> The S-meter measures signal <em>blank</em> — it tells you how strong the received transmission is.</div>
+        <div class="fib-inputs"><input class="blank" id="b4" type="text" placeholder="what it measures…" data-ans="strength"></div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q5.</strong> You should log the time and <em>blank</em> for each fox found on your fox log sheet.</div>
+        <div class="fib-inputs"><input class="blank" id="b5" type="text" placeholder="what else to log…" data-ans="location"></div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q6.</strong> The <em>blank</em> technique involves rotating 360° to find the weakest signal direction, then turning 180° to face the fox.</div>
+        <div class="fib-inputs"><input class="blank" id="b6" type="text" placeholder="technique name…" data-ans="body shielding"></div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q7.</strong> The ARDF competition time limit is <em>blank</em> minutes — after which a late penalty applies.</div>
+        <div class="fib-inputs"><input class="blank" id="b7" type="text" placeholder="minutes…" data-ans="80"></div>
+      </div>
+
+    </div>
+    <button class="check-btn" onclick="checkFIB()" data-bm="Semak Jawapan →">Check Answers →</button>
+    <div id="fibResult" style="margin-top:12px;font-size:.87rem;color:var(--text-dim)"></div>
+  </section>
+
+  <!-- T2: Debug -->
+  <section class="act-section" id="t2">
+    <div class="act-header">
+      <span class="tier-badge t2">Tier 2</span>
+      <span class="act-title" data-bm="Nyahpepijat Senario Pemburuan">Debug the Hunt Scenario</span>
+    </div>
+    <p class="act-desc" data-bm="Baca setiap senario lapangan. Kenal pasti ralat strategi dan tulis pendekatan yang betul.">Read each field scenario. Identify the strategy error and write a correct approach.</p>
+
+    <div class="debug-card">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:8px">Debug #1 — Phase Transition Failure</div>
+      <div class="debug-scenario"><strong>Scenario:</strong> A hunter keeps pointing their Yagi toward the strongest signal direction. After 20 minutes they've walked in a large arc and haven't found any fox. They're confused about why. What phase mistake are they making? What should they be doing differently at close range?</div>
+      <textarea class="ta" id="d1" placeholder="Identify the phase error and explain the correct phase transition strategy…"></textarea>
+    </div>
+
+    <div class="debug-card">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:8px">Debug #2 — Signal Disappears</div>
+      <div class="debug-scenario"><strong>Scenario:</strong> A team is tracking a fox when the signal suddenly disappears completely. They assume they are completely lost and sit down to wait. List at least 3 possible technical or procedural reasons why the signal disappeared, and a fix for each.</div>
+      <textarea class="ta" id="d2" placeholder="List 3 reasons (e.g. beacon cycle timing, antenna orientation, terrain) with a fix for each…"></textarea>
+    </div>
+
+    <div class="debug-card">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:8px">Debug #3 — Scoring Calculation</div>
+      <div class="debug-scenario">
+        <strong>Scenario:</strong> Hunt starts at 09:00. Time limit 80 minutes = deadline 10:20.<br>
+        The team logged their foxes as follows:<br>
+        • MO5 found at 10:00 (60 min elapsed)<br>
+        • MOE found at 10:10 (70 min elapsed)<br>
+        • Checked in at Finish at 10:20 (80 min elapsed — exactly on time)<br>
+        Using the formula <strong>score = 80 − elapsed_minutes per fox</strong>, calculate their total score. Show your working.
+      </div>
+      <textarea class="ta" id="d3" placeholder="Show each fox's score calculation, then sum for total…"></textarea>
+    </div>
+  </section>
+
+  <!-- T3: Phase Decision Trainer -->
+  <section class="act-section" id="t3">
+    <div class="act-header">
+      <span class="tier-badge t3">Tier 3</span>
+      <span class="act-title" data-bm="Latihan Pemilihan Fasa">Phase Decision Trainer</span>
+    </div>
+    <p class="act-desc" data-bm="Dalam ARDF anda menukar teknik bergantung kepada kekuatan isyarat dan jarak. Baca setiap senario dan pilih fasa pemburuan yang betul.">In ARDF you switch technique depending on signal strength and distance. Read each scenario and choose the correct hunt phase.</p>
+
+    <div class="info-box" style="margin-bottom:1rem;font-size:.85rem;">
+      <strong data-bm="Rujukan pantas:">Quick reference:</strong>&nbsp;
+      Phase 1 = Yagi + compass bearing (long range) &nbsp;·&nbsp;
+      Phase 2 = Body shielding (medium, S9++) &nbsp;·&nbsp;
+      Phase 3 = Rubber duck, very close (&lt;30 m)
+    </div>
+
+    <div id="pdt-deck">
+      <!-- Scenario cards injected by JS -->
+    </div>
+    <div id="pdt-progress" style="margin:.6rem 0;font-size:.85rem;color:var(--text-dim)">Question 1 of 5</div>
+    <div id="pdt-feedback" class="feedback-bar" style="display:none;margin-bottom:.6rem;"></div>
+    <div id="pdt-result" class="info-box" style="display:none;"></div>
+  </section>
+
+  <!-- T4: Hunt Debrief -->
+  <section class="act-section" id="t4">
+    <div class="act-header">
+      <span class="tier-badge t4">Tier 4</span>
+      <span class="act-title" data-bm="Penilaian Semula &amp; Analisis Markah">Hunt Debrief &amp; Score Analyst</span>
+    </div>
+    <p class="act-desc" data-bm="Pasukan anda baru sahaja menamatkan pemburuan ARDF 80 minit. Kaji jadual keputusan dan jawab soalan analisis.">Your team just finished a 80-minute ARDF hunt. Study the results table and answer the analysis questions.</p>
+
+    <!-- Mock results table -->
+    <div style="overflow-x:auto;margin-bottom:1rem;">
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;">
+        <thead>
+          <tr style="background:#0d2320;color:var(--teal);">
+            <th style="padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--border);">Fox #</th>
+            <th style="padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--border);">Found at</th>
+            <th style="padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--border);">Points</th>
+            <th style="padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--border);">Penalty</th>
+            <th style="padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--border);">Net</th>
+          </tr>
+        </thead>
+        <tbody style="color:var(--text);">
+          <tr style="border-bottom:1px solid rgba(2,173,165,.1);"><td style="padding:.45rem .7rem;">Fox 1 🦊</td><td>14 min</td><td>100</td><td>0</td><td style="color:#4ade80;font-weight:700;">100</td></tr>
+          <tr style="border-bottom:1px solid rgba(2,173,165,.1);"><td style="padding:.45rem .7rem;">Fox 2 🦊</td><td>31 min</td><td>100</td><td>0</td><td style="color:#4ade80;font-weight:700;">100</td></tr>
+          <tr style="border-bottom:1px solid rgba(2,173,165,.1);"><td style="padding:.45rem .7rem;">Fox 3 🦊</td><td>55 min</td><td>100</td><td>0</td><td style="color:#4ade80;font-weight:700;">100</td></tr>
+          <tr style="border-bottom:1px solid rgba(2,173,165,.1);"><td style="padding:.45rem .7rem;">Fox 4 🦊</td><td>72 min</td><td>100</td><td>0</td><td style="color:#4ade80;font-weight:700;">100</td></tr>
+          <tr style="border-bottom:1px solid rgba(2,173,165,.1);"><td style="padding:.45rem .7rem;">Fox 5 🦊</td><td>83 min</td><td>100</td><td style="color:#f87171;">−3</td><td style="color:#f59e0b;font-weight:700;">97</td></tr>
+          <tr style="background:#0d2320;font-weight:700;"><td style="padding:.5rem .7rem;" colspan="4">Total</td><td style="color:var(--teal);font-size:1.05rem;">497</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.78rem;color:var(--text-dim);margin-bottom:1rem;">Penalty = −1 point per minute over 80 min (Fox 5 found at 83 min → −3)</p>
+
+    <div style="display:grid;gap:.85rem;">
+      <div class="info-box" style="padding:.8rem 1rem;">
+        <p style="font-weight:600;margin-bottom:.5rem;"><span data-bm="1. Berapa banyak rubah yang dijumpai dalam had masa (≤80 min)?">1. How many foxes were found within the time limit (≤80 min)?</span></p>
+        <label style="display:block;margin:.2rem 0;"><input type="radio" name="dq1" value="3"> 3 foxes</label>
+        <label style="display:block;margin:.2rem 0;"><input type="radio" name="dq1" value="4"> 4 foxes</label>
+        <label style="display:block;margin:.2rem 0;"><input type="radio" name="dq1" value="5"> 5 foxes (all found, one late)</label>
+      </div>
+      <div class="info-box" style="padding:.8rem 1rem;">
+        <p style="font-weight:600;margin-bottom:.5rem;"><span data-bm="2. Rubah 5 menyebabkan penalti masa. Apa yang boleh dilakukan pasukan untuk mengelakkannya?">2. Fox 5 caused a time penalty. What could the team have done to avoid it?</span></p>
+        <label style="display:block;margin:.2rem 0;"><input type="radio" name="dq2" value="a"> Ignored Fox 5 — hunting fewer foxes is faster</label>
+        <label style="display:block;margin:.2rem 0;"><input type="radio" name="dq2" value="b"> Found Fox 5 earlier by planning the route to visit it before Fox 3 or 4</label>
+        <label style="display:block;margin:.2rem 0;"><input type="radio" name="dq2" value="c"> Brought more batteries</label>
+      </div>
+      <div class="info-box" style="padding:.8rem 1rem;">
+        <p style="font-weight:600;margin-bottom:.5rem;"><span data-bm="3. Jika pasukan hanya menemui 3 rubah (Rubah 1, 2, 3) tanpa penalti, berapakah markahnya?">3. If the team found only 3 foxes (Fox 1, 2, 3) with no penalties, what would the score be?</span></p>
+        <label style="display:block;margin:.2rem 0;"><input type="radio" name="dq3" value="200"> 200</label>
+        <label style="display:block;margin:.2rem 0;"><input type="radio" name="dq3" value="300"> 300</label>
+        <label style="display:block;margin:.2rem 0;"><input type="radio" name="dq3" value="500"> 500</label>
+      </div>
+      <div>
+        <label style="display:block;font-weight:600;margin-bottom:.4rem;"><span data-bm="4. Tulis penilaian semula pasukan anda.">4. Write your team debrief.</span> What went well, and what would you do differently next time? <span style="color:var(--text-dim);font-weight:400;">(min 15 words)</span></label>
+        <textarea id="debriefQ4" rows="3" style="width:100%;max-width:100%;background:#0d2320;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.6rem .8rem;font-size:.9rem;resize:vertical;" placeholder="We found all 5 foxes but Fox 5 cost us points because…"></textarea>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-top:1rem;">
+      <button class="btn btn-teal" onclick="checkDebrief()" data-bm="Hantar Penilaian ✓">Submit Debrief ✓</button>
+      <button class="btn btn-outline" onclick="resetDebrief()" data-bm="Tetapkan Semula">Reset</button>
+    </div>
+    <div id="debriefFeedback" class="feedback-bar" style="display:none;"></div>
+    <div id="debriefResult" class="info-box" style="display:none;" aria-live="polite"></div>
+  </section>
+
+    <!-- MCQ -->
+  <section class="act-section" id="mcq">
+    <div class="act-header">
+      <span class="tier-badge t1">Concept Check</span>
+      <span class="act-title" data-bm="5 Soalan Ringkas">5 Quick Questions</span>
+    </div>
+    <p class="act-desc" data-bm="Pilih jawapan terbaik. Maklum balas segera diberikan.">Select the best answer. Instant feedback provided.</p>
+    <div class="mcq-list">
+
+      <div class="mcq-item">
+        <div class="mcq-q"><span>1</span>Phase 1 of a fox hunt uses which equipment combination?</div>
+        <div class="options" id="mc1">
+          <label class="opt"><input type="radio" name="mc1" value="a"> Rubber duck antenna and GPS</label>
+          <label class="opt"><input type="radio" name="mc1" value="b"> Yagi antenna and compass</label>
+          <label class="opt"><input type="radio" name="mc1" value="c"> CB radio and topographic map</label>
+          <label class="opt"><input type="radio" name="mc1" value="d"> Body shielding and bearing chart</label>
+        </div>
+        <div class="mcq-feedback" id="fb1"></div>
+      </div>
+
+      <div class="mcq-item">
+        <div class="mcq-q"><span>2</span>Why does body shielding work in Phase 3?</div>
+        <div class="options" id="mc2">
+          <label class="opt"><input type="radio" name="mc2" value="a"> It amplifies the signal from the fox</label>
+          <label class="opt"><input type="radio" name="mc2" value="b"> The human body absorbs and blocks VHF radio signals</label>
+          <label class="opt"><input type="radio" name="mc2" value="c"> It converts FM signals to AM for easier detection</label>
+          <label class="opt"><input type="radio" name="mc2" value="d"> Standing still reduces multipath interference automatically</label>
+        </div>
+        <div class="mcq-feedback" id="fb2"></div>
+      </div>
+
+      <div class="mcq-item">
+        <div class="mcq-q"><span>3</span>When should you switch from the Yagi antenna to a rubber duck?</div>
+        <div class="options" id="mc3">
+          <label class="opt"><input type="radio" name="mc3" value="a"> As soon as you leave the Start area</label>
+          <label class="opt"><input type="radio" name="mc3" value="b"> Only at the very end of the hunt</label>
+          <label class="opt"><input type="radio" name="mc3" value="c"> When you are very close to the fox and signal is overwhelming (S9+)</label>
+          <label class="opt"><input type="radio" name="mc3" value="d"> When the battery on the Yagi runs flat</label>
+        </div>
+        <div class="mcq-feedback" id="fb3"></div>
+      </div>
+
+      <div class="mcq-item">
+        <div class="mcq-q"><span>4</span>What does an S-meter reading of S9++ indicate?</div>
+        <div class="options" id="mc4">
+          <label class="opt"><input type="radio" name="mc4" value="a"> Signal is very weak — fox is far away</label>
+          <label class="opt"><input type="radio" name="mc4" value="b"> Signal is moderate — Yagi is still needed</label>
+          <label class="opt"><input type="radio" name="mc4" value="c"> Signal is extremely strong — fox is very close (Phase 3)</label>
+          <label class="opt"><input type="radio" name="mc4" value="d"> Radio battery is low</label>
+        </div>
+        <div class="mcq-feedback" id="fb4"></div>
+      </div>
+
+      <div class="mcq-item">
+        <div class="mcq-q"><span>5</span>According to field strategy, what should you do every 5 minutes during the hunt?</div>
+        <div class="options" id="mc5">
+          <label class="opt"><input type="radio" name="mc5" value="a"> Rest and check your phone for messages</label>
+          <label class="opt"><input type="radio" name="mc5" value="b"> Mark your current position on the map</label>
+          <label class="opt"><input type="radio" name="mc5" value="c"> Return to Start/Finish to check the scoreboard</label>
+          <label class="opt"><input type="radio" name="mc5" value="d"> Change to a different frequency channel</label>
+        </div>
+        <div class="mcq-feedback" id="fb5"></div>
+      </div>
+
+    </div>
+    <div class="score-display" id="mcqScore" style="display:none">
+      <div class="score-num" id="mcqScoreNum">0</div>
+      <div class="score-label">out of 5 correct</div>
+    </div>
+  </section>
+
+  <!-- Journal -->
+  <section class="act-section" id="journal">
+    <div class="act-header">
+      <span class="tier-badge" style="background:rgba(128,200,128,.18);color:#80d080">Journal</span>
+      <span class="act-title" data-bm="Panduan Refleksi">Reflection Prompts</span>
+    </div>
+    <p class="act-desc" data-bm="Tulis sekurang-kurangnya 2–3 ayat untuk setiap satu. Ini mencerminkan pengalaman pemburuan lapangan sebenar anda.">Write at least 2–3 sentences for each. These reflect on your actual field hunt experience.</p>
+    <div class="journal-list">
+      <div class="journal-item">
+        <div class="journal-q"><span>J1</span>Describe your fox hunt experience — what went well, what was unexpectedly hard?</div>
+        <textarea class="ta" id="j1" placeholder="Be specific — talk about the terrain, the signal, your teamwork…"></textarea>
+      </div>
+      <div class="journal-item">
+        <div class="journal-q"><span>J2</span>How did your strategy change between Phase 1, 2 and 3? Was there a moment where you clearly transitioned?</div>
+        <textarea class="ta" id="j2" placeholder="Describe a specific moment where you switched techniques…"></textarea>
+      </div>
+      <div class="journal-item">
+        <div class="journal-q"><span>J3</span>What would you do differently if you hunted again tomorrow? Name at least two specific changes.</div>
+        <textarea class="ta" id="j3" placeholder="Think about equipment choice, route planning, time management…"></textarea>
+      </div>
+      <div class="journal-item">
+        <div class="journal-q"><span>J4</span>How is the systematic fox hunt approach similar to debugging a program? What are the parallels?</div>
+        <textarea class="ta" id="j4" placeholder="Think about isolating variables, testing hypotheses, narrowing the search…"></textarea>
+      </div>
+      <div class="journal-item">
+        <div class="journal-q"><span>J5</span>What did this workshop teach you that was completely new — something you had never thought about before?</div>
+        <textarea class="ta" id="j5" placeholder="This could be about radio, navigation, teamwork, or how you think about problems…"></textarea>
+      </div>
+    </div>
+    <button class="check-btn" onclick="saveJournal()" data-bm="💾 Simpan Jurnal">💾 Save Journal</button>
+    <span id="journalSaved" style="margin-left:12px;font-size:.83rem;color:var(--ok);display:none">Saved ✓</span>
+  </section>
+
+  <!-- Post-calibration -->
+  <section class="act-section" id="postcalib">
+    <div class="act-header">
+      <span class="tier-badge t1">Post-Calibration</span>
+      <span class="act-title" data-bm="Selepas Aktiviti Ini">After These Activities</span>
+    </div>
+    <div class="calib-card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <div class="calib-q">How well do you now understand the 3-phase hunt strategy? <small style="color:var(--text-dim)">(1–5)</small></div>
+          <div class="range-wrap">
+            <span style="font-size:.75rem;color:var(--text-dim)">1</span>
+            <input type="range" min="1" max="5" value="3" id="postKnow" oninput="document.getElementById('postKnowVal').textContent=this.value">
+            <span style="font-size:.75rem;color:var(--text-dim)">5</span>
+            <span class="range-val" id="postKnowVal">3</span>
+          </div>
+        </div>
+        <div>
+          <div class="calib-q">How useful was this workshop for your understanding of radio and navigation?</div>
+          <div class="range-wrap">
+            <span style="font-size:.75rem;color:var(--text-dim)">1</span>
+            <input type="range" min="1" max="5" value="4" id="postUsefulness" oninput="document.getElementById('postUseVal').textContent=this.value">
+            <span style="font-size:.75rem;color:var(--text-dim)">5</span>
+            <span class="range-val" id="postUseVal">4</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Submit -->
+  <section class="act-section" id="submit">
+    <div class="submit-section">
+      <div class="submit-title">🎉 Workshop Complete!</div>
+      <div class="submit-sub">Submit your Module 4 responses to your facilitator via Google Sheets.</div>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-lg" onclick="submitToGS();if(window.rfMarkActivity)rfMarkActivity(4)" data-bm="📤 Hantar ke Google Sheets">📤 Submit to Google Sheets</button>
+        <button class="btn btn-out btn-lg" onclick="downloadLocal()" data-bm="📥 Muat Turun Jawapan Saya">📥 Download My Answers</button>
+      </div>
+      <div id="submitMsg" style="margin-top:14px;font-size:.87rem;color:var(--text-dim)"></div>
+    </div>
+  </section>
+
+</main>
+
+<div class="cta-section">
+  <div class="cta-title">Workshop Complete!</div>
+  <p class="cta-sub">You have finished all 5 modules of the Radio Foxhunting workshop</p>
+  <a href="module-0.html" class="btn btn-lg">← Back to Module 0</a>
+</div>
+
+<nav class="stepnav">
+  <a href="module-4.html">← Back to Field Guide</a>
+  <span class="step-ghost">(Final Module — Workshop Complete!)</span>
+</nav>
+
+<footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a> &middot;
+      <a href="module-0.html">Module 0</a> &middot;
+      <a href="module-1.html">Module 1</a> &middot;
+      <a href="module-2.html">Module 2</a> &middot;
+      <a href="module-3.html">Module 3</a> &middot;
+      <a href="module-4.html">Module 4</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative
+      <a href="https://ee.ump.edu.my/hazlina/" target="_blank" aria-label="Personal website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" aria-label="Email">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Chev bar ──
+document.querySelectorAll('.chev').forEach(function(c){
+  c.addEventListener('click',function(){document.querySelectorAll('.chev').forEach(function(x){x.classList.remove('active');});c.classList.add('active');});
+});
+document.getElementById('stepsToggle').addEventListener('click',function(e){e.stopPropagation();document.getElementById('stepsMenu').classList.toggle('open');});
+document.addEventListener('click',function(){document.getElementById('stepsMenu').classList.remove('open');});
+
+// ── Fill-in-blank ──
+var fibAnswers={b1:'yagi',b2:'body',b3:'rubber duck',b4:'strength',b5:'location',b6:'body shielding',b7:'80'};
+var fibAlts={b3:['rubber','small'],b5:['bearing','grid','coordinate'],b6:['body shield']};
+function checkFIB(){
+  var correct=0,total=0;
+  Object.keys(fibAnswers).forEach(function(id){
+    var el=document.getElementById(id);if(!el)return;total++;
+    var val=el.value.trim().toLowerCase();
+    var ans=fibAnswers[id];var alts=(fibAlts[id]||[]);
+    var ok=val===ans||val.includes(ans)||(alts.some(function(a){return val.includes(a);}));
+    el.classList.toggle('correct',ok);el.classList.toggle('wrong',!ok);
+    if(ok)correct++;
+  });
+  var pct=Math.round(correct/total*100);
+  document.getElementById('actBar').style.width=pct+'%';
+  document.getElementById('actProg').textContent=correct+' / '+total+' blanks correct';
+  document.getElementById('fibResult').innerHTML=
+    '<span style="color:'+(correct===total?'var(--ok)':'var(--accent)')+'">'+
+    correct+'/'+total+' correct ('+pct+'%)</span>'+(correct<total?' — review highlighted blanks.':' — All correct! ✓');
+}
+
+// ── MCQ ──
+var mcqAns={mc1:'b',mc2:'b',mc3:'c',mc4:'c',mc5:'b'};
+var mcqFeedback={
+  mc1:'Phase 1 uses the directional Yagi antenna paired with a baseplate compass to take precise magnetic bearings at long range.',
+  mc2:'The human body (mostly water) significantly absorbs VHF signals at 144 MHz, creating a clear null when the fox is directly behind you.',
+  mc3:'Switch to the rubber duck in Phase 3 when you\'re very close (under ~30m) and the signal overloads the receiver — S9+ readings.',
+  mc4:'S9++ means the signal is extremely strong, indicating the fox transmitter is very close. Immediately switch to body shielding and rubber duck.',
+  mc5:'Marking your map position every 5 minutes ensures you can backtrack accurately and creates a record of your search path.'
+};
+document.querySelectorAll('input[type=radio]').forEach(function(radio){
+  radio.addEventListener('change',function(){
+    var name=this.name;var correct=mcqAns[name];
+    var fb=document.getElementById('fb'+name.replace('mc',''));
+    document.querySelectorAll('#'+name+' .opt').forEach(function(opt){
+      var r=opt.querySelector('input');
+      if(r.value===correct)opt.classList.add('correct');
+      else if(r.checked)opt.classList.add('wrong');
+    });
+    fb.className='mcq-feedback show '+(this.value===correct?'ok':'err');
+    fb.innerHTML=(this.value===correct?'✓ Correct! ':'✗ Not quite. ')+mcqFeedback[name];
+    if(Object.keys(mcqAns).every(function(k){return document.querySelector('input[name='+k+']:checked');})){
+      var sc=document.getElementById('mcqScore');sc.style.display='block';
+      document.getElementById('mcqScoreNum').textContent=Object.keys(mcqAns).filter(function(k){
+        var r=document.querySelector('input[name='+k+']:checked');return r&&r.value===mcqAns[k];
+      }).length;
+    }
+  });
+});
+
+// ── Journal ──
+function saveJournal(){
+  var data={};['j1','j2','j3','j4','j5'].forEach(function(id){data[id]=(document.getElementById(id)||{}).value||'';});
+  try{localStorage.setItem('fox_journal_4',JSON.stringify(data));}catch(e){}
+  document.getElementById('journalSaved').style.display='inline';
+  setTimeout(function(){document.getElementById('journalSaved').style.display='none';},2500);
+}
+try{
+  var jd=JSON.parse(localStorage.getItem('fox_journal_4')||'null');
+  if(jd){['j1','j2','j3','j4','j5'].forEach(function(id){var el=document.getElementById(id);if(el&&jd[id])el.value=jd[id];});}
+}catch(e){}
+
+// ── Phase Decision Trainer (Tier 3) ──
+var PDT = {
+  current: 0, score: 0,
+  scenarios: [
+    { signal:'S3 — very faint', dist:'~2 km', env:'Open field, clear sky', correct:'p1',
+      options:[{v:'p1',l:'Phase 1 — Yagi + compass bearing'},{v:'p2',l:'Phase 2 — Body shielding'},{v:'p3',l:'Phase 3 — Rubber duck'}],
+      feedback:'Correct! At 2 km with a faint signal you need maximum directional gain. Use the Yagi and take a compass bearing to determine the fox direction.' },
+    { signal:'S9+ — strong, receiver overloading', dist:'~80 m', env:'Light forest, flat terrain', correct:'p2',
+      options:[{v:'p1',l:'Phase 1 — Yagi + compass bearing'},{v:'p2',l:'Phase 2 — Body shielding'},{v:'p3',l:'Phase 3 — Rubber duck'}],
+      feedback:'Correct! S9+ means the fox is within ~100 m and the Yagi is saturated. Shield the antenna with your body and rotate to find the null — the direction of minimum signal.' },
+    { signal:'S9++ — nearly deafening', dist:'~15 m', env:'Dense bushes, confined space', correct:'p3',
+      options:[{v:'p1',l:'Phase 1 — Yagi + compass bearing'},{v:'p2',l:'Phase 2 — Body shielding'},{v:'p3',l:'Phase 3 — Rubber duck'}],
+      feedback:'Correct! Under 30 m with an overloaded signal it\'s time to swap to the rubber duck (short omni antenna) and attenuator. Walk toward the strongest reading.' },
+    { signal:'S5 — moderate, steady', dist:'~500 m', env:'Suburban streets, buildings nearby', correct:'p1',
+      options:[{v:'p1',l:'Phase 1 — Yagi + compass bearing'},{v:'p2',l:'Phase 2 — Body shielding'},{v:'p3',l:'Phase 3 — Rubber duck'}],
+      feedback:'Correct! At 500 m you are still in long-range territory. A Yagi bearing is the most reliable way to narrow the fox direction before you commit to walking.' },
+    { signal:'S9 — strong but not overloading', dist:'~150 m', env:'Park, mixed open/trees', correct:'p2',
+      options:[{v:'p1',l:'Phase 1 — Yagi + compass bearing'},{v:'p2',l:'Phase 2 — Body shielding'},{v:'p3',l:'Phase 3 — Rubber duck'}],
+      feedback:'Correct! At 150 m the signal is strong enough to saturate directional sensing — switch to body shielding. Stand in place, rotate slowly and find the null pointing toward the fox.' }
+  ]
+};
+function renderPDT(){
+  var sc = PDT.scenarios[PDT.current];
+  var deck = document.getElementById('pdt-deck');
+  if(!deck || !sc) return;
+  var opts = sc.options.map(function(o){
+    return '<label style="display:flex;align-items:flex-start;gap:.5rem;padding:.5rem .7rem;border:1px solid var(--border);border-radius:6px;cursor:pointer;margin:.3rem 0;background:#0a1a18;" class="pdt-opt">'
+      +'<input type="radio" name="pdtQ" value="'+o.v+'" style="margin-top:.15rem;"> <span>'+o.l+'</span></label>';
+  }).join('');
+  deck.innerHTML =
+    '<div class="info-box" style="padding:.9rem 1rem;">'
+    +'<p style="font-weight:700;color:var(--teal);margin-bottom:.6rem;">Scenario '+( PDT.current+1 )+' of '+PDT.scenarios.length+'</p>'
+    +'<p style="margin:.2rem 0;"><strong>Signal meter:</strong> '+sc.signal+'</p>'
+    +'<p style="margin:.2rem 0;"><strong>Estimated distance:</strong> '+sc.dist+'</p>'
+    +'<p style="margin:.2rem 0;"><strong>Environment:</strong> '+sc.env+'</p>'
+    +'</div>'
+    +'<div style="margin:.8rem 0;">'+opts+'</div>'
+    +'<button class="btn btn-teal" onclick="checkPDT()" style="margin-top:.3rem;">Check Answer ✓</button>';
+  var fb=document.getElementById('pdt-feedback'); fb.style.display='none';
+  document.getElementById('pdt-progress').textContent='Question '+(PDT.current+1)+' of '+PDT.scenarios.length+' — Score: '+PDT.score+'/'+PDT.current;
+}
+function checkPDT(){
+  var sc = PDT.scenarios[PDT.current];
+  var sel = document.querySelector('input[name=pdtQ]:checked');
+  var fb = document.getElementById('pdt-feedback');
+  if(!sel){ fb.className='feedback-bar err'; fb.style.display='block'; fb.textContent='Select an option first.'; return; }
+  var correct = (sel.value === sc.correct);
+  if(correct) PDT.score++;
+  fb.className = 'feedback-bar '+(correct?'ok':'err');
+  fb.style.display = 'block';
+  fb.textContent = (correct ? '✓ ' : '✗ Wrong. ') + sc.feedback;
+  // disable options
+  document.querySelectorAll('.pdt-opt input').forEach(function(r){ r.disabled=true; });
+  // advance button
+  var deck = document.getElementById('pdt-deck');
+  var btn = deck.querySelector('.btn');
+  if(btn){
+    btn.textContent = PDT.current < PDT.scenarios.length-1 ? 'Next →' : 'See Results';
+    btn.setAttribute('onclick','advancePDT()');
+  }
+}
+function advancePDT(){
+  PDT.current++;
+  if(PDT.current >= PDT.scenarios.length){
+    // Show result
+    document.getElementById('pdt-deck').innerHTML='';
+    document.getElementById('pdt-feedback').style.display='none';
+    var res = document.getElementById('pdt-result');
+    res.style.display='block';
+    res.innerHTML = '<strong>Phase Decision Trainer complete!</strong> Score: '+PDT.score+'/'+PDT.scenarios.length
+      +(PDT.score===PDT.scenarios.length?' 🎉 Perfect!' : PDT.score>=3?' — Good work.' : ' — Review the hunt phases guide and try again.')
+      +'<br><br>Key takeaway: Phase 1 → Yagi bearing, Phase 2 → body shielding null, Phase 3 → rubber duck close-in.';
+    document.getElementById('pdt-progress').textContent='Complete — '+PDT.score+'/'+PDT.scenarios.length+' correct';
+    if(PDT.score >= 4){ completedTasks = Math.max(completedTasks, t3TaskId); updateProgress(); }
+    return;
+  }
+  renderPDT();
+  document.getElementById('pdt-feedback').style.display='none';
+}
+var t3TaskId = 13;
+
+// ── Hunt Debrief (Tier 4) ──
+var DEB_ANS = {dq1:'5', dq2:'b', dq3:'300'};
+function countWordsM4(s){ return s.trim().split(/\s+/).filter(function(w){return w.length>0;}).length; }
+function checkDebrief(){
+  var fb=document.getElementById('debriefFeedback'), res=document.getElementById('debriefResult');
+  fb.style.display='none'; res.style.display='none';
+  var errs=[];
+  Object.keys(DEB_ANS).forEach(function(q){
+    var sel=document.querySelector('input[name='+q+']:checked');
+    if(!sel) errs.push('Answer question '+(q.slice(2)));
+    else if(sel.value!==DEB_ANS[q]) errs.push('Question '+(q.slice(2))+' is incorrect');
+  });
+  var q4=document.getElementById('debriefQ4').value;
+  if(countWordsM4(q4)<15) errs.push('Debrief needs at least 15 words ('+countWordsM4(q4)+' so far)');
+  if(errs.length){fb.className='feedback-bar err';fb.style.display='block';fb.textContent='✗ '+errs.join('; ')+'.';return;}
+  fb.className='feedback-bar ok';fb.style.display='block';fb.textContent='✓ Great analysis!';
+  res.style.display='block';
+  res.innerHTML='<strong>Hunt debrief complete!</strong> All 5 foxes were found — the team scored 497. '
+    +'The only time penalty (−3) came from Fox 5 at 83 min. Planning the route to visit distant foxes early is key to a penalty-free run.';
+  completedTasks=Math.max(completedTasks,14);updateProgress();
+  try{localStorage.setItem('fox_debrief_m4',document.getElementById('debriefQ4').value);}catch(e){}
+}
+function resetDebrief(){
+  document.querySelectorAll('input[name=dq1],input[name=dq2],input[name=dq3]').forEach(function(r){r.checked=false;});
+  document.getElementById('debriefQ4').value='';
+  var fb=document.getElementById('debriefFeedback'); if(fb)fb.style.display='none';
+  var res=document.getElementById('debriefResult'); if(res)res.style.display='none';
+}
+
+// ── Demo Race Clock (kept for reference in pre-calibration demo block if present) ──
+var demoInterval=null,demoStart=null;
+function startDemoClock(){
+  if(demoInterval)return;
+  demoStart=Date.now();
+  try{localStorage.setItem('fox_hunt_start',demoStart);}catch(e){}
+  demoInterval=setInterval(function(){
+    var elapsed=Math.floor((Date.now()-demoStart)/1000);
+    var mins=Math.floor(elapsed/60),secs=elapsed%60;
+    var timeStr=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+    var el=document.getElementById('demoClockTime');
+    var status=document.getElementById('demoClockStatus');
+    if(!el)return;
+    el.textContent=timeStr;
+    if(mins>=80){
+      el.className='clock-time danger';if(status)status.textContent='⛔ Time up!';
+      clearInterval(demoInterval);demoInterval=null;
+    } else if(mins>=70){
+      el.className='clock-time warning';if(status)status.textContent='⚠️ WARNING — '+(80-mins)+' min left!';
+    } else {
+      el.className='clock-time';if(status)status.textContent='Hunt running — '+(80-mins)+' min left';
+    }
+  },1000);
+}
+function resetDemoClock(){
+  clearInterval(demoInterval);demoInterval=null;demoStart=null;
+  var el=document.getElementById('demoClockTime'); if(el){el.textContent='00:00';el.className='clock-time';}
+  var s=document.getElementById('demoClockStatus'); if(s)s.textContent='Hunt not started';
+}
+
+// ── Init ──
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',function(){ renderPDT(); });
+} else { renderPDT(); }
+
+// ── GS Submit ──
+var GS_URL='https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+function gatherData(){
+  var profile={};try{profile=JSON.parse(localStorage.getItem('fox_profile')||'{}');}catch(e){}
+  var finds=[];try{finds=JSON.parse(localStorage.getItem('fox_finds')||'[]');}catch(e){}
+  return{
+    module:4,timestamp:new Date().toISOString(),
+    team:profile.team||'',scout:profile.name||'',school:profile.school||'',age:profile.age||'',
+    preKnow:document.getElementById('preKnow').value,prePredict:document.getElementById('prePredict').value,
+    b1:document.getElementById('b1').value,b2:document.getElementById('b2').value,
+    b3:document.getElementById('b3').value,b4:document.getElementById('b4').value,
+    b5:document.getElementById('b5').value,b6:document.getElementById('b6').value,b7:document.getElementById('b7').value,
+    d1:document.getElementById('d1').value,d2:document.getElementById('d2').value,d3:document.getElementById('d3').value,
+    pdtScore:typeof PDT!=='undefined'?PDT.score:0,debriefNote:(document.getElementById('debriefQ4')||{}).value||'',
+    mcqScore:Object.keys(mcqAns).filter(function(k){var r=document.querySelector('input[name='+k+']:checked');return r&&r.value===mcqAns[k];}).length,
+    j1:document.getElementById('j1').value,j2:document.getElementById('j2').value,
+    j3:document.getElementById('j3').value,j4:document.getElementById('j4').value,j5:document.getElementById('j5').value,
+    postKnow:document.getElementById('postKnow').value,postUsefulness:document.getElementById('postUsefulness').value,
+    foxFindsCount:finds.length,foxFindsData:JSON.stringify(finds)
+  };
+}
+function submitToGS(){
+  saveJournal();var data=gatherData();var msg=document.getElementById('submitMsg');
+  msg.textContent='Submitting…';
+  if(GS_URL.includes('YOUR_SCRIPT_ID')){
+    msg.innerHTML='⚠️ GS URL not configured. <a href="#" onclick="downloadLocal();return false;" style="color:var(--teal)">Download locally instead.</a>';return;
+  }
+  fetch(GS_URL,{method:'POST',body:JSON.stringify(data)})
+    .then(function(){msg.innerHTML='<span style="color:var(--ok)">✅ Submitted! Great work — workshop complete!</span>';})
+    .catch(function(){msg.innerHTML='<span style="color:var(--danger)">Submit failed — download instead.</span>';});
+}
+function downloadLocal(){
+  var data=gatherData();
+  var lines=['Radio Foxhunting — Module 4 Activity Submission','='.repeat(50),''];
+  Object.entries(data).forEach(function(kv){lines.push(kv[0]+': '+kv[1]);});
+  var blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='module4_submission.txt';a.click();
+}
+</script>
+<script>
+/* ── Triple-click SEE → teacher notes ── */
+(function(){
+  var box = document.getElementById('see-box');
+  if (!box) return;
+  var clicks = 0, timer;
+  box.addEventListener('click', function() {
+    clicks++;
+    clearTimeout(timer);
+    timer = setTimeout(function() { clicks = 0; }, 800);
+    if (clicks >= 3) {
+      clicks = 0;
+      window.location.href = 'teacher-4.html';
+    }
+  });
+})();
+</script>
+
+<script>
+/* ── lang.js inlined ── */
+/**
+ * lang.js  — Radio Foxhunting LMS bilingual engine (EN / BM)
+ * Injects a language toggle into .sitenav, applies data-bm attributes.
+ * Sets window.rfLang = 'en' | 'bm' for activity scripts.
+ */
+(function () {
+  'use strict';
+  var lang = 'en';
+  try { lang = localStorage.getItem('rf_lang') || 'en'; } catch (e) {}
+  window.rfLang = lang;
+
+  function applyLang(l) {
+    window.rfLang = l;
+    document.querySelectorAll('[data-bm]').forEach(function (el) {
+      if (!el.hasAttribute('data-en')) el.setAttribute('data-en', el.innerHTML);
+      el.innerHTML = (l === 'bm') ? el.getAttribute('data-bm') : el.getAttribute('data-en');
+    });
+    document.querySelectorAll('[data-bm-ph]').forEach(function (el) {
+      if (!el.hasAttribute('data-en-ph')) el.setAttribute('data-en-ph', el.placeholder);
+      el.placeholder = (l === 'bm') ? el.getAttribute('data-bm-ph') : el.getAttribute('data-en-ph');
+    });
+    var btn = document.getElementById('rf-lang-btn');
+    if (btn) btn.textContent = (l === 'bm') ? 'EN' : 'BM';
+    document.documentElement.lang = (l === 'bm') ? 'ms' : 'en';
+  }
+
+  function injectToggle() {
+    var nav = document.querySelector('.sitenav') || document.querySelector('nav');
+    if (!nav || document.getElementById('rf-lang-btn')) return;
+    var btn = document.createElement('button');
+    btn.id = 'rf-lang-btn';
+    btn.textContent = (lang === 'bm') ? 'EN' : 'BM';
+    btn.title = 'Toggle language / Tukar bahasa';
+    btn.style.cssText = 'background:rgba(2,173,165,.15);border:1px solid var(--teal);color:var(--teal);border-radius:6px;padding:.28rem .72rem;font-size:.78rem;font-weight:800;cursor:pointer;letter-spacing:.06em;margin-left:auto;flex-shrink:0;transition:background .15s;';
+    btn.addEventListener('click', function () {
+      lang = (lang === 'en') ? 'bm' : 'en';
+      try { localStorage.setItem('rf_lang', lang); } catch (e) {}
+      applyLang(lang);
+    });
+    nav.style.display = 'flex';
+    nav.style.alignItems = 'center';
+    nav.appendChild(btn);
+  }
+
+  function init() { injectToggle(); applyLang(lang); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else { init(); }
+})();
+</script>
+<script>
+/* ── tracker.js inlined ── */
+/**
+ * Radio Foxhunting LMS — Analytics Tracker v2
+ * • Sends events to Google Sheets via Apps Script
+ * • Tracks geolocation (IP-based), device type, completion milestones
+ * • Manages completion state in localStorage
+ */
+(function () {
+  'use strict';
+
+  // ── Config ────────────────────────────────────────────────────────────────
+  var SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+  // ── Page / module detection ───────────────────────────────────────────────
+  function getModule() {
+    var p = window.location.pathname.split('/').pop() || 'index.html';
+    if (p === 'index.html' || p === '') return 'Home';
+    var m = p.match(/module-(\d+)\.html/);   if (m) return 'M' + m[1];
+    var a = p.match(/module-activity-(\d+)/); if (a) return 'Activity-M' + a[1];
+    var t = p.match(/teacher-(\d+)/);         if (t) return 'Teacher-M' + t[1];
+    if (p === 'teacher-index.html') return 'Teacher-Hub';
+    if (p === 'survey-pre.html')  return 'Survey-Pre';
+    if (p === 'survey-post.html') return 'Survey-Post';
+    if (p === 'register.html')    return 'Register';
+    if (p === 'certificate.html') return 'Certificate';
+    return p.replace('.html', '');
+  }
+
+  function getLang() {
+    try { var b=document.querySelector('.lang-btn.active'); return b?b.textContent.trim():'EN'; } catch(e){return 'EN';}
+  }
+
+  // ── Session / participant ─────────────────────────────────────────────────
+  function getSessionId() {
+    try {
+      var id = localStorage.getItem('rf_sid');
+      if (!id) { id = 'rf_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); localStorage.setItem('rf_sid', id); }
+      return id;
+    } catch(e) { return 'rf_' + Date.now(); }
+  }
+
+  function getParticipant() {
+    try {
+      var p = JSON.parse(localStorage.getItem('rf_participant') || '{}');
+      return { participant_name: p.full_name||'', participant_id: p.matric_no||'', level: p.level||'', school_code: p.school_code||'', home_state: p.home_state||'' };
+    } catch(e) { return {}; }
+  }
+
+  // ── Device info ───────────────────────────────────────────────────────────
+  function getDevice() {
+    var ua = navigator.userAgent;
+    var device = /Mobi|Android/i.test(ua) ? 'Mobile' : /iPad|Tablet/i.test(ua) ? 'Tablet' : 'Desktop';
+    var os = /Windows/i.test(ua)?'Windows':/Mac/i.test(ua)?'Mac':/Android/i.test(ua)?'Android':/iPhone|iPad/i.test(ua)?'iOS':/Linux/i.test(ua)?'Linux':'Other';
+    return { device: device, os: os };
+  }
+
+  // ── Geolocation (IP-based, fetched once per session) ─────────────────────
+  function getGeoCache() {
+    try { return JSON.parse(localStorage.getItem('rf_geo') || 'null'); } catch(e){return null;}
+  }
+  function fetchGeo(cb) {
+    var cached = getGeoCache();
+    if (cached) { cb(cached); return; }
+    try {
+      fetch('https://ipapi.co/json/', {mode:'cors'})
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var geo = { country: d.country_name||'', region: d.region||'', city: d.city||'', isp: d.org||'' };
+          try { localStorage.setItem('rf_geo', JSON.stringify(geo)); } catch(e){}
+          cb(geo);
+        })
+        .catch(function(){ cb({}); });
+    } catch(e) { cb({}); }
+  }
+
+  // ── Send event ────────────────────────────────────────────────────────────
+  function send(eventName, extra, geo) {
+    if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
+    var payload = Object.assign({
+      survey: 'analytics',
+      event: eventName,
+      module: getModule(),
+      lang: getLang(),
+      session_id: getSessionId(),
+      timestamp: new Date().toISOString(),
+      referrer: document.referrer ? (document.referrer.split('/').pop()||'direct') : 'direct'
+    }, getParticipant(), getDevice(), geo||{}, extra||{});
+    try { fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload), keepalive:true }); }
+    catch(e) {}
+  }
+
+  // ── Completion tracking in localStorage ──────────────────────────────────
+  var mod = getModule();
+
+  // Mark module as visited
+  if (mod.match(/^M\d+$/)) {
+    try {
+      var visited = JSON.parse(localStorage.getItem('rf_visited_modules') || '[]');
+      var mNum = parseInt(mod.replace('M',''));
+      if (visited.indexOf(mNum) === -1) { visited.push(mNum); localStorage.setItem('rf_visited_modules', JSON.stringify(visited)); }
+    } catch(e) {}
+  }
+
+  // Mark activity as submitted (called by activity submit buttons)
+  window.rfMarkActivity = function(num) {
+    try {
+      var done = JSON.parse(localStorage.getItem('rf_activities_done') || '[]');
+      if (done.indexOf(num) === -1) { done.push(num); localStorage.setItem('rf_activities_done', JSON.stringify(done)); }
+    } catch(e) {}
+  };
+
+  // Mark post-survey done
+  window.rfMarkPostDone = function() {
+    try { localStorage.setItem('rf_post_done', '1'); } catch(e) {}
+  };
+
+  // Check full completion: visited M0-M4 + activities 1-4 + post-survey
+  window.rfIsComplete = function() {
+    try {
+      var visited = JSON.parse(localStorage.getItem('rf_visited_modules') || '[]');
+      var acts = JSON.parse(localStorage.getItem('rf_activities_done') || '[]');
+      var post = localStorage.getItem('rf_post_done') === '1';
+      var allModules = [0,1,2,3,4].every(function(n){ return visited.indexOf(n) !== -1; });
+      var allActs = [1,2,3,4].every(function(n){ return acts.indexOf(n) !== -1; });
+      return allModules && allActs && post;
+    } catch(e) { return false; }
+  };
+
+  // ── Auto fire page_view with geo ──────────────────────────────────────────
+  fetchGeo(function(geo) {
+    send('page_view', {}, geo);
+  });
+
+  // ── Time on page ──────────────────────────────────────────────────────────
+  var t0 = Date.now();
+  window.addEventListener('beforeunload', function() {
+    var s = Math.round((Date.now()-t0)/1000);
+    if (s > 3) send('time_spent', {seconds:s});
+  });
+
+  // ── Forward nav click ─────────────────────────────────────────────────────
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest('a[href],button');
+    if (!el) return;
+    var href = el.getAttribute('href') || '';
+    if ((href.match(/module-\d+\.html/) || href === 'index.html') && mod.match(/^(M\d+|Activity-M\d+)$/)) {
+      send('module_forward', {target: href});
+    }
+  });
+
+  window.rfTrack = send;
+})();
+</script>
+</body>
+</html>

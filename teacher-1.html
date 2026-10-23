@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facilitator Notes · Module 1 · Morse Code</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── INDEPENDENT LIGHT-MODE CSS ── */
+    :root {
+      --teal:   #02ADA5;
+      --teal-dk:#01857f;
+      --bg:     #f5f7fa;
+      --surface:#ffffff;
+      --border: #d1d9e0;
+      --text:   #1a2332;
+      --muted:  #6b7a8d;
+      --code-bg:#1e2a38;
+      --code-txt:#cde8e6;
+      --warn:   #b45309;
+      --warn-bg:#fef3c7;
+      --pass:   #166534;
+      --pass-bg:#dcfce7;
+      --fail:   #991b1b;
+      --fail-bg:#fee2e2;
+    }
+
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      font-size:15px; line-height:1.65; background:var(--bg); color:var(--text);
+    }
+
+    /* ── Gate overlay ── */
+    
+    
+    
+    
+    
+    
+    
+    
+
+    /* ── Top bar ── */
+    .topbar {
+      background:var(--teal); color:#08312F; padding:.6rem 1.5rem;
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem;
+    }
+    .topbar-title { font-weight:800; font-size:1rem; }
+    .topbar-badge {
+      background:rgba(8,49,47,.2); padding:.25rem .75rem; border-radius:20px; font-size:.8rem; font-weight:700;
+    }
+
+    /* ── Layout ── */
+    .page-wrap { max-width:900px; margin:0 auto; padding:1.5rem 1rem 4rem; }
+
+    /* ── Page header ── */
+    .page-header { margin-bottom:2rem; }
+    .page-header h1 { font-size:1.7rem; font-weight:800; color:var(--text); margin-bottom:.3rem; }
+    .page-header .subtitle { color:var(--muted); font-size:.95rem; }
+    .page-header .meta { margin-top:.5rem; font-size:.82rem; color:var(--muted); }
+
+    /* ── Section card ── */
+    .tc {
+      background:var(--surface); border:1px solid var(--border); border-radius:12px;
+      padding:1.4rem 1.6rem; margin-bottom:1.2rem;
+    }
+    .tc h2 {
+      font-size:1.05rem; font-weight:800; color:var(--teal); text-transform:uppercase;
+      letter-spacing:.04em; margin-bottom:.9rem; border-bottom:2px solid var(--border);
+      padding-bottom:.5rem; display:flex; align-items:center; gap:.5rem;
+    }
+    .tc h3 { font-size:.95rem; font-weight:700; margin:.8rem 0 .4rem; color:var(--text); }
+    .tc p, .tc li { font-size:.92rem; line-height:1.7; }
+    .tc ul, .tc ol { padding-left:1.3rem; }
+    .tc li { margin-bottom:.3rem; }
+
+    /* ── Code box ── */
+    .codebox {
+      background:var(--code-bg); color:var(--code-txt); border-radius:10px;
+      padding:1rem 1.2rem; font-family:monospace; font-size:.83rem;
+      line-height:1.6; overflow-x:auto; position:relative; margin:.6rem 0;
+    }
+    .copybtn {
+      position:absolute; top:.6rem; right:.6rem;
+      background:rgba(2,173,165,.2); color:var(--teal); border:1px solid var(--teal);
+      border-radius:6px; padding:.3rem .75rem; font-size:.78rem; cursor:pointer; font-weight:700;
+    }
+    .copybtn:hover { background:rgba(2,173,165,.35); }
+    .copybtn.copied { background:rgba(74,222,128,.2); color:#4ade80; border-color:#4ade80; }
+
+    /* ── Answer key ── */
+    .answer-key { background:var(--pass-bg); border:1px solid #bbf7d0; border-radius:10px; padding:1rem 1.2rem; margin-top:.5rem; }
+    .answer-key p { color:var(--pass); font-size:.88rem; margin-bottom:.4rem; }
+    .answer-key p:last-child { margin-bottom:0; }
+
+    /* ── Warning/info boxes ── */
+    .warn-box {
+      background:var(--warn-bg); border-left:4px solid var(--warn);
+      border-radius:0 8px 8px 0; padding:.8rem 1rem; font-size:.88rem;
+      color:var(--warn); margin:.5rem 0;
+    }
+    .info-box {
+      background:#e0f2fe; border-left:4px solid #0284c7;
+      border-radius:0 8px 8px 0; padding:.8rem 1rem; font-size:.88rem;
+      color:#0369a1; margin:.5rem 0;
+    }
+
+    /* ── Table ── */
+    table.t { width:100%; border-collapse:collapse; margin:.6rem 0; font-size:.88rem; }
+    table.t th { background:#e2e8f0; text-align:left; padding:.55rem .8rem; font-weight:700; }
+    table.t td { padding:.5rem .8rem; border-bottom:1px solid var(--border); vertical-align:top; }
+    table.t tr:last-child td { border-bottom:none; }
+    .sev-low  { color:#16a34a; font-weight:600; }
+    .sev-med  { color:#d97706; font-weight:600; }
+    .sev-hi   { color:#dc2626; font-weight:600; }
+
+    /* ── Rubric table ── */
+    table.rubric th:first-child { width:50%; }
+
+    /* ── Section icon ── */
+    .icon { font-size:1.1rem; }
+
+    /* ── Sheets schema ── */
+    .schema-cols { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.5rem; }
+    .col-chip {
+      background:#e0f2fe; color:#0369a1; padding:.25rem .65rem;
+      border-radius:20px; font-size:.78rem; font-family:monospace; font-weight:600;
+    }
+
+    /* ── Print ── */
+    @media print {
+      
+      .topbar { background:#02ADA5 !important; -webkit-print-color-adjust:exact; }
+    }
+
+    /* ── Sitenav ── */
+    .sitenav{background:#041f1e;border-bottom:2px solid var(--teal);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:52px;position:sticky;top:0;z-index:100;}
+    .sitenav .brand{font-weight:800;font-size:1rem;color:var(--teal);text-decoration:none;}
+    .teacher-badge{background:rgba(2,173,165,.2);border:1px solid var(--teal);color:var(--teal);padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;}
+    /* ── Module nav ── */
+    .mod-nav{background:#031714;border-bottom:1px solid rgba(2,173,165,.2);display:flex;align-items:center;gap:4px;padding:0 1.25rem;height:38px;flex-wrap:wrap;}
+    .mod-nav-label{font-size:.72rem;font-weight:700;color:#7bbfba;margin-right:.5rem;white-space:nowrap;}
+    .mod-nav-item{font-size:.78rem;font-weight:600;color:#7bbfba;text-decoration:none;padding:3px 10px;border-radius:4px;border:1px solid transparent;transition:all .15s;}
+    .mod-nav-item:hover{background:rgba(2,173,165,.15);color:var(--teal);}
+    .mod-nav-item.active{background:var(--teal);color:#041f1e;border-color:var(--teal);}
+    /* ── Hero ── */
+    .hero{background:linear-gradient(135deg,rgba(2,53,51,.18) 0%,var(--bg) 100%);border-bottom:2px solid var(--teal);padding:2.5rem 1.25rem 2rem;}
+    .hero-inner{max-width:900px;margin:0 auto;}
+    .eyebrow{font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:.4rem;}
+    .hero h1{font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:800;color:var(--text);margin-bottom:.4rem;}
+    .hero .subtitle{color:var(--muted);font-size:.92rem;}
+    .back-link{color:var(--teal);text-decoration:none;font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem;}
+    .back-link:hover{text-decoration:underline;}
+  </style>
+</head>
+<body>
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+<!-- MODULE NAV -->
+<nav class="mod-nav">
+  <span class="mod-nav-label">📋 Teacher Guides:</span>
+  <a href="teacher-0.html" class="mod-nav-item">M0 Orientation</a>
+  <a href="teacher-1.html" class="mod-nav-item active">M1 Morse Code</a>
+  <a href="teacher-2.html" class="mod-nav-item">M2 Map Reading</a>
+  <a href="teacher-3.html" class="mod-nav-item">M3 Yagi Antenna</a>
+  <a href="teacher-4.html" class="mod-nav-item">M4 Field Strategy</a>
+</nav>
+
+<!-- SITENAV -->
+<nav class="sitenav">
+  <a href="module-1.html" class="brand">🦊 Radio Foxhunting</a>
+  <div style="display:flex;align-items:center;gap:.75rem;">
+    <a href="module-1.html" class="back-link">← Student View</a>
+    <span class="teacher-badge">Teacher View</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Module 1 of 5 — Teacher Guide</p>
+    <h1>Morse Code &amp; Beacon IDs — Facilitator Notes</h1>
+    <p class="subtitle">Teaching guidance, answer keys, common mistakes, and facilitation tips for Module 1.</p>
+  </div>
+</header>
+
+<div class="page-wrap">
+
+  <!-- ── 1. What This Module Teaches ── -->
+  <div class="tc">
+    <h2><span class="icon">📚</span> 1. What This Module Teaches</h2>
+
+    <h3>Learning Objectives</h3>
+    <ul>
+      <li>Understand the physical structure of Morse code (dit/dah timing ratios).</li>
+      <li>Identify the five ARDF beacon callsigns (MOE, MOI, MOS, MOH, MO5) by counting dits.</li>
+      <li>Explain the 5-minute ARDF beacon cycle (12s TX + 60s rest).</li>
+      <li>Implement a basic Morse player using the <strong>Web Audio API</strong> (AudioContext, OscillatorNode).</li>
+      <li>Evaluate code for timing correctness and debug logical errors.</li>
+    </ul>
+
+    <h3>Key Concepts Covered</h3>
+    <ul>
+      <li><strong>Web Audio API</strong> — AudioContext, createOscillator, frequency, connect, start/stop.</li>
+      <li><strong>Morse timing</strong> — DIT = 80 ms, DAH = 240 ms (3× ratio), inter-element gap = 80 ms.</li>
+      <li><strong>ARDF beacon protocol</strong> — 5 beacons, 700 Hz carrier, 12s TX slots, 60s MO rest.</li>
+      <li><strong>Computational thinking</strong> — decomposition (symbols → timing), abstraction (pattern string).</li>
+    </ul>
+
+    <h3>Prerequisites</h3>
+    <ul>
+      <li>Module 0: Orientation (what is ARDF, safety, equipment overview).</li>
+      <li>Basic JavaScript familiarity (variables, loops, functions) is helpful for Tier 3+.</li>
+    </ul>
+
+    <div class="info-box">
+      <strong>Time estimate:</strong> 45–90 minutes depending on prior JavaScript experience.
+      Tier 1+2+MCQ is accessible to all scouts. Tier 3 requires ~15 extra minutes for JS learners.
+    </div>
+  </div>
+
+  <!-- ── 2. Interactive Demo Guide ── -->
+  <div class="tc">
+    <h2><span class="icon">🔊</span> 2. Interactive Demo Guide</h2>
+
+    <h3>Using the Morse Player (Section 2 of module-1.html)</h3>
+    <p>
+      The player uses the Web Audio API. Each "▶ Listen" button creates a new AudioContext and
+      schedules oscillator start/stop times in advance (not setTimeout-based). This is important for
+      accurate timing — tell scouts not to spam-click buttons.
+    </p>
+
+    <div class="warn-box">
+      <strong>Browser Autoplay Policy:</strong> Modern browsers (Chrome, Firefox, Safari) block
+      AudioContext creation until the user has interacted with the page. The Morse player already
+      requires a button click (a user gesture), so this is handled correctly. However, if a scout
+      <em>loads the page and immediately runs console code</em>, AudioContext may be suspended.
+      Fix: call <code>audioCtx.resume()</code> after creation in any console experiments.
+    </div>
+
+    <h3>Common Audio Issues</h3>
+    <ul>
+      <li><strong>No sound on iOS:</strong> Ensure the device is not on silent mode (hardware switch). iOS requires a user gesture — the button click satisfies this.</li>
+      <li><strong>Clicking/popping sounds:</strong> Normal for rectangular on/off oscillators. This is a feature of Morse — scouts will experience the real thing.</li>
+      <li><strong>Firefox older versions:</strong> <code>webkitAudioContext</code> fallback is included.</li>
+    </ul>
+
+    <h3>Timeline Simulator (Section 3)</h3>
+    <p>
+      The canvas animation runs at 10 seconds real-time to represent the 300-second cycle. The progress
+      indicator shows current position. If a scout asks why it is "too fast", explain that it is a
+      sped-up demonstration — the real cycle takes 5 minutes.
+    </p>
+
+    <h3>Code Tab Reference (Section 5)</h3>
+    <p>
+      The three tabs show Morse patterns, timing constants, and the complete <code>playMorse</code>
+      function. These are intentionally shown — scouts in Tier 3 are asked to <em>recreate</em> this
+      function, not copy it. Encourage them to close the tab before attempting Tier 3.
+    </p>
+  </div>
+
+  <!-- ── 3. Answer Keys ── -->
+  <div class="tc">
+    <h2><span class="icon">✅</span> 3. Exercise Answer Keys</h2>
+
+    <h3>Tier 1 — Fill in the Blanks</h3>
+    <div class="answer-key">
+      <p><strong>Q1.</strong> The beacon MOE transmits the pattern: <code>-- --- .</code></p>
+      <p><strong>Q2.</strong> A dit lasts: <code>80</code> milliseconds</p>
+      <p><strong>Q3.</strong> A dah is <code>3</code> times longer than a dit</p>
+      <p><strong>Q4.</strong> ARDF beacons use a tone of <code>700</code> Hz</p>
+      <p><strong>Q5.</strong> MOH has <code>4</code> dits</p>
+      <p><strong>Q6.</strong> The rest-period beacon is called <code>MO</code></p>
+      <p><strong>Q7.</strong> Each beacon transmits for <code>12</code> seconds</p>
+    </div>
+
+    <h3 style="margin-top:1.2rem;">Tier 2 — Debug Exercises: Sample Good Responses</h3>
+
+    <h3>Exercise 1</h3>
+    <p><em>Pattern claimed for MOI: <code>-- --- .</code></em></p>
+    <p><strong>What is wrong:</strong> That is the pattern for MOE (1 dit). MOI has 2 dits.</p>
+    <p><strong>Correct pattern:</strong> <code>-- --- ..</code></p>
+    <p><strong>Sample explanation:</strong> "The letter I in Morse is two dits (..), but the pattern shown has only one dit (.). MOI should end with two short pulses, not one. The MO prefix (-- ---) is correct — the error is in the letter after MO."</p>
+
+    <h3>Exercise 2</h3>
+    <p><em>DIT=240, DAH=80 — what is wrong?</em></p>
+    <p><strong>What is wrong:</strong> The values are swapped. A dah must be 3× a dit. With DIT=240 and DAH=80, dits would be longer than dahs, reversing the entire code.</p>
+    <p><strong>Correct values:</strong> DIT=80 ms, DAH=240 ms.</p>
+    <p><strong>Sample explanation:</strong> "The ratio DAH/DIT = 3 is a fundamental rule of Morse code. With the swapped values, short marks become long and long marks become short, making every message sound completely different. A scout listening in the field would decode the wrong beacon ID."</p>
+
+    <h3>Exercise 3</h3>
+    <p><em>You hear –– ––– · · · — which beacon?</em></p>
+    <p><strong>Answer:</strong> MOS (Morse for M, O, S = M is --, O is ---, S is ...).</p>
+    <p><strong>Sample explanation:</strong> "The long MO prefix (–– –––) is the same for all five beacons. After MO I count 3 short pulses (dits). Three dits = the letter S. So this is beacon MOS, the 3rd beacon in the cycle. In the field I would mark this bearing as Beacon 3."</p>
+
+    <h3 style="margin-top:1.2rem;">Tier 3 — Complete Working <code>playMorse</code> Function</h3>
+    <p>Below is the full reference implementation. Scouts should produce something functionally equivalent.</p>
+
+    <div class="codebox" id="t3code">
+      <button class="copybtn" data-target="t3code">Copy</button>
+<pre>function playMorse(pattern) {
+  var DIT = 80;   // milliseconds
+  var DAH = 240;
+  var GAP = 80;   // inter-element gap
+  var CHAR_GAP = 240; // inter-character gap (space between letters)
+
+  var ctx = new (window.AudioContext || window.webkitAudioContext)();
+  var t = ctx.currentTime + 0.05; // small lead-in
+
+  for (var i = 0; i &lt; pattern.length; i++) {
+    var ch = pattern[i];
+
+    if (ch === ' ') {
+      // Space between Morse characters (e.g., between M, O, and E)
+      t += CHAR_GAP / 1000;
+      continue;
+    }
+
+    var dur = ch === '-' ? DAH / 1000 : DIT / 1000;
+
+    var osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = 700;  // 700 Hz standard ARDF tone
+    osc.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + dur);
+
+    t += dur + GAP / 1000; // advance time: tone + gap
+  }
+
+  // Auto-close context after all tones finish
+  var totalMs = (t - ctx.currentTime) * 1000 + 200;
+  setTimeout(function () { ctx.close(); }, totalMs);
+}</pre>
+    </div>
+
+    <div class="warn-box">
+      Accept any implementation that correctly schedules AudioContext oscillators at 700 Hz with
+      DIT≈80 ms and DAH≈240 ms. The exact gap handling (space vs. | separator) varies by
+      string parsing approach.
+    </div>
+
+    <h3 style="margin-top:1.2rem;">Tier 4 — Extension Example (Speed Control + Visual Indicator)</h3>
+    <div class="codebox" id="t4code">
+      <button class="copybtn" data-target="t4code">Copy</button>
+<pre>// ── HTML needed: ──────────────────────────────────────────────────────
+// &lt;div id="morseIndicator" style="
+//   width:60px; height:60px; border-radius:50%;
+//   background:#333; transition:background .05s;
+// "&gt;&lt;/div&gt;
+// &lt;select id="speedSelect"&gt;
+//   &lt;option value="0.5"&gt;0.5× Slow&lt;/option&gt;
+//   &lt;option value="1" selected&gt;1× Normal&lt;/option&gt;
+//   &lt;option value="2"&gt;2× Fast&lt;/option&gt;
+// &lt;/select&gt;
+
+// ── Extended playMorse ─────────────────────────────────────────────────
+function playMorseExtended(pattern) {
+  var speed = parseFloat(document.getElementById('speedSelect').value) || 1;
+  var DIT = 80  / speed;
+  var DAH = 240 / speed;
+  var GAP = 80  / speed;
+  var CHAR_GAP = 240 / speed;
+
+  var ctx = new (window.AudioContext || window.webkitAudioContext)();
+  var t = ctx.currentTime + 0.05;
+  var indicator = document.getElementById('morseIndicator');
+
+  for (var i = 0; i &lt; pattern.length; i++) {
+    var ch = pattern[i];
+    if (ch === ' ') { t += CHAR_GAP / 1000; continue; }
+
+    var dur = ch === '-' ? DAH / 1000 : DIT / 1000;
+    var isDah = ch === '-';
+
+    // Visual indicator scheduling
+    (function(startT, d, dah) {
+      setTimeout(function() {
+        indicator.style.background = '#02ADA5';
+        indicator.style.borderRadius = dah ? '8px' : '50%';
+        indicator.style.width  = dah ? '120px' : '60px';
+      }, startT * 1000);
+      setTimeout(function() {
+        indicator.style.background = '#333';
+        indicator.style.width = '60px';
+        indicator.style.borderRadius = '50%';
+      }, (startT + d) * 1000);
+    })(t - ctx.currentTime, dur, isDah);
+
+    var osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = 700;
+    osc.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + dur);
+    t += dur + GAP / 1000;
+  }
+
+  var totalMs = (t - ctx.currentTime) * 1000 + 200;
+  setTimeout(function () { ctx.close(); }, totalMs);
+}</pre>
+    </div>
+  </div>
+
+  <!-- ── 4. Concept Check Answer Key ── -->
+  <div class="tc">
+    <h2><span class="icon">★</span> 4. Concept Check Answer Key</h2>
+    <table class="t">
+      <thead>
+        <tr><th>Q#</th><th>Question</th><th>Correct Answer</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>What is the frequency of ARDF beacon tones?</td>
+          <td><strong>700 Hz</strong></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>How long is a dit (short Morse pulse)?</td>
+          <td><strong>80 ms</strong></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Which beacon has the MOST dits after the MO prefix?</td>
+          <td><strong>MO5</strong> (5 dits)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>How many numbered beacons are used in standard ARDF?</td>
+          <td><strong>5</strong></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>What Morse pattern does MOI transmit?</td>
+          <td><strong>-- --- ..</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:.6rem; font-size:.87rem; color:var(--muted);">
+      Pass threshold: 4/5 (80%). A scout who misses Q5 usually has not practised the patterns —
+      direct them back to the Morse player in the lesson.
+    </p>
+  </div>
+
+  <!-- ── 5. Reflective Journal Rubric ── -->
+  <div class="tc">
+    <h2><span class="icon">✍</span> 5. Reflective Journal Rubric</h2>
+    <p style="margin-bottom:.8rem; font-size:.88rem;">Minimum 15 words per prompt. Use this rubric to provide qualitative feedback.</p>
+    <table class="t rubric">
+      <thead>
+        <tr><th>Prompt</th><th>Developing (1)</th><th>Proficient (2)</th><th>Exceeds (3)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1. What surprised you about Morse timing?</td>
+          <td>Names a fact without reflection.</td>
+          <td>Expresses genuine surprise with reasoning.</td>
+          <td>Connects surprise to a broader principle (e.g., importance of standards).</td>
+        </tr>
+        <tr>
+          <td>2. How would you remember beacons in the field?</td>
+          <td>Repeats the mnemonic given.</td>
+          <td>Proposes a personal memory strategy.</td>
+          <td>Creates an original system with justification.</td>
+        </tr>
+        <tr>
+          <td>3. What would you change about ARDF beacons?</td>
+          <td>Vague suggestion without reasoning.</td>
+          <td>Specific change with rationale.</td>
+          <td>Considers trade-offs and constraints of the change.</td>
+        </tr>
+        <tr>
+          <td>4. Morse code and computational thinking.</td>
+          <td>Mentions "it's like code."</td>
+          <td>Applies decomposition or abstraction correctly.</td>
+          <td>Links multiple CT concepts (decomposition, pattern recognition, algorithms).</td>
+        </tr>
+        <tr>
+          <td>5. Sound patterns in other situations.</td>
+          <td>Lists examples without explanation.</td>
+          <td>Explains how the principle transfers.</td>
+          <td>Novel, creative application with mechanistic reasoning.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box" style="margin-top:.8rem;">
+      Journals are not auto-graded. Use them for one-on-one check-ins or group discussion.
+      Look for understanding of the <em>why</em> behind Morse timing, not just pattern recall.
+    </div>
+  </div>
+
+  <!-- ── 6. Common Mistakes ── -->
+  <div class="tc">
+    <h2><span class="icon">⚠️</span> 6. Common Mistakes Table</h2>
+    <table class="t">
+      <thead>
+        <tr><th>Issue</th><th>Severity</th><th>Fix</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Scout swaps DIT and DAH values (240ms / 80ms)</td>
+          <td class="sev-hi">High</td>
+          <td>Remind: dah = 3× dit. DIT=80, DAH=240 always. The mnemonic is "dit is quick, dah is drawn out."</td>
+        </tr>
+        <tr>
+          <td>No inter-element gap between symbols</td>
+          <td class="sev-med">Medium</td>
+          <td>Each symbol must be followed by a GAP (=DIT) of silence before the next oscillator starts. Show the scheduler advancing time: <code>t += dur + GAP/1000</code>.</td>
+        </tr>
+        <tr>
+          <td>AudioContext created outside click handler (blocked)</td>
+          <td class="sev-hi">High</td>
+          <td>Browser autoplay policy requires AudioContext to be created inside a user gesture handler. Ensure it is inside the <code>addEventListener('click', ...)</code> callback.</td>
+        </tr>
+        <tr>
+          <td>Oscillator not connected to destination before start</td>
+          <td class="sev-hi">High</td>
+          <td>Call <code>osc.connect(ctx.destination)</code> before <code>osc.start()</code>. No connection = no sound, no error.</td>
+        </tr>
+        <tr>
+          <td>Confusing MOE and MOI (1 vs. 2 dits)</td>
+          <td class="sev-low">Low</td>
+          <td>Count aloud. MOE ends in E (one dit), MOI ends in I (two dits). Use the mnemonic: Every=1, Indian=2.</td>
+        </tr>
+        <tr>
+          <td>Forgetting the rest period (MO) in the cycle</td>
+          <td class="sev-low">Low</td>
+          <td>After beacon 5 (MO5), there is a 60-second window where only MO is broadcast. Scouts must wait and not mistake the rest period for a sixth beacon.</td>
+        </tr>
+        <tr>
+          <td>Tier 3: using setTimeout instead of AudioContext scheduling</td>
+          <td class="sev-med">Medium</td>
+          <td>setTimeout is unreliable for audio timing (tab throttling, event loop jitter). Accepted for Tier 3 but note the issue. Award full marks; discuss accurate scheduling as a stretch topic.</td>
+        </tr>
+        <tr>
+          <td>Not suspending AudioContext between plays</td>
+          <td class="sev-low">Low</td>
+          <td>Multiple AudioContexts can accumulate. Encourage calling <code>ctx.close()</code> after use or reusing one context per session.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── 7. Facilitation Tips ── -->
+  <div class="tc">
+    <h2><span class="icon">💡</span> 7. Facilitation Tips</h2>
+
+    <h3>For scouts scared of electronics / new to coding</h3>
+    <ul>
+      <li>Start with the Morse player in the lesson — let them press ▶ Listen for all five beacons and just count dits aloud together.</li>
+      <li>Tier 1 (fill in the blanks) is fully accessible. Celebrate getting it right before moving to Tier 2.</li>
+      <li>For Tier 3, show the code reference tab first, walk through it line by line, then ask them to close the tab and type it from memory. This builds confidence.</li>
+      <li>Pair shy scouts with a partner for Tier 2 debug exercises — talking through the problem aloud helps enormously.</li>
+      <li>Use the physical tap-finger technique (short tap = dit, hold = dah) to make the abstract timing concrete.</li>
+    </ul>
+
+    <h3>For fast learners and scouts with prior coding experience</h3>
+    <ul>
+      <li>Challenge them to Tier 4 immediately — the speed control and visual indicator extension is non-trivial.</li>
+      <li>Ask them to explain the <em>AudioContext scheduling model</em>: why schedule all oscillators up front rather than use setTimeout?</li>
+      <li>Extension challenge: add an <em>envelope</em> (GainNode with attack/release) to smooth the clicks on each tone.</li>
+      <li>Ask: how would you encode an arbitrary text string as Morse (not just ARDF callsigns)?</li>
+      <li>For radio enthusiasts: discuss how actual ARDF beacons generate the 700 Hz tone on a VHF carrier wave.</li>
+    </ul>
+
+    <h3>Running the module outdoors</h3>
+    <ul>
+      <li>If devices are unavailable outdoors, print the Morse reference table and have scouts tap the patterns on a table with a finger.</li>
+      <li>The 12-second beacon identification drill: facilitator taps a pattern on a desk, scouts write the beacon name.</li>
+      <li>Set a real field exercise: one scout transmits (clapping), others identify the beacon — works well in pairs.</li>
+    </ul>
+
+    <div class="warn-box">
+      <strong>Screen time advisory:</strong> If your group has limited screen time, prioritise
+      Tier 1 + Concept Check on-device, and run Tier 2 debug exercises as paper or verbal activities.
+      The Morse player demo works well on one projected device for the whole group.
+    </div>
+  </div>
+
+  <!-- ── 8. Google Sheets Schema ── -->
+  <div class="tc">
+    <h2><span class="icon">📊</span> 8. Google Sheets Schema</h2>
+    <p>The activity page submits a JSON payload to <code>window.GS_ENDPOINT</code>.
+       Create a tab named <strong>Act_1</strong> in your LMS workbook with these columns:</p>
+
+    <div class="schema-cols">
+      <span class="col-chip">timestamp</span>
+      <span class="col-chip">pre_confidence</span>
+      <span class="col-chip">pre_predicted</span>
+      <span class="col-chip">tier1_score</span>
+      <span class="col-chip">tier2_submitted</span>
+      <span class="col-chip">tier3_submitted</span>
+      <span class="col-chip">tier4_attempted</span>
+      <span class="col-chip">mcq_score</span>
+      <span class="col-chip">journal_0</span>
+      <span class="col-chip">journal_1</span>
+      <span class="col-chip">journal_2</span>
+      <span class="col-chip">journal_3</span>
+      <span class="col-chip">journal_4</span>
+      <span class="col-chip">post_confidence</span>
+      <span class="col-chip">post_actual</span>
+    </div>
+
+    <h3 style="margin-top:1rem;">Column Notes</h3>
+    <table class="t">
+      <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>timestamp</td><td>ISO 8601 string</td><td>Auto-set by page at submit time.</td></tr>
+        <tr><td>pre_confidence</td><td>Integer 1–5</td><td>Pre-activity confidence slider.</td></tr>
+        <tr><td>pre_predicted</td><td>Integer 0–4</td><td>Predicted tiers to complete.</td></tr>
+        <tr><td>tier1_score</td><td>String "n/7"</td><td>e.g. "6/7". Parse as fraction for analysis.</td></tr>
+        <tr><td>tier2_submitted</td><td>0 or 1</td><td>1 = all 3 debug exercises ≥10 chars.</td></tr>
+        <tr><td>tier3_submitted</td><td>0 or 1</td><td>1 = code check passed (all 6 keywords found).</td></tr>
+        <tr><td>tier4_attempted</td><td>0 or 1</td><td>1 = extension ≥50 chars marked as attempted.</td></tr>
+        <tr><td>mcq_score</td><td>String "n/5"</td><td>e.g. "4/5".</td></tr>
+        <tr><td>journal_0..4</td><td>Text</td><td>Raw journal entries. May be long — use WRAP TEXT in Sheets.</td></tr>
+        <tr><td>post_confidence</td><td>Integer 1–5</td><td>Post-activity confidence.</td></tr>
+        <tr><td>post_actual</td><td>Integer 0–4</td><td>Self-reported tiers completed. Calibration index = post_actual − pre_predicted.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box" style="margin-top:.8rem;">
+      <strong>Setting the endpoint:</strong> Deploy a Google Apps Script Web App as described in
+      the LMS setup guide. Set <code>window.GS_ENDPOINT = 'https://script.google.com/...'</code>
+      in the page's <code>&lt;head&gt;</code> or via a shared <code>config.js</code> before
+      distributing to scouts.
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<script>
+// ── Gate ──────────────────────────────────────────────────────────────────
+
+// ── Copy buttons ───────────────────────────────────────────────────────────
+document.querySelectorAll('.copybtn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var target = document.getElementById(btn.dataset.target);
+    var code = target.querySelector('pre').textContent;
+    navigator.clipboard.writeText(code).then(function() {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 1800);
+    }).catch(function() {
+      // fallback: select text
+      var range = document.createRange();
+      range.selectNodeContents(target.querySelector('pre'));
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    });
+  });
+});
+</script>
+</body>
+</html>

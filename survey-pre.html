@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pre-Workshop Survey — Radio Foxhunting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap">
+<style>
+/* ── SETUP NOTICE (admin only — remove after configuring Apps Script URL) ─── */
+#setup-notice{background:#1a0a00;border:2px solid #e07b2a;color:#fcd9b0;padding:1rem 1.25rem;font-size:.82rem;font-family:monospace;margin-bottom:1.5rem;border-radius:6px;line-height:1.6;}
+#setup-notice strong{color:#e07b2a;}
+/* ── Tokens ── */
+:root{
+  --bg:#071412;--surface:#0d1f1d;--surface2:#122221;
+  --border:rgba(2,173,165,.18);--border-str:rgba(2,173,165,.35);
+  --text:#e0efee;--muted:#7bbfba;--teal:#02ADA5;--teal-glow:rgba(2,173,165,.12);
+  --pill:#0d1f1d;--font:'Space Grotesk',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;padding-bottom:3rem;}
+
+/* ── Top bar ── */
+.topbar{background:#041e1c;border-bottom:2px solid var(--teal);padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar .brand{font-weight:800;font-size:1rem;color:var(--teal);text-decoration:none;}
+.badge{background:rgba(2,173,165,.2);border:1px solid var(--teal);color:var(--teal);padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;}
+/* ── Lang toggle ── */
+.lang-row{display:flex;gap:.5rem;}
+.lang-btn{background:transparent;border:1px solid var(--border-str);color:var(--muted);padding:2px 10px;border-radius:4px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:var(--font);}
+.lang-btn.active{background:var(--teal);color:#041e1c;border-color:var(--teal);}
+
+/* ── Hero ── */
+.hero{background:linear-gradient(135deg,rgba(2,53,51,.22) 0%,var(--bg) 100%);border-bottom:2px solid var(--teal);padding:2rem 1.25rem 1.75rem;}
+.hero-inner{max-width:680px;margin:0 auto;}
+.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:.35rem;}
+.hero h1{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:800;margin-bottom:.35rem;}
+.hero p{color:var(--muted);font-size:.9rem;}
+
+/* ── Form wrap ── */
+.wrap{max-width:680px;margin:2rem auto;padding:0 1.25rem;}
+
+/* ── Section ── */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1.25rem;}
+.section-title{font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+
+/* ── Question ── */
+.q{margin-bottom:1.25rem;}
+.q:last-child{margin-bottom:0;}
+.q-label{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:.55rem;display:block;}
+.q-label .req{color:var(--teal);margin-left:2px;}
+.q-hint{font-size:.78rem;color:var(--muted);margin-bottom:.5rem;}
+
+/* ── Radio / Checkbox pills ── */
+.pill-group{display:flex;flex-wrap:wrap;gap:.45rem;}
+.pill-group label{display:flex;align-items:center;gap:.4rem;background:var(--pill);border:1px solid var(--border-str);color:var(--muted);padding:.35rem .85rem;border-radius:999px;font-size:.82rem;cursor:pointer;transition:all .15s;user-select:none;}
+.pill-group label:hover{background:var(--teal-glow);border-color:var(--teal);color:var(--text);}
+.pill-group input[type=radio],.pill-group input[type=checkbox]{display:none;}
+.pill-group input:checked + span,.pill-group label:has(input:checked){background:var(--teal);color:#041e1c;border-color:var(--teal);font-weight:700;}
+
+/* ── Star rating ── */
+.stars{display:flex;gap:.3rem;flex-direction:row-reverse;width:fit-content;}
+.stars input{display:none;}
+.stars label{font-size:1.6rem;color:#2a4a47;cursor:pointer;transition:color .1s;}
+.stars input:checked ~ label,.stars label:hover,.stars label:hover ~ label{color:var(--teal);}
+
+/* ── Textarea ── */
+textarea{width:100%;background:var(--surface2);border:1px solid var(--border-str);color:var(--text);border-radius:6px;padding:.6rem .75rem;font-size:.88rem;font-family:var(--font);resize:vertical;min-height:80px;outline:none;transition:border .15s;}
+textarea:focus{border-color:var(--teal);}
+textarea::placeholder{color:var(--muted);}
+
+/* ── Submit ── */
+.submit-row{text-align:center;margin-top:1.5rem;}
+.btn-submit{background:var(--teal);color:#041e1c;font-weight:800;font-size:1rem;border:none;padding:.75rem 2.5rem;border-radius:8px;cursor:pointer;font-family:var(--font);transition:opacity .15s;}
+.btn-submit:hover{opacity:.88;}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;}
+
+/* ── Status ── */
+#status{text-align:center;margin-top:1rem;font-size:.9rem;color:var(--muted);min-height:1.4rem;}
+#status.ok{color:#2a9e5e;}
+#status.err{color:#e07b2a;}
+
+/* ── Success screen ── */
+#success{display:none;text-align:center;padding:3rem 1rem;}
+#success .icon{font-size:3rem;margin-bottom:1rem;}
+#success h2{font-size:1.4rem;font-weight:800;color:var(--teal);margin-bottom:.5rem;}
+#success p{color:var(--muted);font-size:.9rem;}
+</style>
+</head>
+<body>
+
+<!-- ADMIN SETUP NOTICE — delete this block after you paste your Apps Script URL below -->
+<div id="setup-notice">
+  <strong>⚙️ ADMIN SETUP REQUIRED</strong><br>
+  1. Create a Google Sheet (see column headers in the Apps Script code in this file).<br>
+  2. In the Sheet → Extensions → Apps Script → paste the <code>doPost</code> code from the comments at the bottom of this file.<br>
+  3. Deploy as Web App (Execute as: Me, Who has access: Anyone) → copy the URL.<br>
+  4. Replace <code>YOUR_APPS_SCRIPT_URL_HERE</code> in the JavaScript below with that URL.<br>
+  5. Delete this yellow notice block.<br>
+  <a href="https://docs.google.com/spreadsheets" style="color:#e07b2a;" target="_blank">Open Google Sheets →</a>
+</div>
+
+<!-- TOP BAR -->
+<nav class="topbar">
+  <a href="index.html" class="brand">🦊 Radio Foxhunting</a>
+  <div style="display:flex;align-items:center;gap:.75rem;">
+    <div class="lang-row">
+      <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="btnBM" onclick="setLang('bm')">BM</button>
+    </div>
+    <span class="badge" data-i18n="badge">Pre-Survey</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow" data-i18n="eyebrow">JOTA JOTI 2026 · UMPSA STEM Lab</p>
+    <h1 data-i18n="h1">Before We Begin — Tell Us About You</h1>
+    <p data-i18n="subtitle">This short survey helps us understand what you already know. There are no wrong answers! Takes about 3 minutes.</p>
+  </div>
+</header>
+
+<!-- FORM -->
+<div class="wrap">
+<div id="form-area">
+<form id="surveyForm" onsubmit="submitForm(event)">
+
+  <!-- Section 1: About You -->
+  <div class="section">
+    <div class="section-title" data-i18n="s1_title">📋 About You</div>
+
+    <!-- School level -->
+    <div class="q">
+      <label class="q-label"><span data-i18n="q1">School level</span> <span class="req">*</span></label>
+      <div class="pill-group" id="q1">
+        <label><input type="radio" name="level" value="Primary" required><span data-i18n="q1_primary">Primary (Std 4–6)</span></label>
+        <label><input type="radio" name="level" value="Secondary"><span data-i18n="q1_secondary">Secondary (Form 1–5)</span></label>
+      </div>
+    </div>
+
+    <!-- Age -->
+    <div class="q">
+      <label class="q-label"><span data-i18n="q2">Age group</span> <span class="req">*</span></label>
+      <div class="pill-group">
+        <label><input type="radio" name="age" value="10-11" required><span>10–11</span></label>
+        <label><input type="radio" name="age" value="12-13"><span>12–13</span></label>
+        <label><input type="radio" name="age" value="14-15"><span>14–15</span></label>
+        <label><input type="radio" name="age" value="16-17"><span>16–17</span></label>
+        <label><input type="radio" name="age" value="18+"><span>18+</span></label>
+      </div>
+    </div>
+
+    <!-- Gender -->
+    <div class="q">
+      <label class="q-label"><span data-i18n="q3">Gender</span> <span style="color:var(--muted);font-weight:400;font-size:.78rem;" data-i18n="optional">(optional)</span></label>
+      <div class="pill-group">
+        <label><input type="radio" name="gender" value="Male"><span data-i18n="male">Male</span></label>
+        <label><input type="radio" name="gender" value="Female"><span data-i18n="female">Female</span></label>
+        <label><input type="radio" name="gender" value="Prefer not to say"><span data-i18n="pns">Prefer not to say</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Prior Knowledge -->
+  <div class="section">
+    <div class="section-title" data-i18n="s2_title">🧠 What Do You Already Know?</div>
+    <p class="q-hint" style="margin-bottom:1rem;" data-i18n="s2_hint">Be honest — we just want to know your starting point!</p>
+
+    <!-- Morse code -->
+    <div class="q">
+      <label class="q-label" data-i18n="q4">I have heard of Morse code before. <span class="req">*</span></label>
+      <div class="pill-group">
+        <label><input type="radio" name="morse" value="Yes" required><span data-i18n="yes">Yes</span></label>
+        <label><input type="radio" name="morse" value="No"><span data-i18n="no">No</span></label>
+        <label><input type="radio" name="morse" value="Not sure"><span data-i18n="not_sure">Not sure</span></label>
+      </div>
+    </div>
+
+    <!-- Compass -->
+    <div class="q">
+      <label class="q-label" data-i18n="q5">I know how to use a compass. <span class="req">*</span></label>
+      <div class="pill-group">
+        <label><input type="radio" name="compass" value="Yes" required><span data-i18n="yes">Yes</span></label>
+        <label><input type="radio" name="compass" value="A little"><span data-i18n="a_little">A little</span></label>
+        <label><input type="radio" name="compass" value="No"><span data-i18n="no">No</span></label>
+      </div>
+    </div>
+
+    <!-- Radio use -->
+    <div class="q">
+      <label class="q-label" data-i18n="q6">I have used a radio device (walkie-talkie, handheld radio). <span class="req">*</span></label>
+      <div class="pill-group">
+        <label><input type="radio" name="radio_use" value="Yes" required><span data-i18n="yes">Yes</span></label>
+        <label><input type="radio" name="radio_use" value="No"><span data-i18n="no">No</span></label>
+      </div>
+    </div>
+
+    <!-- Yagi antenna -->
+    <div class="q">
+      <label class="q-label" data-i18n="q7">I know what a Yagi antenna is. <span class="req">*</span></label>
+      <div class="pill-group">
+        <label><input type="radio" name="yagi" value="Yes" required><span data-i18n="yes">Yes</span></label>
+        <label><input type="radio" name="yagi" value="No"><span data-i18n="no">No</span></label>
+        <label><input type="radio" name="yagi" value="Not sure"><span data-i18n="not_sure">Not sure</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: STEM Interest -->
+  <div class="section">
+    <div class="section-title" data-i18n="s3_title">⭐ Your Interest in STEM</div>
+    <p class="q-hint" style="margin-bottom:1rem;" data-i18n="s3_hint">1 = Not interested at all &nbsp;·&nbsp; 5 = Very interested</p>
+
+    <!-- Interest in Science/Tech -->
+    <div class="q">
+      <label class="q-label" data-i18n="q8">How interested are you in science and technology? <span class="req">*</span></label>
+      <div class="stars" id="stars-stem">
+        <input type="radio" name="interest_stem" id="s5" value="5" required><label for="s5">★</label>
+        <input type="radio" name="interest_stem" id="s4" value="4"><label for="s4">★</label>
+        <input type="radio" name="interest_stem" id="s3" value="3"><label for="s3">★</label>
+        <input type="radio" name="interest_stem" id="s2" value="2"><label for="s2">★</label>
+        <input type="radio" name="interest_stem" id="s1" value="1"><label for="s1">★</label>
+      </div>
+    </div>
+
+    <!-- Interest in radio/electronics -->
+    <div class="q">
+      <label class="q-label" data-i18n="q9">How interested are you in electronics or radio communication? <span class="req">*</span></label>
+      <div class="stars" id="stars-radio">
+        <input type="radio" name="interest_radio" id="r5" value="5" required><label for="r5">★</label>
+        <input type="radio" name="interest_radio" id="r4" value="4"><label for="r4">★</label>
+        <input type="radio" name="interest_radio" id="r3" value="3"><label for="r3">★</label>
+        <input type="radio" name="interest_radio" id="r2" value="2"><label for="r2">★</label>
+        <input type="radio" name="interest_radio" id="r1" value="1"><label for="r1">★</label>
+      </div>
+    </div>
+
+    <!-- Want to learn -->
+    <div class="q">
+      <label class="q-label" data-i18n="q10">Do you want to learn about radio foxhunting after today? <span class="req">*</span></label>
+      <div class="pill-group">
+        <label><input type="radio" name="want_learn" value="Yes, definitely" required><span data-i18n="yes_def">Yes, definitely!</span></label>
+        <label><input type="radio" name="want_learn" value="Maybe"><span data-i18n="maybe">Maybe</span></label>
+        <label><input type="radio" name="want_learn" value="Not really"><span data-i18n="not_really">Not really</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Open -->
+  <div class="section">
+    <div class="section-title" data-i18n="s4_title">💬 Your Expectations</div>
+    <div class="q">
+      <label class="q-label" data-i18n="q11">What do you hope to learn or do today? <span style="color:var(--muted);font-weight:400;font-size:.78rem;" data-i18n="optional">(optional)</span></label>
+      <textarea name="expectation" placeholder="Write anything — in English or Bahasa Malaysia!" data-i18n-ph="ph_expect"></textarea>
+    </div>
+  </div>
+
+  <div class="submit-row">
+    <button class="btn-submit" type="submit" id="submitBtn" data-i18n="submit_btn">Submit Survey →</button>
+  </div>
+  <div id="status"></div>
+
+</form>
+</div>
+
+<!-- Success screen -->
+<div id="success">
+  <div class="icon">🎉</div>
+  <h2 data-i18n="success_h">Survey submitted — thank you!</h2>
+  <p data-i18n="success_p">Now head back to the workshop and let's start hunting foxes!</p>
+  <br>
+  <a href="module-0.html" style="color:var(--teal);font-weight:700;text-decoration:none;" data-i18n="success_link">Go to Module 0 · Orientation →</a>
+</div>
+</div><!-- .wrap -->
+
+<script>
+/* ─── REPLACE THIS WITH YOUR DEPLOYED APPS SCRIPT WEB APP URL ─────────────
+   Steps:
+   1. Open your Google Sheet
+   2. Extensions → Apps Script
+   3. Paste the doPost() code from the bottom of this file
+   4. Click Deploy → New Deployment → Web App
+      Execute as: Me | Who has access: Anyone
+   5. Copy the /exec URL and paste it below
+   ──────────────────────────────────────────────────────────────────────── */
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+// Pre-fill from registration (if participant already registered)
+(function(){
+  try {
+    var p = JSON.parse(localStorage.getItem('rf_participant') || '{}');
+    if (p.level) {
+      // Auto-select level radio
+      var r = document.querySelector('input[name=level][value="'+p.level+'"]');
+      if (r) r.click();
+    }
+  } catch(e) {}
+})();
+
+/* ─── i18n ─────────────────────────────────────────────────────────────── */
+const i18n = {
+  en: {
+    badge:'Pre-Survey', eyebrow:'JOTA JOTI 2026 · UMPSA STEM Lab',
+    h1:'Before We Begin — Tell Us About You',
+    subtitle:'This short survey helps us understand what you already know. There are no wrong answers! Takes about 3 minutes.',
+    s1_title:'📋 About You', q1:'School level', q1_primary:'Primary (Std 4–6)', q1_secondary:'Secondary (Form 1–5)',
+    q2:'Age group', q3:'Gender', optional:'(optional)', male:'Male', female:'Female', pns:'Prefer not to say',
+    s2_title:'🧠 What Do You Already Know?',
+    s2_hint:'Be honest — we just want to know your starting point!',
+    q4:'I have heard of Morse code before.', q5:'I know how to use a compass.',
+    q6:'I have used a radio device (walkie-talkie, handheld radio).',
+    q7:'I know what a Yagi antenna is.',
+    yes:'Yes', no:'No', not_sure:'Not sure', a_little:'A little',
+    s3_title:'⭐ Your Interest in STEM',
+    s3_hint:'1 = Not interested at all · 5 = Very interested',
+    q8:'How interested are you in science and technology?',
+    q9:'How interested are you in electronics or radio communication?',
+    q10:'Do you want to learn more about radio foxhunting after today?',
+    yes_def:'Yes, definitely!', maybe:'Maybe', not_really:'Not really',
+    s4_title:'💬 Your Expectations',
+    q11:'What do you hope to learn or do today?',
+    ph_expect:'Write anything — in English or Bahasa Malaysia!',
+    submit_btn:'Submit Survey →',
+    success_h:'Survey submitted — thank you!',
+    success_p:'Now head back to the workshop and let\'s start hunting foxes!',
+    success_link:'Go to Module 0 · Orientation →',
+    sending:'Submitting…', err:'Something went wrong — please try again.',
+  },
+  bm: {
+    badge:'Kaji Selidik Pra', eyebrow:'JOTA JOTI 2026 · UMPSA STEM Lab',
+    h1:'Sebelum Kita Mulakan — Cerita Sikit Tentang Diri Kamu',
+    subtitle:'Kaji selidik ringkas ini membantu kami memahami pengetahuan sedia ada kamu. Tiada jawapan salah! Ambil masa lebih kurang 3 minit.',
+    s1_title:'📋 Tentang Kamu', q1:'Peringkat sekolah', q1_primary:'Rendah (Std 4–6)', q1_secondary:'Menengah (Tingkatan 1–5)',
+    q2:'Julat umur', q3:'Jantina', optional:'(pilihan)', male:'Lelaki', female:'Perempuan', pns:'Tidak mahu nyatakan',
+    s2_title:'🧠 Apa Yang Kamu Sudah Tahu?',
+    s2_hint:'Jawab dengan jujur — kami hanya ingin tahu titik permulaan kamu!',
+    q4:'Saya pernah mendengar tentang kod Morse.', q5:'Saya tahu cara menggunakan kompas.',
+    q6:'Saya pernah menggunakan alat radio (walkie-talkie, radio genggam).',
+    q7:'Saya tahu apa itu antena Yagi.',
+    yes:'Ya', no:'Tidak', not_sure:'Tidak pasti', a_little:'Sedikit',
+    s3_title:'⭐ Minat Kamu Terhadap STEM',
+    s3_hint:'1 = Langsung tidak berminat · 5 = Sangat berminat',
+    q8:'Sejauh mana minat kamu terhadap sains dan teknologi?',
+    q9:'Sejauh mana minat kamu terhadap elektronik atau komunikasi radio?',
+    q10:'Adakah kamu mahu belajar lebih lanjut tentang radio foxhunting selepas ini?',
+    yes_def:'Ya, semestinya!', maybe:'Mungkin', not_really:'Kurang berminat',
+    s4_title:'💬 Jangkaan Kamu',
+    q11:'Apa yang kamu harap dapat pelajari atau lakukan hari ini?',
+    ph_expect:'Tulis apa-apa sahaja — dalam Bahasa Malaysia atau Inggeris!',
+    submit_btn:'Hantar Kaji Selidik →',
+    success_h:'Kaji selidik dihantar — terima kasih!',
+    success_p:'Sekarang kembali ke bengkel dan jom mula memburu rubah!',
+    success_link:'Pergi ke Modul 0 · Orientasi →',
+    sending:'Menghantar…', err:'Ralat — sila cuba sekali lagi.',
+  }
+};
+
+let lang = 'en';
+function setLang(l) {
+  lang = l;
+  document.getElementById('btnEN').classList.toggle('active', l==='en');
+  document.getElementById('btnBM').classList.toggle('active', l==='bm');
+  const t = i18n[l];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (t[k]) el.textContent = t[k];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const k = el.getAttribute('data-i18n-ph');
+    if (t[k]) el.placeholder = t[k];
+  });
+}
+
+/* ─── Form submission ───────────────────────────────────────────────────── */
+async function submitForm(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const status = document.getElementById('status');
+  btn.disabled = true;
+  status.textContent = i18n[lang].sending;
+  status.className = '';
+
+  const fd = new FormData(e.target);
+  // Include participant info from registration
+  var _p = {};
+  try { _p = JSON.parse(localStorage.getItem('rf_participant') || '{}'); } catch(e){}
+  const payload = {survey:'pre', timestamp: new Date().toISOString(), lang,
+    participant_name: _p.full_name || '', participant_id: _p.matric_no || ''};
+  fd.forEach((v,k) => payload[k] = v);
+
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    // Demo mode — show success without actually submitting
+    setTimeout(() => showSuccess(), 800);
+    return;
+  }
+
+  try {
+    await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify(payload)});
+    showSuccess();
+  } catch(err) {
+    status.textContent = i18n[lang].err;
+    status.className = 'err';
+    btn.disabled = false;
+  }
+}
+
+function showSuccess() {
+  setLang(lang); // refresh i18n on success screen
+  document.getElementById('form-area').style.display = 'none';
+  document.getElementById('success').style.display = 'block';
+}
+</script>
+
+<!--
+═══════════════════════════════════════════════════════════════════════════════
+  GOOGLE APPS SCRIPT — paste this into your Sheet's Apps Script editor
+  (Extensions → Apps Script → replace the default code → Save → Deploy)
+═══════════════════════════════════════════════════════════════════════════════
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName('Pre-Survey');
+    if (!sheet) {
+      sheet = ss.insertSheet('Pre-Survey');
+      sheet.appendRow([
+        'Timestamp','Survey','Lang','Level','Age','Gender',
+        'Heard Morse','Use Compass','Used Radio','Knows Yagi',
+        'Interest STEM (1-5)','Interest Radio (1-5)','Want to Learn More',
+        'Expectations'
+      ]);
+    }
+    sheet.appendRow([
+      data.timestamp, data.survey, data.lang, data.level, data.age, data.gender||'',
+      data.morse, data.compass, data.radio_use, data.yagi,
+      data.interest_stem, data.interest_radio, data.want_learn,
+      data.expectation||''
+    ]);
+    return ContentService.createTextOutput('ok');
+  } catch(err) {
+    return ContentService.createTextOutput('error: ' + err.message);
+  }
+}
+
+═══════════════════════════════════════════════════════════════════════════════
+-->
+</body>
+</html>

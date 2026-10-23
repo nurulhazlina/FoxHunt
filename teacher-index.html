@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Facilitator Hub — Radio Foxhunting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap">
+  <style>
+    /* ── Independent Light-Mode Token System ────────────────────
+       Layout: STEM bar → gate → revealed content (overview, schedule, objectives, rubric, sheets, module links, tips)
+       Fully self-contained, no style.css dependency.
+    ──────────────────────────────────────────────────────────── */
+    :root {
+      --bg:           #F5F7F6;
+      --surface:      #FFFFFF;
+      --surface2:     #F0F4F3;
+      --border:       #D4E4E2;
+      --border-str:   #B0CFCC;
+      --text:         #162420;
+      --text-muted:   #5A7A76;
+      --teal:         #02ADA5;
+      --teal-dark:    #026F6A;
+      --teal-light:   #E0F5F4;
+      --blue:         #0D55A7;
+      --blue-light:   #E5EEFA;
+      --orange:       #E07B2A;
+      --orange-light: #FDF0E5;
+      --green:        #2A9E5E;
+      --green-light:  #E5F6ED;
+      --shadow-sm:    0 1px 3px rgba(0,0,0,0.08);
+      --shadow:       0 4px 16px rgba(0,0,0,0.10);
+      --shadow-lg:    0 8px 32px rgba(0,0,0,0.12);
+      --radius:       10px;
+      --radius-lg:    16px;
+      --ff-display:   'Space Grotesk', system-ui, sans-serif;
+      --ff-mono:      'Space Mono', 'Courier New', monospace;
+      color-scheme: light;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--ff-display);
+      font-size: 15px;
+      line-height: 1.65;
+      min-height: 100vh;
+      padding-left:  max(0px, env(safe-area-inset-left,  0px));
+      padding-right: max(0px, env(safe-area-inset-right, 0px));
+    }
+
+    .inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding-left:  max(16px, env(safe-area-inset-left,  0px));
+      padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+
+    /* ── STEM Brand Bar ── */
+    #stem-bar {
+      height: 7px;
+      background: linear-gradient(90deg,
+        #E72A2A 0%,
+        #E72A2A 25%,
+        #2A79E7 25%,
+        #2A79E7 50%,
+        #2AE76A 50%,
+        #2AE76A 75%,
+        #E7B62A 75%,
+        #E7B62A 100%
+      );
+    }
+    .stem-labels {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+    }
+    .stem-labels-inner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .stem-label-item {
+      padding: 6px 12px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .stem-label-item.s { color: #C72020; }
+    .stem-label-item.t { color: #1A5EC4; }
+    .stem-label-item.e { color: #1A8A42; }
+    .stem-label-item.m { color: #B58A10; }
+
+    /* ── Top nav ── */
+    #topnav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .topnav-inner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .nav-brand {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--teal);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: auto;
+    }
+    .nav-back {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 5px 12px;
+      border: 1px solid var(--border-str);
+      border-radius: 6px;
+      transition: border-color .15s, color .15s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .nav-back:hover { border-color: var(--teal); color: var(--teal); }
+    .teacher-badge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      border: 1px solid rgba(2,173,165,0.3);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    /* ── Gate ── */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    /* ── Main content (hidden until gate opened) ── */
+    #main-content { display: none; }
+    #main-content.revealed { display: block; }
+
+    /* ── Section headings ── */
+    .section-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--teal-dark);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .section-h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      color: var(--text);
+      margin-bottom: 6px;
+      text-wrap: balance;
+    }
+    .section-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    .page-section {
+      padding: 48px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-section:last-of-type { border-bottom: none; }
+
+    /* ── Overview cards ── */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .overview-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .overview-card-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .overview-card-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--teal-dark);
+      font-family: var(--ff-mono);
+    }
+    .overview-card-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .info-box {
+      background: var(--teal-light);
+      border: 1px solid rgba(2,173,165,0.25);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: 14px;
+      color: var(--teal-dark);
+      line-height: 1.65;
+    }
+    .info-box strong { color: var(--teal-dark); }
+    .info-box + .info-box { margin-top: 10px; }
+
+    .warn-box {
+      background: var(--orange-light);
+      border: 1px solid rgba(224,123,42,0.3);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: 14px;
+      color: #7A3E0A;
+      line-height: 1.65;
+      margin-top: 14px;
+    }
+
+    /* ── Schedule table ── */
+    .sched-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+    table.sched-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    .sched-table th {
+      background: var(--teal);
+      color: #fff;
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    .sched-table th:first-child { border-radius: 0; }
+    .sched-table td {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .sched-table td:first-child { font-family: var(--ff-mono); font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+    .sched-table tbody tr:hover td { background: var(--surface2); }
+    .sched-table tbody tr:last-child td { border-bottom: none; }
+    .mod-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      margin-bottom: 3px;
+    }
+    .mod-pill.blue { background: var(--blue-light); color: var(--blue); }
+    .mod-pill.green { background: var(--green-light); color: var(--green); }
+    .mod-pill.orange { background: var(--orange-light); color: var(--orange); }
+    td .duration { font-size: 11px; color: var(--text-muted); font-family: var(--ff-mono); }
+
+    /* ── Learning Objectives ── */
+    .obj-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .obj-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .obj-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .obj-bloom {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--teal-dark);
+      margin-bottom: 3px;
+    }
+    .obj-text { font-size: 14px; color: var(--text); line-height: 1.55; }
+
+    /* ── Assessment Rubric ── */
+    .rubric-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    table.rubric-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+    .rubric-table th {
+      background: var(--surface2);
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: left;
+      border-bottom: 2px solid var(--border-str);
+    }
+    .rubric-table td {
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .rubric-table tbody tr:hover td { background: var(--surface2); }
+    .rubric-table tbody tr:last-child td { border-bottom: none; }
+    .rubric-table td:first-child { font-weight: 600; white-space: nowrap; }
+    .score-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--ff-mono);
+    }
+    .score-4 { background: #D1FAE5; color: #065F46; }
+    .score-3 { background: #DBEAFE; color: #1E40AF; }
+    .score-2 { background: #FEF3C7; color: #92400E; }
+    .score-1 { background: #FEE2E2; color: #991B1B; }
+
+    /* ── Google Sheets Setup ── */
+    .sheets-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .sheet-step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .sheet-step-num {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--teal);
+      color: var(--teal-dark);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .sheet-step-content { flex: 1; min-width: 0; }
+    .sheet-step-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .sheet-step-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+    .code-chip {
+      display: inline-block;
+      background: #1E1E2E;
+      color: #A0DFDB;
+      font-family: var(--ff-mono);
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin: 2px 2px;
+    }
+
+    /* ── Module Links ── */
+    .teacher-module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .teacher-module-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: border-color .15s, box-shadow .15s, transform .15s;
+    }
+    .teacher-module-card:hover { border-color: var(--teal); box-shadow: var(--shadow); transform: translateY(-2px); }
+    .tm-icon { font-size: 1.5rem; margin-bottom: 10px; }
+    .tm-num { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; font-family: var(--ff-mono); }
+    .tm-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; line-height: 1.3; }
+    .tm-link { font-size: 12px; color: var(--teal); font-weight: 600; display: flex; align-items: center; gap: 4px; margin-top: auto; }
+
+    /* ── Facilitator Tips ── */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .tip-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .tip-card.orange { border-left-color: var(--orange); }
+    .tip-card.blue { border-left-color: var(--blue); }
+    .tip-card.green { border-left-color: var(--green); }
+    .tip-card-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--teal-dark);
+      margin-bottom: 6px;
+    }
+    .tip-card.orange .tip-card-tag { color: var(--orange); }
+    .tip-card.blue .tip-card-tag { color: var(--blue); }
+    .tip-card.green .tip-card-tag { color: var(--green); }
+    .tip-card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .tip-card-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .tip-card-text ul { padding-left: 16px; margin-top: 6px; }
+    .tip-card-text li { margin-bottom: 3px; }
+
+    /* ── Print hints ── */
+    .print-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    table.print-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 400px;
+    }
+    .print-table th {
+      background: var(--surface2);
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: left;
+      border-bottom: 2px solid var(--border-str);
+    }
+    .print-table td {
+      padding: 10px 12px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    .print-table tbody tr:last-child td { border-bottom: none; }
+    .print-table tbody tr:hover td { background: var(--surface2); }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 24px 0;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-brand { font-size: 13px; font-weight: 600; color: var(--teal-dark); }
+    .footer-info { font-size: 12px; color: var(--text-muted); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .overview-grid { grid-template-columns: 1fr 1fr; }
+      .teacher-module-grid { grid-template-columns: 1fr 1fr; }
+      .tips-grid { grid-template-columns: 1fr; }
+      
+    }
+    @media (max-width: 480px) {
+      .overview-grid { grid-template-columns: 1fr 1fr; }
+      .teacher-module-grid { grid-template-columns: 1fr; }
+      .stem-labels-inner { grid-template-columns: repeat(4, 1fr); }
+      .stem-label-item { font-size: 9px; padding: 5px 4px; }
+    }
+  </style>
+</head>
+<body>
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+<!-- ── STEM Brand Bar ── -->
+<div id="stem-bar" aria-hidden="true"></div>
+<div class="stem-labels" aria-hidden="true">
+  <div class="stem-labels-inner">
+    <div class="stem-label-item s">Science</div>
+    <div class="stem-label-item t">Technology</div>
+    <div class="stem-label-item e">Engineering</div>
+    <div class="stem-label-item m">Mathematics</div>
+  </div>
+</div>
+
+<!-- ── Top Nav ── -->
+<nav id="topnav" aria-label="Facilitator navigation">
+  <div class="inner topnav-inner">
+    <a class="nav-brand" href="index.html">
+      <svg width="20" height="20" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <circle cx="11" cy="11" r="10" stroke="#02ADA5" stroke-width="1.5"/>
+        <circle cx="11" cy="11" r="6" stroke="#02ADA5" stroke-width="1" stroke-dasharray="2 2"/>
+        <circle cx="11" cy="11" r="2.5" fill="#02ADA5"/>
+        <line x1="11" y1="1" x2="11" y2="4.5" stroke="#02ADA5" stroke-width="1.5"/>
+        <line x1="11" y1="17.5" x2="11" y2="21" stroke="#02ADA5" stroke-width="1.5"/>
+        <line x1="1" y1="11" x2="4.5" y2="11" stroke="#02ADA5" stroke-width="1.5"/>
+        <line x1="17.5" y1="11" x2="21" y2="11" stroke="#02ADA5" stroke-width="1.5"/>
+      </svg>
+      Radio Foxhunting
+    </a>
+    <span class="teacher-badge">Facilitator View</span>
+    <a class="nav-back" href="index.html">
+      ← Student Home
+    </a>
+  </div>
+</nav>
+
+<!-- ── Gate ── -->
+</div>
+</div>
+
+<!-- ── Main Content ── -->
+<div id="main-content">
+
+  <!-- 1. Workshop Overview -->
+  <section class="page-section" aria-labelledby="overview-h2">
+    <div class="inner">
+      <p class="section-eyebrow">Workshop Overview</p>
+      <h2 class="section-h2" id="overview-h2">Radio Foxhunting · ARDF One-Day Workshop</h2>
+      <p class="section-desc">A full-day scouting activity where teams hunt hidden 144 MHz radio transmitters using Yagi antennas, compasses, and topographic maps. Designed for JOTA JOTI 2026 at UMPSA.</p>
+
+      <div class="overview-grid">
+        <div class="overview-card">
+          <div class="overview-card-label">Duration</div>
+          <div class="overview-card-value">1 Day</div>
+          <div class="overview-card-note">~6.5 hours of activities</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-card-label">Frequency</div>
+          <div class="overview-card-value">144 MHz</div>
+          <div class="overview-card-note">2-meter amateur band</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-card-label">Beacons</div>
+          <div class="overview-card-value">5 Foxes</div>
+          <div class="overview-card-note">MO MOE MOI MOS MOH</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-card-label">Team Size</div>
+          <div class="overview-card-value">2–4</div>
+          <div class="overview-card-note">Scouts per team</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-card-label">Age Group</div>
+          <div class="overview-card-value">11–17</div>
+          <div class="overview-card-note">Secondary scouts</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-card-label">Max Teams</div>
+          <div class="overview-card-value">10–12</div>
+          <div class="overview-card-note">Per facilitator group</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>Amateur Radio Licence note:</strong> Transmitters must be operated by a licensed amateur radio operator (MCMC B licence minimum) at all times during field deployment. Scouts may use the receive equipment without a licence.
+      </div>
+      <div class="info-box" style="margin-top:10px;">
+        <strong>ARDF Format used:</strong> Simplified IARU Region 3 rules. 5 foxes on sequential 12-second transmission slots, one minute master oscillator beacon. Teams hunt on foot. Paper punch-card scoring. No finish-line time penalty for this beginner format.
+      </div>
+      <div class="warn-box">
+        <strong>⚠ Site safety:</strong> Walk the course before the event. Mark any hazards on your master map. Ensure all scouts carry a whistle (3 blasts = emergency), a water bottle, and know the rally point.
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Module Schedule -->
+  <section class="page-section" aria-labelledby="sched-h2">
+    <div class="inner">
+      <p class="section-eyebrow">Programme Schedule</p>
+      <h2 class="section-h2" id="sched-h2">One-Day Module Timetable</h2>
+      <p class="section-desc">Adjust start times to local sunrise and venue constraints. Ensure field deployment ends by late afternoon.</p>
+
+      <div class="sched-table-wrap">
+        <table class="sched-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Module</th>
+              <th>Activity</th>
+              <th>Venue</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>07:30–08:00</td>
+              <td><span class="duration">30 min</span></td>
+              <td>Registration, team formation, equipment issue</td>
+              <td>Base camp</td>
+              <td>Issue receiver, Yagi, map, card, pen, whistle per team</td>
+            </tr>
+            <tr>
+              <td>08:00–09:00</td>
+              <td><span class="mod-pill">Module 1</span><div class="duration">60 min</div></td>
+              <td><strong>Orientation &amp; Safety</strong> — Site rules, radio regulations, emergency drill, role assignment</td>
+              <td>Classroom / shelter</td>
+              <td>Show LMS module-0.html. Run emergency whistle drill.</td>
+            </tr>
+            <tr>
+              <td>09:00–10:00</td>
+              <td><span class="mod-pill blue">Module 2</span><div class="duration">60 min</div></td>
+              <td><strong>Morse Code</strong> — Learn fox identifiers, decode practice, fox sequence timing</td>
+              <td>Classroom</td>
+              <td>Each team decodes 5 messages correctly before proceeding</td>
+            </tr>
+            <tr>
+              <td>10:00–11:00</td>
+              <td><span class="mod-pill green">Module 3</span><div class="duration">60 min</div></td>
+              <td><strong>Map &amp; Compass</strong> — Contour reading, bearing practice, triangulation exercise (indoor)</td>
+              <td>Classroom</td>
+              <td>Use printed 1:10000 topo map. Pre-mark three landmarks.</td>
+            </tr>
+            <tr>
+              <td>11:00–12:00</td>
+              <td><span class="mod-pill orange">Module 4</span><div class="duration">60 min</div></td>
+              <td><strong>Yagi Antenna Build</strong> — Assemble 3-element Yagi, attenuator demo, signal test walk</td>
+              <td>Outdoor / workshop area</td>
+              <td>Pre-cut elements save time. Test antenna on live beacon before lunch.</td>
+            </tr>
+            <tr>
+              <td>12:00–13:00</td>
+              <td><span class="duration">60 min</span></td>
+              <td>Lunch break, equipment check, team briefing</td>
+              <td>Base camp</td>
+              <td>Verify every team's punch card is blank, map is correct edition</td>
+            </tr>
+            <tr>
+              <td>13:00–15:30</td>
+              <td><span class="mod-pill" style="background:#fde8ff;color:#6b21a8">Module 5</span><div class="duration">150 min</div></td>
+              <td><strong>Foxhunting Field Run</strong> — Find all 5 beacons, punch control card, return to base</td>
+              <td>Hunt course (outdoor)</td>
+              <td>Start teams at 2-min intervals. Facilitators stationed at Fox 1 and Fox 5. Recall whistle at T+140 min.</td>
+            </tr>
+            <tr>
+              <td>15:30–16:00</td>
+              <td><span class="duration">30 min</span></td>
+              <td>Card check, scoring, results announcement, debrief</td>
+              <td>Base camp</td>
+              <td>Score: 10 pts/fox found + time bonus (1 pt per min under limit)</td>
+            </tr>
+            <tr>
+              <td>16:00–16:30</td>
+              <td><span class="duration">30 min</span></td>
+              <td>Post-survey, equipment return, certificate issue</td>
+              <td>Base camp</td>
+              <td>Each scout completes survey-post.html before leaving</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Learning Objectives -->
+  <section class="page-section" aria-labelledby="obj-h2">
+    <div class="inner">
+      <p class="section-eyebrow">Curriculum</p>
+      <h2 class="section-h2" id="obj-h2">Learning Objectives</h2>
+      <p class="section-desc">Bloom's taxonomy levels noted. Assessable outcomes for each workshop module.</p>
+
+      <div class="obj-list">
+        <div class="obj-item">
+          <span class="obj-num">1</span>
+          <div>
+            <div class="obj-bloom">Remember · Understand</div>
+            <div class="obj-text">Scouts can explain the ARDF beacon cycle (5 foxes, 12-second slots, 60-second MO), identify each fox by its Morse identifier, and state the frequency and band used (144 MHz, 2m).</div>
+          </div>
+        </div>
+        <div class="obj-item">
+          <span class="obj-num">2</span>
+          <div>
+            <div class="obj-bloom">Apply</div>
+            <div class="obj-text">Scouts can take a compass bearing on a signal maximum using a Yagi antenna and plot that bearing line from their current position on a 1:10 000 topographic map.</div>
+          </div>
+        </div>
+        <div class="obj-item">
+          <span class="obj-num">3</span>
+          <div>
+            <div class="obj-bloom">Apply · Analyse</div>
+            <div class="obj-text">Scouts can triangulate a transmitter location from two or more bearing lines, select the best approach route given terrain, and estimate remaining distance from signal strength.</div>
+          </div>
+        </div>
+        <div class="obj-item">
+          <span class="obj-num">4</span>
+          <div>
+            <div class="obj-bloom">Analyse · Evaluate</div>
+            <div class="obj-text">Scouts can apply the body-null technique and use inline attenuators to close in on a transmitter at short range, adjusting technique as signal strength increases.</div>
+          </div>
+        </div>
+        <div class="obj-item">
+          <span class="obj-num">5</span>
+          <div>
+            <div class="obj-bloom">Create · Evaluate</div>
+            <div class="obj-text">Teams can independently plan a hunt strategy (fox visit order, pacing, time budget) and adapt the plan in the field when initial triangulation misses, demonstrating computational and critical thinking.</div>
+          </div>
+        </div>
+        <div class="obj-item">
+          <span class="obj-num">6</span>
+          <div>
+            <div class="obj-bloom">Understand · Apply</div>
+            <div class="obj-text">Scouts can demonstrate safe radio and field practices: no transmission on 144 MHz without a licensed operator present, stay-on-trail rules, emergency whistle signal, and buddy-system check-in procedure.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Assessment Rubric -->
+  <section class="page-section" aria-labelledby="rubric-h2">
+    <div class="inner">
+      <p class="section-eyebrow">Assessment</p>
+      <h2 class="section-h2" id="rubric-h2">Facilitator Assessment Rubric</h2>
+      <p class="section-desc">Observe teams during field run. Score each criterion 1–4. Total = sum of all criteria × 2.5 = 100 point scale.</p>
+
+      <div class="rubric-table-wrap">
+        <table class="rubric-table">
+          <thead>
+            <tr>
+              <th>Criterion</th>
+              <th><span class="score-badge score-4">4 — Exceeds</span></th>
+              <th><span class="score-badge score-3">3 — Meets</span></th>
+              <th><span class="score-badge score-2">2 — Developing</span></th>
+              <th><span class="score-badge score-1">1 — Beginning</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Morse Code ID</td>
+              <td>Correctly identifies all 5 fox IDs from audio in &lt;5 s each</td>
+              <td>Identifies 4–5 fox IDs with occasional hesitation</td>
+              <td>Identifies 2–3 fox IDs; confuses similar patterns</td>
+              <td>Cannot reliably decode any fox identifier</td>
+            </tr>
+            <tr>
+              <td>Bearing Accuracy</td>
+              <td>Bearings within ±5° of true; consistent across two positions</td>
+              <td>Bearings within ±10° with minor compass technique errors</td>
+              <td>Bearings within ±20°; forgets to account for declination</td>
+              <td>Bearing technique incorrect; cannot hold Yagi steadily</td>
+            </tr>
+            <tr>
+              <td>Map Use</td>
+              <td>Plots all bearings accurately; chooses optimal route using contours</td>
+              <td>Plots bearings correctly; route mostly suitable</td>
+              <td>Plots some bearings; map orientation errors present</td>
+              <td>Cannot plot bearing on map; does not use terrain features</td>
+            </tr>
+            <tr>
+              <td>Close-In Technique</td>
+              <td>Uses attenuator correctly; finds null with body method efficiently</td>
+              <td>Uses attenuator; body null partially applied</td>
+              <td>Attempts attenuator but does not adjust levels; body null unused</td>
+              <td>Walks directly into strong signal; receiver overloads</td>
+            </tr>
+            <tr>
+              <td>Teamwork &amp; Roles</td>
+              <td>Roles clearly assigned; constant communication; adapts strategy</td>
+              <td>Roles mostly observed; some communication breakdowns</td>
+              <td>One or two members dominate; others not engaged</td>
+              <td>No defined roles; team frequently disagrees</td>
+            </tr>
+            <tr>
+              <td>Safety &amp; Rules</td>
+              <td>All safety protocols followed throughout; stays within boundaries</td>
+              <td>One minor oversight; corrected without prompting</td>
+              <td>Two or more minor oversights; required facilitator reminder</td>
+              <td>Serious safety breach or deliberate rule violation</td>
+            </tr>
+            <tr>
+              <td>Field Strategy</td>
+              <td>Efficiently plans fox visit order; manages time; finds 5 foxes</td>
+              <td>Finds 3–4 foxes within time; adequate time management</td>
+              <td>Finds 1–2 foxes; poor route selection wastes time</td>
+              <td>Finds 0 foxes; no evidence of strategy</td>
+            </tr>
+            <tr>
+              <td>CT &amp; Problem Solving</td>
+              <td>Adapts plan on the fly; uses data from misses to revise estimate</td>
+              <td>Makes some adaptations; partially applies decomposition</td>
+              <td>Follows sequence rigidly; does not adapt when plan fails</td>
+              <td>No evidence of systematic approach</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box" style="margin-top:16px;">
+        <strong>Scoring:</strong> Sum all 8 criteria (max 32 points). Multiply by 3.125 for 100-point scale.
+        Foxes found is a separate tally: award a certificate to teams finding ≥ 3 foxes.
+        Certificate of Participation to all scouts who complete the full day.
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Google Sheets Setup -->
+  <section class="page-section" aria-labelledby="sheets-h2">
+    <div class="inner">
+      <p class="section-eyebrow">Data Collection</p>
+      <h2 class="section-h2" id="sheets-h2">Google Sheets Tracker Setup</h2>
+      <p class="section-desc">The LMS tracker.js pushes progress events to a Google Apps Script endpoint. Set up the sheet before the workshop day.</p>
+
+      <div class="sheets-steps">
+        <div class="sheet-step">
+          <div class="sheet-step-num">1</div>
+          <div class="sheet-step-content">
+            <div class="sheet-step-title">Create the spreadsheet</div>
+            <div class="sheet-step-desc">Open Google Sheets and create a new sheet named <span class="code-chip">RF_Workshop_2026</span>. Create four tabs: <span class="code-chip">progress</span>, <span class="code-chip">survey_pre</span>, <span class="code-chip">survey_post</span>, and <span class="code-chip">scores</span>.</div>
+          </div>
+        </div>
+        <div class="sheet-step">
+          <div class="sheet-step-num">2</div>
+          <div class="sheet-step-content">
+            <div class="sheet-step-title">Add the Apps Script web app</div>
+            <div class="sheet-step-desc">In the spreadsheet, open Extensions → Apps Script. Paste the tracker endpoint script (available in the workshop facilitator pack). Deploy as a Web App with <span class="code-chip">Execute as: Me</span> and <span class="code-chip">Who has access: Anyone</span>. Copy the deployment URL.</div>
+          </div>
+        </div>
+        <div class="sheet-step">
+          <div class="sheet-step-num">3</div>
+          <div class="sheet-step-content">
+            <div class="sheet-step-title">Update tracker.js</div>
+            <div class="sheet-step-desc">Open <span class="code-chip">tracker.js</span> and set <span class="code-chip">SHEET_ENDPOINT</span> to your deployment URL. Save and redeploy the LMS. The tracker sends POST requests with <span class="code-chip">{ scoutId, module, activity, ts }</span> payloads on each activity completion.</div>
+          </div>
+        </div>
+        <div class="sheet-step">
+          <div class="sheet-step-num">4</div>
+          <div class="sheet-step-content">
+            <div class="sheet-step-title">Set up the progress tab columns</div>
+            <div class="sheet-step-desc">
+              <div>Required column headers in the <span class="code-chip">progress</span> tab:</div>
+              <div style="margin-top:8px;">
+                <span class="code-chip">timestamp</span>
+                <span class="code-chip">scout_id</span>
+                <span class="code-chip">team_name</span>
+                <span class="code-chip">module</span>
+                <span class="code-chip">activity</span>
+                <span class="code-chip">score</span>
+                <span class="code-chip">duration_s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sheet-step">
+          <div class="sheet-step-num">5</div>
+          <div class="sheet-step-content">
+            <div class="sheet-step-title">Test before the event</div>
+            <div class="sheet-step-desc">Open a student page on the event device and complete one activity. Within 5 seconds, a row should appear in the <span class="code-chip">progress</span> tab. If not, check the Apps Script execution log for CORS or permission errors. Most issues resolve by re-deploying the web app with a new version.</div>
+          </div>
+        </div>
+        <div class="sheet-step">
+          <div class="sheet-step-num">6</div>
+          <div class="sheet-step-content">
+            <div class="sheet-step-title">Monitor live during the workshop</div>
+            <div class="sheet-step-desc">Keep the spreadsheet open on the facilitator device. Use conditional formatting on the <span class="code-chip">module</span> column to highlight stuck teams (no new rows after 25 minutes). The <span class="code-chip">scores</span> tab auto-calculates per-team completion percentage from a COUNTIF formula.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Module Links -->
+  <section class="page-section" aria-labelledby="modlinks-h2">
+    <div class="inner">
+      <p class="section-eyebrow">Facilitator Pages</p>
+      <h2 class="section-h2" id="modlinks-h2">Teacher Module Files</h2>
+      <p class="section-desc">Each teacher page contains answer keys, CT activity solutions, common misconceptions, and differentiating questions.</p>
+
+      <div class="teacher-module-grid">
+        <a class="teacher-module-card" href="teacher-0.html">
+          <span class="tm-icon">🧭</span>
+          <div class="tm-num">Teacher · Module 1</div>
+          <div class="tm-title">Orientation &amp; Safety — Facilitator Guide</div>
+          <span class="tm-link">Open guide →</span>
+        </a>
+        <a class="teacher-module-card" href="teacher-1.html">
+          <span class="tm-icon">📡</span>
+          <div class="tm-num">Teacher · Module 2</div>
+          <div class="tm-title">Morse Code — Answer Key &amp; Audio Files</div>
+          <span class="tm-link">Open guide →</span>
+        </a>
+        <a class="teacher-module-card" href="teacher-2.html">
+          <span class="tm-icon">🗺️</span>
+          <div class="tm-num">Teacher · Module 3</div>
+          <div class="tm-title">Map &amp; Compass — Solutions &amp; Demo Setup</div>
+          <span class="tm-link">Open guide →</span>
+        </a>
+        <a class="teacher-module-card" href="teacher-3.html">
+          <span class="tm-icon">📻</span>
+          <div class="tm-num">Teacher · Module 4</div>
+          <div class="tm-title">Yagi Build — Parts List &amp; Common Faults</div>
+          <span class="tm-link">Open guide →</span>
+        </a>
+        <a class="teacher-module-card" href="teacher-4.html">
+          <span class="tm-icon">🦊</span>
+          <div class="tm-num">Teacher · Module 5</div>
+          <div class="tm-title">Field Run — Transmitter Placement &amp; Scoring</div>
+          <span class="tm-link">Open guide →</span>
+        </a>
+      </div>
+
+      <div style="margin-top:24px;">
+        <p class="section-eyebrow">Print Materials</p>
+        <div class="print-table-wrap">
+          <table class="print-table">
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Copies needed</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Topographic hunt map (1:10 000)</td>
+                <td>1 per team + 2 spares</td>
+                <td>Laminate or use map case if rain forecast</td>
+              </tr>
+              <tr>
+                <td>Control punch card</td>
+                <td>1 per team + 5 spares</td>
+                <td>A6 card stock, 5 numbered boxes</td>
+              </tr>
+              <tr>
+                <td>Morse reference card</td>
+                <td>1 per scout</td>
+                <td>Fox identifiers on front, full alphabet on back</td>
+              </tr>
+              <tr>
+                <td>Field recording sheet</td>
+                <td>2 per team</td>
+                <td>Bearing log with time, position, bearing, fox ID columns</td>
+              </tr>
+              <tr>
+                <td>Emergency contact card</td>
+                <td>1 per scout</td>
+                <td>Facilitator phone, rally point GPS coords, nearest clinic</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Facilitator Tips -->
+  <section class="page-section" aria-labelledby="tips-h2">
+    <div class="inner">
+      <p class="section-eyebrow">Field Wisdom</p>
+      <h2 class="section-h2" id="tips-h2">Facilitator Tips for Scouts</h2>
+      <p class="section-desc">Collected from previous ARDF workshops. Address these proactively in Module 1 to avoid delays in the field.</p>
+
+      <div class="tips-grid">
+        <div class="tip-card">
+          <div class="tip-card-tag">Signal Confusion</div>
+          <div class="tip-card-title">Scouts hear everything at 144.500 MHz</div>
+          <div class="tip-card-text">
+            First-time scouts often cannot isolate the fox signal from background noise.
+            <ul>
+              <li>Teach them to listen for rhythm, not just volume</li>
+              <li>Have them listen to all 5 fox IDs before the run</li>
+              <li>Remind them MO = – – – is the master oscillator, not a fox</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip-card orange">
+          <div class="tip-card-tag">Map Reading</div>
+          <div class="tip-card-title">They rotate the map, not themselves</div>
+          <div class="tip-card-text">
+            Scouts turn the paper map to face their direction of travel. This reverses east and west on the ground.
+            <ul>
+              <li>Drill: hold map flat, align north arrow to compass north — always</li>
+              <li>Practice indoors with a simple floor plan before the field</li>
+              <li>Mark their start point together before they disperse</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip-card blue">
+          <div class="tip-card-tag">Antenna Use</div>
+          <div class="tip-card-title">They sweep too fast and miss the null</div>
+          <div class="tip-card-text">
+            A 3-element Yagi has a front beam width of ~60°. A scout sweeping in 2 seconds misses the peak.
+            <ul>
+              <li>Teach: one full 360° rotation should take at least 20 seconds</li>
+              <li>Watch the signal meter, not the landscape</li>
+              <li>Record bearing in notebook before moving — memory fails on rough terrain</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip-card green">
+          <div class="tip-card-tag">Close-In Phase</div>
+          <div class="tip-card-title">They get close and then run past the fox</div>
+          <div class="tip-card-text">
+            When within 20 m, the signal reaches the receiver from all directions. Scouts think the fox moved.
+            <ul>
+              <li>At full-scale deflection, add 20 dB attenuator immediately</li>
+              <li>Switch to body-null: stand still, turn slowly on the spot</li>
+              <li>Fox is always in the null direction (directly behind you when signal drops)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip-card orange">
+          <div class="tip-card-tag">Time Management</div>
+          <div class="tip-card-title">Teams chase the farthest fox first</div>
+          <div class="tip-card-text">
+            Natural tendency is to go for the most exciting fox. This leaves scouts far from base when time runs out.
+            <ul>
+              <li>Brief on score: 10 pts/fox regardless of distance</li>
+              <li>Suggest nearest-fox-first strategy as a starting heuristic</li>
+              <li>Issue a 30-minute and 15-minute return whistle reminder</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-card-tag">Teamwork</div>
+          <div class="tip-card-title">One scout dominates, others disengage</div>
+          <div class="tip-card-text">
+            Often the scout who built the antenna becomes the team's only operator.
+            <ul>
+              <li>Enforce role rotation: map reader, antenna operator, recorder rotate each fox</li>
+              <li>Grade on individual participation in the rubric, not just team result</li>
+              <li>In debrief: ask each team member to name one decision they made</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip-card blue">
+          <div class="tip-card-tag">Computational Thinking</div>
+          <div class="tip-card-title">Help scouts see the algorithm in the hunt</div>
+          <div class="tip-card-text">
+            Connect CT vocabulary explicitly during the field debrief.
+            <ul>
+              <li>Decomposition: each fox is an independent sub-problem</li>
+              <li>Pattern recognition: each fox has the same 5-step find sequence</li>
+              <li>Algorithm: the close-in procedure is a deterministic search loop</li>
+              <li>Abstraction: the map replaces walking the terrain in advance</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip-card green">
+          <div class="tip-card-tag">Equipment</div>
+          <div class="tip-card-title">Antenna connections loosen on rough ground</div>
+          <div class="tip-card-text">
+            3-element Yagi boom connections and the coax-to-receiver BNC joint are the most common failure points.
+            <ul>
+              <li>Issue electrical tape with each team's kit for field repairs</li>
+              <li>Demonstrate antenna assembly and disassembly at start</li>
+              <li>Have one spare receiver at base camp; swap immediately, don't diagnose in field</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer inside main content -->
+  <footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a> &middot;
+      <a href="module-0.html">Module 0</a> &middot;
+      <a href="module-1.html">Module 1</a> &middot;
+      <a href="module-2.html">Module 2</a> &middot;
+      <a href="module-3.html">Module 3</a> &middot;
+      <a href="module-4.html">Module 4</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative
+      <a href="https://ee.ump.edu.my/hazlina/" target="_blank" aria-label="Personal website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" aria-label="Email">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+</div><!-- end #main-content -->
+
+<script>
+function openGate() {
+  const gateSection = document.getElementById('gate-section');
+  const mainContent = document.getElementById('main-content');
+  const btn = document.getElementById('gate-btn');
+
+  btn.disabled = true;
+  btn.textContent = 'Opening…';
+
+  setTimeout(() => {
+    gateSection.style.display = 'none';
+    mainContent.classList.add('revealed');
+    // Smooth scroll to top of content
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Remember for this session
+    try { sessionStorage.setItem('rf_facilitator', '1'); } catch(e) {}
+  }, 400);
+}
+
+// Restore if already confirmed this session
+(function() {
+  try {
+    if (sessionStorage.getItem('rf_facilitator') === '1') {
+      document.getElementById('gate-section').style.display = 'none';
+      document.getElementById('main-content').classList.add('revealed');
+    }
+  } catch(e) {}
+})();
+</script>
+<script>
+/* ── Triple-click SEE → teacher notes ── */
+(function(){
+  var box = document.getElementById('see-box');
+  if (!box) return;
+  var clicks = 0, timer;
+  box.addEventListener('click', function() {
+    clicks++;
+    clearTimeout(timer);
+    timer = setTimeout(function() { clicks = 0; }, 800);
+    if (clicks >= 3) {
+      clicks = 0;
+      window.location.href = 'teacher-index.html';
+    }
+  });
+})();
+</script>
+</body>
+</html>

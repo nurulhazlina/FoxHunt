@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Certificate of Completion – Radio Foxhunting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .cert-section {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 3rem 1.5rem 4rem;
+      gap: 2rem;
+    }
+    .progress-card {
+      background: var(--surface);
+      border: 1px solid rgba(2,173,165,.25);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      max-width: 540px;
+      width: 100%;
+    }
+    .progress-card h2 { color: var(--teal); font-size: 1.35rem; margin-bottom: 1rem; }
+    .progress-card p { color: var(--text-muted); font-size: .9rem; margin-bottom: 1.5rem; }
+    .checklist { list-style: none; padding: 0; margin: 0 0 2rem; display: flex; flex-direction: column; gap: .65rem; }
+    .checklist li { display: flex; align-items: center; gap: .8rem; font-size: .95rem; }
+    .check-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .8rem; flex-shrink: 0; }
+    .check-done { background: var(--teal); color: #000; }
+    .check-todo { background: rgba(255,255,255,.07); color: var(--text-muted); border: 1px solid rgba(255,255,255,.12); }
+    .check-label { color: var(--text-muted); }
+    .check-label.done { color: var(--text); }
+    .back-btn { display: inline-block; background: var(--teal); color: #071412; font-weight: 700; font-size: .9rem; padding: .65rem 1.5rem; border-radius: 8px; text-decoration: none; transition: opacity .2s; }
+    .back-btn:hover { opacity: .85; }
+    .cert-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; max-width: 840px; width: 100%; }
+    .btn-print { background: var(--teal); color: #071412; border: none; font-family: var(--font); font-weight: 700; font-size: .95rem; padding: .75rem 2rem; border-radius: 8px; cursor: pointer; transition: opacity .2s; }
+    .btn-print:hover { opacity: .85; }
+    .btn-share { background: transparent; color: var(--teal); border: 1px solid var(--teal); font-family: var(--font); font-weight: 600; font-size: .95rem; padding: .75rem 2rem; border-radius: 8px; cursor: pointer; transition: all .2s; }
+    .btn-share:hover { background: rgba(2,173,165,.1); }
+    .cert-wrapper { max-width: 840px; width: 100%; }
+    .cert-paper { background: #fff; color: #1a1a1a; border-radius: 12px; padding: 0; overflow: hidden; box-shadow: 0 8px 48px rgba(0,0,0,.5); font-family: 'Space Grotesk', sans-serif; position: relative; }
+    .cert-topbar { height: 10px; background: linear-gradient(90deg, #02ADA5 0%, #2E5FAF 35%, #D99A10 65%, #1FA898 100%); }
+    .cert-body { padding: 3rem 3.5rem; text-align: center; }
+    .cert-logos { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .cert-logo-badge { width: 56px; height: 56px; border-radius: 50%; background: #071412; display: flex; align-items: center; justify-content: center; font-size: .45rem; font-weight: 800; color: #02ADA5; letter-spacing: .08em; text-align: center; line-height: 1.2; }
+    .cert-logo-divider { width: 1px; height: 40px; background: #ddd; }
+    .cert-org-text { text-align: left; }
+    .cert-org-title { font-size: .75rem; font-weight: 700; color: #071412; letter-spacing: .1em; text-transform: uppercase; }
+    .cert-org-sub { font-size: .65rem; color: #666; letter-spacing: .06em; text-transform: uppercase; }
+    .cert-heading { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: #666; letter-spacing: .25em; text-transform: uppercase; margin-bottom: .4rem; }
+    .cert-title { font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 900; color: #071412; line-height: 1.1; margin-bottom: .35rem; }
+    .cert-subtitle { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: #02ADA5; letter-spacing: .1em; }
+    .cert-divider { width: 80px; height: 3px; background: linear-gradient(90deg, #02ADA5, #2E5FAF); border-radius: 2px; margin: 1.2rem auto; }
+    .cert-presented { font-size: .8rem; color: #888; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .4rem; }
+    .cert-name { font-family: 'Cinzel', serif; font-size: 2.2rem; font-weight: 900; color: #071412; line-height: 1.1; margin-bottom: .3rem; }
+    .cert-meta-row { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; font-size: .78rem; color: #666; margin-bottom: .3rem; }
+    .cert-meta-row span strong { color: #1a1a1a; }
+    .cert-desc { font-size: .88rem; color: #555; max-width: 480px; margin: 0 auto .5rem; line-height: 1.6; }
+    .cert-modules { display: flex; justify-content: center; flex-wrap: wrap; gap: .45rem; margin: 1rem auto .3rem; max-width: 520px; }
+    .cert-mod-pill { background: #f0faf9; border: 1px solid #c0ede9; color: #02ADA5; font-size: .7rem; font-weight: 700; letter-spacing: .06em; padding: .3rem .75rem; border-radius: 99px; }
+    .cert-divider2 { width: 100%; height: 1px; background: #eee; margin: 1.5rem 0; }
+    .cert-sigs { display: flex; justify-content: space-around; align-items: flex-end; flex-wrap: wrap; gap: 2rem; }
+    .cert-sig { display: flex; flex-direction: column; align-items: center; gap: .3rem; }
+    .cert-sig-line { width: 160px; height: 1px; background: #ccc; }
+    .cert-sig-name { font-size: .8rem; font-weight: 700; color: #1a1a1a; }
+    .cert-sig-role { font-size: .7rem; color: #888; text-align: center; }
+    .cert-date-block { text-align: center; }
+    .cert-date-val { font-size: .95rem; font-weight: 600; color: #1a1a1a; margin-bottom: .2rem; }
+    .cert-date-lbl { font-size: .7rem; color: #888; letter-spacing: .08em; text-transform: uppercase; }
+    .cert-bottombar { height: 6px; background: linear-gradient(90deg, #2E5FAF 0%, #02ADA5 50%, #D99A10 100%); }
+    @media print {
+      body { background: #fff !important; }
+      .chev, .sitenav, .site-footer, .cert-actions { display: none !important; }
+      .cert-section { padding: 0 !important; background: #fff !important; }
+      .cert-paper { box-shadow: none !important; border-radius: 0 !important; }
+      @page { size: A4 landscape; margin: 0; }
+      .cert-body { padding: 2.5rem 3rem !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+<nav class="sitenav">
+  <a href="index.html" class="brand">Radio Foxhunting</a>
+  <div class="steps-dropdown">
+    <button class="steps-btn" id="stepsToggle">Steps ▾</button>
+    <div class="steps-menu" id="stepsMenu">
+      <a href="module-0.html">0 · Orientation</a>
+      <a href="module-1.html">1 · Morse Code</a>
+      <a href="module-2.html">2 · Radio Basics</a>
+      <a href="module-3.html">3 · Yagi Antenna</a>
+      <a href="module-4.html">4 · Field Guide</a>
+    </div>
+  </div>
+  <div class="lang-row">
+    <button class="lang-btn active" data-lang="en">EN</button>
+    <span class="lang-sep">|</span>
+    <button class="lang-btn" data-lang="bm">BM</button>
+  </div>
+</nav>
+<main>
+<section class="cert-section" id="certSection">
+  <div id="certContent" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:2rem;"></div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a>
+      <a href="module-0.html">Start</a>
+      <a href="survey-pre.html">Pre-Survey</a>
+      <a href="survey-post.html">Post-Survey</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  function safeJSON(key){try{return JSON.parse(localStorage.getItem(key)||'null');}catch(e){return null;}}
+  var participant=safeJSON('rf_participant')||{};
+  var visited=safeJSON('rf_visited_modules')||[];
+  var activities=safeJSON('rf_activities_done')||[];
+  var postDone=localStorage.getItem('rf_post_done')==='1';
+  var MODULES=[0,1,2,3,4];
+  var ACTIVITIES=[1,2,3,4];
+  function allVisited(){return MODULES.every(function(m){return visited.indexOf(m)!==-1;});}
+  function allActivities(){return ACTIVITIES.every(function(a){return activities.indexOf(a)!==-1;});}
+  function isComplete(){return allVisited()&&allActivities()&&postDone;}
+  function modLabel(n){var l=['0 · Orientation','1 · Morse Code','2 · Radio Basics','3 · Yagi Antenna','4 · Field Guide'];return l[n]||('Module '+n);}
+  function todayStr(){var d=new Date();var m=['January','February','March','April','May','June','July','August','September','October','November','December'];return d.getDate()+' '+m[d.getMonth()]+' '+d.getFullYear();}
+  function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var el=document.getElementById('certContent');
+  if(!isComplete()){renderProgress(el);}else{renderCertificate(el);if(window.rfTrack)window.rfTrack('certificate_viewed',{participant_name:participant.full_name||''});}
+
+  function checkItem(done,label,link){
+    return '<li><div class="check-icon '+(done?'check-done':'check-todo')+'">'+(done?'✓':'·')+'</div>'+
+      '<span class="check-label'+(done?' done':'')+'">'+
+      (link&&!done?'<a href="'+link+'" style="color:var(--teal);text-decoration:none;">'+label+'</a>':label)+
+      '</span></li>';
+  }
+
+  function renderProgress(el){
+    var name=participant.full_name?', '+participant.full_name:'';
+    var items='';
+    MODULES.forEach(function(m){var done=visited.indexOf(m)!==-1;items+=checkItem(done,'Module '+modLabel(m),done?null:'module-'+m+'.html');});
+    ACTIVITIES.forEach(function(a){var done=activities.indexOf(a)!==-1;items+=checkItem(done,'Activity '+a+' submitted',done?null:'module-activity-'+a+'.html');});
+    items+=checkItem(postDone,'Post-survey submitted',postDone?null:'survey-post.html');
+    var total=10;
+    var done=visited.filter(function(v){return MODULES.indexOf(v)!==-1;}).length+activities.filter(function(a){return ACTIVITIES.indexOf(a)!==-1;}).length+(postDone?1:0);
+    el.innerHTML='<div class="progress-card"><h2>Almost there'+name+'! 🏁</h2>'+
+      '<p>Complete all tasks below to unlock your certificate. <strong>'+done+' / '+total+'</strong> done.</p>'+
+      '<ul class="checklist">'+items+'</ul>'+
+      '<a href="index.html" class="back-btn">← Back to Home</a></div>';
+  }
+
+  function renderCertificate(el){
+    var name=participant.full_name||'Participant';
+    var matric=participant.matric_no||'–';
+    var level=participant.level||'';
+    var school=participant.school_code||'';
+    var cls=participant.class||'';
+    if(!localStorage.getItem('rf_cert_date'))localStorage.setItem('rf_cert_date',todayStr());
+    var issueDate=localStorage.getItem('rf_cert_date');
+    var modPills=MODULES.map(function(m){return '<span class="cert-mod-pill">'+modLabel(m)+'</span>';}).join('');
+    var metaItems=[];
+    if(matric&&matric!=='–')metaItems.push('<span><strong>ID:</strong> '+escHtml(matric)+'</span>');
+    if(cls)metaItems.push('<span><strong>Class:</strong> '+escHtml(cls)+'</span>');
+    if(level)metaItems.push('<span><strong>Level:</strong> '+escHtml(level)+'</span>');
+    if(school)metaItems.push('<span><strong>School:</strong> '+escHtml(school)+'</span>');
+    el.innerHTML=
+      '<div class="cert-actions">'+
+        '<button class="btn-print" onclick="window.print()">🖨️ Print Certificate</button>'+
+        '<button class="btn-share" onclick="shareCert()">📤 Share</button>'+
+        '<a href="index.html" class="btn-share" style="text-decoration:none;">← Back to Home</a>'+
+      '</div>'+
+      '<div class="cert-wrapper"><div class="cert-paper">'+
+        '<div class="cert-topbar"></div>'+
+        '<div class="cert-body">'+
+          '<div class="cert-logos">'+
+            '<div class="cert-logo-badge">UMPSA<br>STEM<br>LAB</div>'+
+            '<div class="cert-logo-divider"></div>'+
+            '<div class="cert-org-text">'+
+              '<div class="cert-org-title">UMPSA STEM Lab</div>'+
+              '<div class="cert-org-sub">Universiti Malaysia Pahang Al-Sultan Abdullah</div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="cert-heading">This is to certify that</div>'+
+          '<div class="cert-divider"></div>'+
+          '<div class="cert-presented">Presented to</div>'+
+          '<div class="cert-name">'+escHtml(name)+'</div>'+
+          (metaItems.length?'<div class="cert-meta-row">'+metaItems.join('')+'</div>':'')+
+          '<div class="cert-divider"></div>'+
+          '<div class="cert-title">Certificate<br>of Completion</div>'+
+          '<div class="cert-subtitle">JOTA JOTI 2026 · Radio Foxhunting Workshop</div>'+
+          '<div class="cert-divider" style="margin-top:1.2rem;"></div>'+
+          '<p class="cert-desc">has successfully completed all modules, hands-on activities, and assessments of the <strong>Amateur Radio Direction Finding (ARDF)</strong> workshop, demonstrating knowledge in radio communication, Morse code, map reading, Yagi antenna construction, and field strategy.</p>'+
+          '<div class="cert-modules">'+modPills+'</div>'+
+          '<div class="cert-divider2"></div>'+
+          '<div class="cert-sigs">'+
+            '<div class="cert-sig">'+
+              '<div style="height:32px;display:flex;align-items:flex-end;margin-bottom:.25rem;">'+
+                '<span style="font-family:\'Space Grotesk\',sans-serif;font-size:.95rem;font-style:italic;color:#444;">Nurul Hazlina Noordin</span>'+
+              '</div>'+
+              '<div class="cert-sig-line"></div>'+
+              '<div class="cert-sig-name">Nurul Hazlina Noordin</div>'+
+              '<div class="cert-sig-role">Principal Investigator<br>UMPSA STEM Lab</div>'+
+            '</div>'+
+            '<div class="cert-date-block">'+
+              '<div style="font-size:2.2rem;margin-bottom:.2rem;">🦊</div>'+
+              '<div class="cert-date-val">'+escHtml(issueDate)+'</div>'+
+              '<div class="cert-date-lbl">Date of Issue</div>'+
+            '</div>'+
+            '<div class="cert-sig">'+
+              '<div style="height:32px;display:flex;align-items:flex-end;margin-bottom:.25rem;">'+
+                '<span style="font-family:\'Space Grotesk\',sans-serif;font-size:.95rem;font-style:italic;color:#444;">JOTA JOTI 2026</span>'+
+              '</div>'+
+              '<div class="cert-sig-line"></div>'+
+              '<div class="cert-sig-name">JOTA JOTI 2026</div>'+
+              '<div class="cert-sig-role">World Scout Bureau<br>Amateur Radio Event</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="cert-bottombar"></div>'+
+      '</div></div>';
+  }
+
+  window.shareCert=function(){
+    var text='I completed the JOTA JOTI 2026 Radio Foxhunting Workshop by UMPSA STEM Lab! 🦊📻 #JOTAJOTI2026 #ARDF #ScoutRadio';
+    if(navigator.share){navigator.share({title:'Radio Foxhunting Certificate',text:text,url:window.location.href}).catch(function(){});}
+    else if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){alert('Copied! Paste it anywhere to share.');}).catch(function(){alert(text);});}
+    else{alert(text);}
+  };
+
+  var toggle=document.getElementById('stepsToggle');
+  var menu=document.getElementById('stepsMenu');
+  if(toggle&&menu){
+    toggle.addEventListener('click',function(){menu.classList.toggle('open');});
+    document.addEventListener('click',function(e){if(!toggle.contains(e.target)&&!menu.contains(e.target))menu.classList.remove('open');});
+  }
+})();
+</script>
+<script>
+/* ── tracker.js inlined ── */
+/**
+ * Radio Foxhunting LMS — Analytics Tracker v2
+ * • Sends events to Google Sheets via Apps Script
+ * • Tracks geolocation (IP-based), device type, completion milestones
+ * • Manages completion state in localStorage
+ */
+(function () {
+  'use strict';
+
+  // ── Config ────────────────────────────────────────────────────────────────
+  var SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+  // ── Page / module detection ───────────────────────────────────────────────
+  function getModule() {
+    var p = window.location.pathname.split('/').pop() || 'index.html';
+    if (p === 'index.html' || p === '') return 'Home';
+    var m = p.match(/module-(\d+)\.html/);   if (m) return 'M' + m[1];
+    var a = p.match(/module-activity-(\d+)/); if (a) return 'Activity-M' + a[1];
+    var t = p.match(/teacher-(\d+)/);         if (t) return 'Teacher-M' + t[1];
+    if (p === 'teacher-index.html') return 'Teacher-Hub';
+    if (p === 'survey-pre.html')  return 'Survey-Pre';
+    if (p === 'survey-post.html') return 'Survey-Post';
+    if (p === 'register.html')    return 'Register';
+    if (p === 'certificate.html') return 'Certificate';
+    return p.replace('.html', '');
+  }
+
+  function getLang() {
+    try { var b=document.querySelector('.lang-btn.active'); return b?b.textContent.trim():'EN'; } catch(e){return 'EN';}
+  }
+
+  // ── Session / participant ─────────────────────────────────────────────────
+  function getSessionId() {
+    try {
+      var id = localStorage.getItem('rf_sid');
+      if (!id) { id = 'rf_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); localStorage.setItem('rf_sid', id); }
+      return id;
+    } catch(e) { return 'rf_' + Date.now(); }
+  }
+
+  function getParticipant() {
+    try {
+      var p = JSON.parse(localStorage.getItem('rf_participant') || '{}');
+      return { participant_name: p.full_name||'', participant_id: p.matric_no||'', level: p.level||'', school_code: p.school_code||'', home_state: p.home_state||'' };
+    } catch(e) { return {}; }
+  }
+
+  // ── Device info ───────────────────────────────────────────────────────────
+  function getDevice() {
+    var ua = navigator.userAgent;
+    var device = /Mobi|Android/i.test(ua) ? 'Mobile' : /iPad|Tablet/i.test(ua) ? 'Tablet' : 'Desktop';
+    var os = /Windows/i.test(ua)?'Windows':/Mac/i.test(ua)?'Mac':/Android/i.test(ua)?'Android':/iPhone|iPad/i.test(ua)?'iOS':/Linux/i.test(ua)?'Linux':'Other';
+    return { device: device, os: os };
+  }
+
+  // ── Geolocation (IP-based, fetched once per session) ─────────────────────
+  function getGeoCache() {
+    try { return JSON.parse(localStorage.getItem('rf_geo') || 'null'); } catch(e){return null;}
+  }
+  function fetchGeo(cb) {
+    var cached = getGeoCache();
+    if (cached) { cb(cached); return; }
+    try {
+      fetch('https://ipapi.co/json/', {mode:'cors'})
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var geo = { country: d.country_name||'', region: d.region||'', city: d.city||'', isp: d.org||'' };
+          try { localStorage.setItem('rf_geo', JSON.stringify(geo)); } catch(e){}
+          cb(geo);
+        })
+        .catch(function(){ cb({}); });
+    } catch(e) { cb({}); }
+  }
+
+  // ── Send event ────────────────────────────────────────────────────────────
+  function send(eventName, extra, geo) {
+    if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
+    var payload = Object.assign({
+      survey: 'analytics',
+      event: eventName,
+      module: getModule(),
+      lang: getLang(),
+      session_id: getSessionId(),
+      timestamp: new Date().toISOString(),
+      referrer: document.referrer ? (document.referrer.split('/').pop()||'direct') : 'direct'
+    }, getParticipant(), getDevice(), geo||{}, extra||{});
+    try { fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload), keepalive:true }); }
+    catch(e) {}
+  }
+
+  // ── Completion tracking in localStorage ──────────────────────────────────
+  var mod = getModule();
+
+  // Mark module as visited
+  if (mod.match(/^M\d+$/)) {
+    try {
+      var visited = JSON.parse(localStorage.getItem('rf_visited_modules') || '[]');
+      var mNum = parseInt(mod.replace('M',''));
+      if (visited.indexOf(mNum) === -1) { visited.push(mNum); localStorage.setItem('rf_visited_modules', JSON.stringify(visited)); }
+    } catch(e) {}
+  }
+
+  // Mark activity as submitted (called by activity submit buttons)
+  window.rfMarkActivity = function(num) {
+    try {
+      var done = JSON.parse(localStorage.getItem('rf_activities_done') || '[]');
+      if (done.indexOf(num) === -1) { done.push(num); localStorage.setItem('rf_activities_done', JSON.stringify(done)); }
+    } catch(e) {}
+  };
+
+  // Mark post-survey done
+  window.rfMarkPostDone = function() {
+    try { localStorage.setItem('rf_post_done', '1'); } catch(e) {}
+  };
+
+  // Check full completion: visited M0-M4 + activities 1-4 + post-survey
+  window.rfIsComplete = function() {
+    try {
+      var visited = JSON.parse(localStorage.getItem('rf_visited_modules') || '[]');
+      var acts = JSON.parse(localStorage.getItem('rf_activities_done') || '[]');
+      var post = localStorage.getItem('rf_post_done') === '1';
+      var allModules = [0,1,2,3,4].every(function(n){ return visited.indexOf(n) !== -1; });
+      var allActs = [1,2,3,4].every(function(n){ return acts.indexOf(n) !== -1; });
+      return allModules && allActs && post;
+    } catch(e) { return false; }
+  };
+
+  // ── Auto fire page_view with geo ──────────────────────────────────────────
+  fetchGeo(function(geo) {
+    send('page_view', {}, geo);
+  });
+
+  // ── Time on page ──────────────────────────────────────────────────────────
+  var t0 = Date.now();
+  window.addEventListener('beforeunload', function() {
+    var s = Math.round((Date.now()-t0)/1000);
+    if (s > 3) send('time_spent', {seconds:s});
+  });
+
+  // ── Forward nav click ─────────────────────────────────────────────────────
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest('a[href],button');
+    if (!el) return;
+    var href = el.getAttribute('href') || '';
+    if ((href.match(/module-\d+\.html/) || href === 'index.html') && mod.match(/^(M\d+|Activity-M\d+)$/)) {
+      send('module_forward', {target: href});
+    }
+  });
+
+  window.rfTrack = send;
+})();
+</script>
+</body>
+</html>

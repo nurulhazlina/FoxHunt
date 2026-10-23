@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facilitator Guide – Module 4 · Radio Foxhunting</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root{--teal:#02ADA5;--teal-dim:#017a74;--bg:#f4f8f8;--surface:#fff;--surface2:#f0f6f6;
+      --text:#1a3330;--text-dim:#4a7370;--accent:#0a5f5a;--border:#d0e8e6;
+      --ok:#1a8040;--danger:#c0392b;--warn:#b07800;--radius:10px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;line-height:1.6}
+    /* Gate */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    .teacher-bar{background:#02ADA5;color:#fff;padding:8px 28px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+    .sitenav{background:#041e1c;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:52px;border-bottom:2px solid #02ADA5;position:sticky;top:0;z-index:100;}
+    .brand{font-size:1.05rem;font-weight:800;color:#02ADA5;letter-spacing:.06em}
+    .brand::before{content:"🦊 "}
+    .nav-link{color:#7ab8b5;text-decoration:none;font-size:.85rem;font-weight:700;padding:7px 14px;border:1px solid rgba(2,173,165,.3);border-radius:7px;transition:all .2s}
+    .nav-link:hover{background:rgba(2,173,165,.15);color:#02ADA5}
+    .hero{background:linear-gradient(135deg,rgba(2,53,51,.18) 0%,var(--bg) 100%);border-bottom:2px solid var(--teal);padding:2.5rem 1.25rem 2rem;}
+    .teacher-badge{background:rgba(2,173,165,.2);border:1px solid #02ADA5;color:#02ADA5;padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;}
+    .hero h1{font-size:clamp(1.7rem,4vw,2.8rem);font-weight:900;color:#fff;margin-bottom:10px}
+    .hero-sub{color:#7ab8b5;font-size:.95rem;max-width:600px;margin:0 auto}
+    .content{max-width:980px;margin:0 auto;padding:44px 28px}
+    .t-section{margin-bottom:52px}
+    .t-section h2{font-size:1.3rem;font-weight:800;color:var(--accent);margin-bottom:18px;display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+    .t-section h3{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:10px;margin-top:20px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:14px}
+    .answer-key{background:#f0fbf9;border:2px solid #02ADA5;border-radius:var(--radius);padding:18px 22px;margin-bottom:14px}
+    .ak-label{font-size:.72rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#02ADA5;margin-bottom:8px}
+    .ak-q{font-weight:700;color:var(--text);margin-bottom:6px;font-size:.92rem}
+    .ak-a{background:#e8f7f5;border-left:3px solid #02ADA5;padding:10px 14px;border-radius:0 7px 7px 0;font-size:.87rem;color:var(--text);line-height:1.6}
+    .ak-a code{background:rgba(2,173,165,.12);padding:1px 6px;border-radius:4px;font-family:monospace;color:#02ADA5}
+    .callout{border-radius:var(--radius);padding:16px 20px;margin-bottom:14px}
+    .callout.warn{background:#fdf8ec;border:1px solid #e8d080;border-left:4px solid var(--warn)}
+    .callout.info{background:#f0fbf9;border:1px solid #b0dfd8;border-left:4px solid #02ADA5}
+    .callout.danger{background:#fdf0f0;border:1px solid #e8b0b0;border-left:4px solid var(--danger)}
+    .callout.ok{background:#f0fdf4;border:1px solid #a0dfb0;border-left:4px solid var(--ok)}
+    .callout-title{font-weight:800;font-size:.9rem;margin-bottom:8px}
+    .callout.warn .callout-title{color:var(--warn)}.callout.info .callout-title{color:#02ADA5}
+    .callout.danger .callout-title{color:var(--danger)}.callout.ok .callout-title{color:var(--ok)}
+    .callout p,.callout li{font-size:.87rem;color:var(--text-dim);line-height:1.55}
+    .callout ul{padding-left:18px}.callout li{margin-bottom:5px}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    th{background:#e8f7f5;color:var(--accent);padding:10px 14px;text-align:left;font-weight:700;border-bottom:2px solid var(--border)}
+    td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim)}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#f8fdfc}
+    .score-box{background:#e8f7f5;border:2px solid #02ADA5;border-radius:var(--radius);padding:18px 22px;font-family:monospace;font-size:.9rem;line-height:1.8}
+    .code-block{background:#f5faf9;border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'Courier New',monospace;font-size:.82rem;line-height:1.7;color:#1a3330;overflow-x:auto}
+    .gs-schema{background:#fff;border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+    .gs-schema-header{background:#02ADA5;color:#fff;padding:10px 16px;font-weight:800;font-size:.85rem}
+    .gs-cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0}
+    .gs-col{padding:8px 12px;border:1px solid var(--border);font-size:.78rem}
+    .gs-col-head{font-weight:700;color:var(--text);background:#f0f7f6}
+    .gs-col-type{color:var(--text-dim);font-size:.7rem}
+    .gs-module-header{background:#e8f7f5;padding:8px 12px;font-weight:800;font-size:.8rem;color:var(--accent);grid-column:1/-1}
+    .debrief-q{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+    .debrief-q-num{font-size:.72rem;font-weight:800;color:#02ADA5;text-transform:uppercase;margin-bottom:5px}
+    .debrief-q-text{font-weight:700;color:var(--text);margin-bottom:4px}
+    .debrief-q-note{font-size:.83rem;color:var(--text-dim)}
+    footer{background:#031a18;padding:24px 28px;text-align:center;color:#7ab8b5;font-size:.8rem}
+    /* ── Module nav ── */
+    .mod-nav{background:#031714;border-bottom:1px solid rgba(2,173,165,.2);display:flex;align-items:center;gap:4px;padding:0 1.25rem;height:38px;flex-wrap:wrap;}
+    .mod-nav-label{font-size:.72rem;font-weight:700;color:#7bbfba;margin-right:.5rem;white-space:nowrap;}
+    .mod-nav-item{font-size:.78rem;font-weight:600;color:#7bbfba;text-decoration:none;padding:3px 10px;border-radius:4px;border:1px solid transparent;transition:all .15s;}
+    .mod-nav-item:hover{background:rgba(2,173,165,.15);color:#02ADA5;}
+    .mod-nav-item.active{background:#02ADA5;color:#041e1c;border-color:#02ADA5;}
+    /* ── Shared hero/back ── */
+    .back-link{color:#02ADA5;text-decoration:none;font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem;}
+    .back-link:hover{text-decoration:underline;}
+    .eyebrow{font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#02ADA5;margin-bottom:.4rem;}
+    @media(max-width:640px){.gs-cols{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+
+<!-- MODULE NAV -->
+<nav class="mod-nav">
+  <span class="mod-nav-label">📋 Teacher Guides:</span>
+  <a href="teacher-0.html" class="mod-nav-item">M0 Orientation</a>
+  <a href="teacher-1.html" class="mod-nav-item">M1 Morse Code</a>
+  <a href="teacher-2.html" class="mod-nav-item">M2 Map Reading</a>
+  <a href="teacher-3.html" class="mod-nav-item">M3 Yagi Antenna</a>
+  <a href="teacher-4.html" class="mod-nav-item active">M4 Field Strategy</a>
+</nav>
+
+<!-- SITENAV -->
+<nav class="sitenav">
+  <a href="module-4.html" class="brand">🦊 Radio Foxhunting</a>
+  <div style="display:flex;align-items:center;gap:.75rem;">
+    <a href="module-4.html" class="back-link">← Student View</a>
+    <span class="teacher-badge">Teacher View</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" style="background:linear-gradient(135deg,rgba(2,53,51,.18) 0%,var(--bg) 100%);border-bottom:2px solid #02ADA5;padding:2.5rem 1.25rem 2rem;">
+  <div style="max-width:980px;margin:0 auto;">
+    <p class="eyebrow">Module 4 of 5 — Teacher Guide</p>
+    <h1 style="font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:900;color:var(--text);margin-bottom:.4rem;">Foxhunting Field Strategy — Facilitator Notes</h1>
+    <p style="color:var(--text-dim);font-size:.92rem;">Answer keys, field assessment criteria, scoring formula, common hunt mistakes, full 5-module GS schema, and debrief questions.</p>
+  </div>
+</header>
+
+<main class="content">
+
+  <!-- Overview -->
+  <section class="t-section">
+    <h2>📋 Final Module Overview</h2>
+    <div class="card">
+      <p style="margin-bottom:14px">Module 4 is the <strong>capstone module</strong>. Scouts apply all learning from Modules 0–3 in a live competitive hunt. The key pedagogical goals are phase-based thinking, signal interpretation, and systematic field navigation.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+        <div style="background:var(--surface2);border-radius:8px;padding:14px">
+          <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#02ADA5;margin-bottom:5px">Hunt Duration</div>
+          <div style="font-size:.88rem;color:var(--text-dim)">80 minutes — IARU Region 3 standard</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:14px">
+          <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#02ADA5;margin-bottom:5px">Scoring</div>
+          <div style="font-size:.88rem;color:var(--text-dim)">80 − elapsed_minutes per fox found</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:14px">
+          <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#02ADA5;margin-bottom:5px">Late Penalty</div>
+          <div style="font-size:.88rem;color:var(--text-dim)">−1 pt per minute after 80 min; &gt;5 min late = outside results list</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:14px">
+          <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#02ADA5;margin-bottom:5px">Evidence</div>
+          <div style="font-size:.88rem;color:var(--text-dim)">Punched fox card + signed fox log sheet</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Assessment Criteria -->
+  <section class="t-section">
+    <h2>🎯 Field Assessment Criteria</h2>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table>
+        <thead><tr><th>Criterion</th><th>Below Standard</th><th>Meets Standard</th><th>Exceeds Standard</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Phase Transition</strong></td><td>Uses Yagi at all distances, including close range</td><td>Switches to rubber duck before Phase 3</td><td>Seamless transitions with explicit attenuator use</td></tr>
+          <tr><td><strong>Body Shielding</strong></td><td>Does not attempt body rotation technique</td><td>Performs 360° rotation to find null direction</td><td>Accurately locates fox using null + 180° flip</td></tr>
+          <tr><td><strong>Map Marking</strong></td><td>No map marks during hunt</td><td>Marks position every 5–10 minutes</td><td>Marks every ~5 min with bearings plotted</td></tr>
+          <tr><td><strong>Time Management</strong></td><td>Returns late; spends &gt;20 min on one fox</td><td>Returns on time; moves on after 15 min if needed</td><td>Strategic fox order; planned return time</td></tr>
+          <tr><td><strong>Fox Log</strong></td><td>Missing or incomplete log entries</td><td>Logs beacon ID and time for each find</td><td>Complete log with notes and coordinates</td></tr>
+          <tr><td><strong>Teamwork</strong></td><td>No role assignment; team works individually</td><td>Basic role split (antenna/map/compass)</td><td>Dynamic roles with clear communication</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- T1 Answers -->
+  <section class="t-section">
+    <h2>✅ T1: Fill-in-Blanks — Answer Key</h2>
+
+    <div class="answer-key">
+      <div class="ak-label">Q1</div>
+      <div class="ak-q">Phase 1 uses the ___ antenna</div>
+      <div class="ak-a"><strong>Yagi</strong> — the directional 3-element Yagi gives 6–8 dBi gain over a dipole, essential for long-range bearings. Accept: "3-element Yagi", "directional antenna".</div>
+    </div>
+    <div class="answer-key">
+      <div class="ak-label">Q2</div>
+      <div class="ak-q">Body shielding uses the ___ of your body</div>
+      <div class="ak-a"><strong>body</strong> (accept: absorption, mass). The human body (70% water) effectively absorbs 144 MHz VHF signals, attenuating signal by 15–25 dB behind the hunter.</div>
+    </div>
+    <div class="answer-key">
+      <div class="ak-label">Q3</div>
+      <div class="ak-q">When signal is very strong, switch to a ___ antenna</div>
+      <div class="ak-a"><strong>rubber duck</strong> (accept: "small antenna", "whip", "short antenna"). The rubber duck/helical antenna has much lower gain (~0 dBi vs Yagi's 7 dBi), reducing overload.</div>
+    </div>
+    <div class="answer-key">
+      <div class="ak-label">Q4</div>
+      <div class="ak-q">The S-meter measures signal ___</div>
+      <div class="ak-a"><strong>strength</strong>. The S-meter (Signal meter) displays received signal strength in S-units. S9 = −73 dBm; each S-unit = 6 dB.</div>
+    </div>
+    <div class="answer-key">
+      <div class="ak-label">Q5</div>
+      <div class="ak-q">Log the time and ___ for each fox found</div>
+      <div class="ak-a"><strong>location</strong> (accept: bearing, grid reference, coordinate, landmark). Both time and location are required on the official fox log sheet.</div>
+    </div>
+    <div class="answer-key">
+      <div class="ak-label">Q6</div>
+      <div class="ak-q">The ___ technique uses body rotation</div>
+      <div class="ak-a"><strong>body shielding</strong> (accept: "body shield"). The formal ARDF term is body shielding or "body as attenuator". The mnemonic "Fox Dance" is informal but widely used.</div>
+    </div>
+    <div class="answer-key">
+      <div class="ak-label">Q7</div>
+      <div class="ak-q">Competition time limit is ___ minutes</div>
+      <div class="ak-a"><strong>80</strong> minutes — this is the IARU Region 3 standard for 144 MHz ARDF. Note: junior events may use 60 minutes locally.</div>
+    </div>
+  </section>
+
+  <!-- T2 Answers -->
+  <section class="t-section">
+    <h2>🐛 T2: Debug Scenarios — Model Answers</h2>
+
+    <h3>Debug #1 — Phase Transition Failure</h3>
+    <div class="answer-key">
+      <div class="ak-label">Model Answer</div>
+      <div class="ak-a">
+        <strong>The mistake:</strong> The hunter is stuck in Phase 1 behaviour (chasing the strongest signal) even at close range. At close range, VHF signals reflect off terrain and foliage, so the "strongest" direction is unreliable — it can lead to circles or false paths.<br><br>
+        <strong>Correct approach:</strong> When signal reaches S7+ (roughly under 100 m), transition to Phase 2 by adding an attenuator and reducing gain. Under 30 m (S9+), switch to rubber duck only, and use body shielding. Rotate 360°, find the null (weakest) direction, flip 180° — that is the fox bearing. Walk 5–10 m and repeat.
+      </div>
+    </div>
+
+    <h3>Debug #2 — Signal Disappears (3 causes)</h3>
+    <div class="answer-key">
+      <div class="ak-label">Model Answer (accept any 3)</div>
+      <div class="ak-a">
+        <strong>1. Beacon cycle timing:</strong> The hunter is listening during the MO rest period between fox transmissions. Fix: wait 12–60 seconds for the cycle to repeat.<br><br>
+        <strong>2. Frequency drift or wrong channel:</strong> Radio accidentally bumped to wrong frequency. Fix: verify 144.500 MHz (or local beacon frequency) and rescan.<br><br>
+        <strong>3. Terrain shadowing (RF shadow):</strong> A hill or dense stand of trees is directly between the hunter and fox. Fix: move laterally 20–30 m to break the shadow, then listen again.<br><br>
+        <strong>4. Low battery:</strong> Radio or antenna lost power. Fix: check/replace batteries; carry spares.<br><br>
+        <strong>5. Too close — overload squelch:</strong> The receiver is so close the signal overloads and the squelch cuts the audio. Fix: reduce squelch, switch to rubber duck, use maximum attenuation.
+      </div>
+    </div>
+
+    <h3>Debug #3 — Scoring Calculation (Worked Example)</h3>
+    <div class="score-box">
+      Hunt start: 09:00 | Time limit: 80 min | Deadline: 10:20<br><br>
+      Formula: score_per_fox = 80 − elapsed_minutes_at_find<br><br>
+      MO5 found at 10:00 → elapsed = 60 min → score = 80 − 60 = <strong>20 pts</strong><br>
+      MOE found at 10:10 → elapsed = 70 min → score = 80 − 70 = <strong>10 pts</strong><br><br>
+      Check-in at 10:20 → elapsed = 80 min → ON TIME → no penalty<br><br>
+      Total score = 20 + 10 = <strong>30 points</strong><br>
+      <small style="color:var(--text-dim)">Note: if check-in was late (e.g. 10:25 = 5 min late), deduct 5 pts → total 25 pts.</small>
+    </div>
+    <div class="callout warn">
+      <div class="callout-title">Marking Note</div>
+      <p>Award marks for correct formula application per fox. Scouts who get each individual score right but add incorrectly should receive partial credit. The worked example in the student page shows the formula clearly — look for understanding of the concept over arithmetic accuracy.</p>
+    </div>
+  </section>
+
+  <!-- T3 -->
+  <section class="t-section">
+    <h2>💻 T3: Fox Log Code — Reference Solution</h2>
+    <div class="code-block">var foxFinds = JSON.parse(localStorage.getItem('fox_finds') || '[]');
+
+function logFox(beacon, time) {
+  var entry = {
+    beacon:   beacon,
+    time:     time,
+    score:    1,                        // 1 point per fox
+    loggedAt: new Date().toISOString()
+  };
+  foxFinds.push(entry);
+  localStorage.setItem('fox_finds', JSON.stringify(foxFinds));
+  updateDisplay();
+  return 'Logged ' + beacon + ' at ' + time + '. Running score: ' + calculateScore();
+}
+
+function calculateScore(elapsedMinutes) {
+  // Sum base scores
+  var total = foxFinds.reduce(function(sum, f) { return sum + (f.score || 1); }, 0);
+  // Apply time penalty if elapsed > 80
+  var late = (elapsedMinutes || 0) - 80;
+  if (late > 0) total = Math.max(0, total - late);
+  return total;
+}
+
+function updateDisplay() {
+  var tbody = document.getElementById('logBody');
+  tbody.innerHTML = foxFinds.map(function(f, i) {
+    return '<tr><td>' + (i+1) + '</td><td>' + f.beacon + '</td><td>'
+      + f.time + '</td><td>+' + f.score + '</td></tr>';
+  }).join('') || '<tr><td colspan="4">No entries yet.</td></tr>';
+  document.getElementById('scoreDisplay').textContent = calculateScore();
+}</div>
+    <div class="callout info">
+      <div class="callout-title">Assessment Criteria</div>
+      <ul>
+        <li><strong>Meets:</strong> Correct entry object, push + localStorage save, basic score sum</li>
+        <li><strong>Exceeds:</strong> Handles duplicate beacon check, time penalty applied correctly, DOM updated</li>
+        <li><strong>Extension:</strong> Validates beacon ID against allowed list; handles edge cases (empty array, missing fields)</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- T4 -->
+  <section class="t-section">
+    <h2>⏱️ T4: Race Clock — Reference Solution</h2>
+    <div class="code-block">var huntStart = null;
+var clockInterval = null;
+var LOG_LOCKED = false;
+
+function startHunt() {
+  huntStart = Date.now();
+  localStorage.setItem('fox_hunt_start', huntStart);
+  LOG_LOCKED = false;
+  clockInterval = setInterval(tickClock, 1000);
+}
+
+function tickClock() {
+  var elapsed = Math.floor((Date.now() - huntStart) / 1000);
+  var mins = Math.floor(elapsed / 60);
+  var secs = elapsed % 60;
+  var display = String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+
+  document.getElementById('clockDisplay').textContent = display;
+
+  if (mins >= 80) {
+    // Lock log
+    LOG_LOCKED = true;
+    document.getElementById('clockDisplay').style.color = '#e05050';
+    document.getElementById('clockStatus').textContent = '⛔ Time up! Log locked. Final score: ' + calculateScore(mins);
+    clearInterval(clockInterval);
+  } else if (mins >= 70) {
+    // Warning
+    document.getElementById('clockDisplay').style.color = '#f0c040';
+    document.getElementById('clockStatus').textContent = '⚠️ Only ' + (80 - mins) + ' minutes remaining!';
+  } else {
+    document.getElementById('clockStatus').textContent = mins + ' min elapsed';
+  }
+}
+
+// Guard logFox against locked state
+function logFoxGuarded(beacon, time) {
+  if (LOG_LOCKED) { alert('Hunt has ended — log is locked.'); return; }
+  logFox(beacon, time); // call original logFox
+}</div>
+    <div class="callout info">
+      <div class="callout-title">Assessment Criteria for T4</div>
+      <ul>
+        <li><strong>Meets:</strong> setInterval works, elapsed time displayed, 80-min lock triggers</li>
+        <li><strong>Exceeds:</strong> 70-min warning, log locked correctly, start time persisted to localStorage</li>
+        <li><strong>Extension:</strong> Survives page refresh (reads start time from localStorage), accessible warning (screen reader friendly)</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Phase timing advice -->
+  <section class="t-section">
+    <h2>📡 Phase Transition Timing Advice</h2>
+    <div class="card">
+      <p style="margin-bottom:14px;font-size:.9rem;color:var(--text-dim)">Scouts consistently struggle with <em>when</em> to transition phases. Use this table in your pre-hunt briefing:</p>
+      <table>
+        <thead><tr><th>Cue</th><th>What it means</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>Signal first heard, very weak (S1–S2)</td><td>Long range, Phase 1</td><td>Take compass bearing, plot on map, start walking</td></tr>
+          <tr><td>Signal reaches S5–S6</td><td>Closing in, ~200 m</td><td>Add −10 dB attenuator, continue Phase 2 tracking</td></tr>
+          <tr><td>Signal overloads even with attenuator</td><td>Very close, ~30–50 m</td><td>Remove Yagi, use rubber duck only, begin body shielding</td></tr>
+          <tr><td>Null clearly found (near silence in one direction)</td><td>Fox is directly behind you</td><td>Flip 180°, walk 10 m toward fox, punch card</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout warn">
+      <div class="callout-title">⚠️ Common Timing Mistake</div>
+      <p>Scouts delay Phase 3 too long — they keep the Yagi even when standing 5 m from the fox, then get confused by reflections. Emphasise: <strong>if you can hear the fox without an antenna plugged in, you are in Phase 3.</strong></p>
+    </div>
+  </section>
+
+  <!-- Common hunt mistakes -->
+  <section class="t-section">
+    <h2>⚠️ Common Hunt Mistakes</h2>
+
+    <div class="callout danger">
+      <div class="callout-title">Mistake 1: Not Switching Phases</div>
+      <p>Teams that use only Phase 1 technique for the entire hunt tend to orbit the fox in a spiral, never converging. This wastes 15–20 minutes. <strong>Facilitator action:</strong> Before the hunt, drill the transition points with a tabletop exercise using the S-meter widget.</p>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-title">Mistake 2: Ignoring Body Shielding</div>
+      <p>Scouts trained only in Yagi techniques have no close-range strategy. They walk past the fox at 5 m and keep going. <strong>Facilitator action:</strong> Run a 10-minute indoor body-shield demo with a test transmitter before the hunt — let scouts feel the null with their own body.</p>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-title">Mistake 3: Chasing the Strongest Signal</div>
+      <p>Reflections from hills and large metallic objects (vehicles, buildings) can create false peaks. Teams that follow maximum signal instead of taking cross-bearings get badly misled. <strong>Facilitator action:</strong> Emphasise: take bearings from TWO different positions before moving; the triangulation point is more reliable than any single peak reading.</p>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Mistake 4: Poor Time Management</div>
+      <p>Juniors especially spend too long on a single fox, missing others. Reinforce the 15-minute rule: <strong>if you haven't found a fox in 15 minutes of close searching, mark it on the map and move to the next.</strong> You can return if time allows.</p>
+    </div>
+  </section>
+
+  <!-- Safety checklist -->
+  <section class="t-section">
+    <h2>🦺 Field Safety Checklist</h2>
+    <div class="callout danger">
+      <div class="callout-title">Verify Before Hunt Start</div>
+      <ul>
+        <li>All scouts wearing closed-toe shoes — check at start line, send back anyone non-compliant</li>
+        <li>Each team has: water (minimum 500 mL per person), emergency whistle, first aid card with facilitator phone number</li>
+        <li>Walk the boundary markers with all teams before the hunt starts</li>
+        <li>Emergency procedure briefed: 3 whistle blasts = emergency, stay put, do not continue hunting</li>
+        <li>At least two facilitators / marshals with radios on the course at all times</li>
+        <li>All mobile phones confirmed OFF (or confiscated) before Start horn</li>
+        <li>First aid kit at Start/Finish with qualified person present</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Full GS Schema -->
+  <section class="t-section">
+    <h2>📊 Complete Google Sheets Schema — All 5 Modules</h2>
+    <div class="callout info" style="margin-bottom:16px">
+      <div class="callout-title">Google Apps Script Setup</div>
+      <p style="margin-bottom:8px">Create ONE Google Sheet with these columns. Deploy a single GS web app that accepts POST with a JSON body containing a <code>module</code> field (0–4) and appends rows. All modules share the same sheet — use the module field to filter by module in analysis.</p>
+      <p>Apps Script endpoint template: <code>doPost(e) → JSON.parse(e.postData.contents) → sheet.appendRow([...])</code></p>
+    </div>
+
+    <div class="gs-schema">
+      <div class="gs-schema-header">Sheet: fox_hunt_submissions — Master Schema (all modules)</div>
+      <div class="gs-cols">
+        <div class="gs-col gs-module-header">Core (all modules)</div>
+        <div class="gs-col gs-col-head">A: timestamp<div class="gs-col-type">ISO 8601</div></div>
+        <div class="gs-col gs-col-head">B: module<div class="gs-col-type">0–4 integer</div></div>
+        <div class="gs-col gs-col-head">C: team<div class="gs-col-type">string</div></div>
+        <div class="gs-col gs-col-head">D: scout_name<div class="gs-col-type">string</div></div>
+        <div class="gs-col gs-col-head">E: school<div class="gs-col-type">string</div></div>
+        <div class="gs-col gs-col-head">F: age_group<div class="gs-col-type">Junior/Senior/Open</div></div>
+        <div class="gs-col gs-col-head">G: pre_know<div class="gs-col-type">1–5 integer</div></div>
+        <div class="gs-col gs-col-head">H: pre_predict<div class="gs-col-type">1–5 integer</div></div>
+
+        <div class="gs-col gs-module-header">Module 0 — Orientation</div>
+        <div class="gs-col gs-col-head">I: m0_b1a<div class="gs-col-type">Amateur (T1 blank)</div></div>
+        <div class="gs-col gs-col-head">J: m0_b1b<div class="gs-col-type">Direction (T1 blank)</div></div>
+        <div class="gs-col gs-col-head">K: m0_b2–b7<div class="gs-col-type">T1 blanks 2–7 (concatenated)</div></div>
+        <div class="gs-col gs-col-head">L: m0_d1<div class="gs-col-type">Debug 1 response</div></div>
+        <div class="gs-col gs-col-head">M: m0_d2<div class="gs-col-type">Debug 2 response</div></div>
+        <div class="gs-col gs-col-head">N: m0_d3<div class="gs-col-type">Debug 3 response</div></div>
+        <div class="gs-col gs-col-head">O: m0_t3code<div class="gs-col-type">T3 code submission</div></div>
+        <div class="gs-col gs-col-head">P: m0_t4code<div class="gs-col-type">T4 find-log design</div></div>
+        <div class="gs-col gs-col-head">Q: m0_mcq<div class="gs-col-type">0–5 integer</div></div>
+        <div class="gs-col gs-col-head">R–V: m0_j1–j5<div class="gs-col-type">Journal prompts (5 cols)</div></div>
+        <div class="gs-col gs-col-head">W: m0_post_know<div class="gs-col-type">1–5</div></div>
+        <div class="gs-col gs-col-head">X: m0_post_conf<div class="gs-col-type">1–5</div></div>
+
+        <div class="gs-col gs-module-header">Modules 1–3 (Morse, Radio Basics, Yagi)</div>
+        <div class="gs-col gs-col-head">Y–AH: m1_*<div class="gs-col-type">Module 1 fields (same structure)</div></div>
+        <div class="gs-col gs-col-head">AI–AR: m2_*<div class="gs-col-type">Module 2 fields</div></div>
+        <div class="gs-col gs-col-head">AS–BB: m3_*<div class="gs-col-type">Module 3 fields</div></div>
+
+        <div class="gs-col gs-module-header">Module 4 — Field Strategy</div>
+        <div class="gs-col gs-col-head">BC: m4_b1–b7<div class="gs-col-type">T1 blanks 1–7</div></div>
+        <div class="gs-col gs-col-head">BD: m4_d1<div class="gs-col-type">Phase transition debug</div></div>
+        <div class="gs-col gs-col-head">BE: m4_d2<div class="gs-col-type">Signal disappears debug</div></div>
+        <div class="gs-col gs-col-head">BF: m4_d3<div class="gs-col-type">Scoring calculation</div></div>
+        <div class="gs-col gs-col-head">BG: m4_t3code<div class="gs-col-type">Log + score code</div></div>
+        <div class="gs-col gs-col-head">BH: m4_t4code<div class="gs-col-type">Race clock code</div></div>
+        <div class="gs-col gs-col-head">BI: m4_mcq<div class="gs-col-type">0–5 integer</div></div>
+        <div class="gs-col gs-col-head">BJ–BN: m4_j1–j5<div class="gs-col-type">Journal prompts</div></div>
+        <div class="gs-col gs-col-head">BO: m4_post_know<div class="gs-col-type">1–5</div></div>
+        <div class="gs-col gs-col-head">BP: m4_post_useful<div class="gs-col-type">1–5</div></div>
+        <div class="gs-col gs-col-head">BQ: fox_finds_count<div class="gs-col-type">0–5 integer</div></div>
+        <div class="gs-col gs-col-head">BR: fox_finds_data<div class="gs-col-type">JSON string of fox log</div></div>
+      </div>
+    </div>
+
+    <div class="callout ok">
+      <div class="callout-title">Recommended Analysis Sheet</div>
+      <p>Create a second sheet "Analysis" with IMPORTRANGE or direct formulas: <br>
+      • Average MCQ score per module (spot which module is hardest)<br>
+      • Pre vs post calibration delta (learning gain indicator)<br>
+      • Fox finds count histogram (hunt performance by age group)<br>
+      • Journal word count (engagement proxy)</p>
+    </div>
+  </section>
+
+  <!-- Debrief Questions -->
+  <section class="t-section">
+    <h2>💬 Facilitator Debrief Questions</h2>
+    <p style="color:var(--text-dim);font-size:.9rem;margin-bottom:18px">Use these in the post-hunt debrief session (14:00–14:30). Encourage scouts to answer from their own experience, not from the theory.</p>
+
+    <div class="debrief-q">
+      <div class="debrief-q-num">Q1</div>
+      <div class="debrief-q-text">At what point during the hunt did you realise you needed to change technique?</div>
+      <div class="debrief-q-note">Listen for: phase transition moments, S-meter overload, body shield discovery. Bridges theory to lived experience.</div>
+    </div>
+    <div class="debrief-q">
+      <div class="debrief-q-num">Q2</div>
+      <div class="debrief-q-text">What was the most surprising thing the radio signal did in the field?</div>
+      <div class="debrief-q-note">Elicits reflection on multipath, terrain effects, signal anomalies — builds intuition for RF propagation.</div>
+    </div>
+    <div class="debrief-q">
+      <div class="debrief-q-num">Q3</div>
+      <div class="debrief-q-text">How did your team make decisions under time pressure?</div>
+      <div class="debrief-q-note">Leadership, communication, prioritisation. Bridges to real-world STEM career skills.</div>
+    </div>
+    <div class="debrief-q">
+      <div class="debrief-q-num">Q4</div>
+      <div class="debrief-q-text">If you could place the beacons for the next group, where would you hide them and why?</div>
+      <div class="debrief-q-note">Reverses perspective — scouts must think like the puzzle-setter. Reveals understanding of signal propagation and terrain.</div>
+    </div>
+    <div class="debrief-q">
+      <div class="debrief-q-num">Q5</div>
+      <div class="debrief-q-text">How is systematic fox hunting like good engineering? What parallels do you see?</div>
+      <div class="debrief-q-note">Connects the workshop to STEM learning: hypothesis-test cycles, systematic elimination, tool selection, data logging.</div>
+    </div>
+    <div class="debrief-q">
+      <div class="debrief-q-num">Q6</div>
+      <div class="debrief-q-text">What one thing would you teach someone who has never heard of ARDF?</div>
+      <div class="debrief-q-note">Consolidates learning through the protégé effect. Excellent for journal/portfolio evidence. Wrap-up question.</div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a> &middot;
+      <a href="module-0.html">Module 0</a> &middot;
+      <a href="module-1.html">Module 1</a> &middot;
+      <a href="module-2.html">Module 2</a> &middot;
+      <a href="module-3.html">Module 3</a> &middot;
+      <a href="module-4.html">Module 4</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative
+      <a href="https://ee.ump.edu.my/hazlina/" target="_blank" aria-label="Personal website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" aria-label="Email">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+
+</body>
+</html>

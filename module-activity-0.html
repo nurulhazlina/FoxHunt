@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orientation Activities – Radio Foxhunting</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root{--teal:#02ADA5;--teal-dim:#017a74;--teal-glow:rgba(2,173,165,.16);
+      --bg:#08312F;--surface:#0d3f3c;--surface2:#0f3634;--text:#e8f5f4;--text-dim:#7ab8b5;
+      --accent:#f0c040;--danger:#e05050;--ok:#50c850;--radius:10px;--shadow:0 4px 24px rgba(0,0,0,.5)}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;line-height:1.6}
+    .chev{padding:7px 22px 7px 28px;font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+      color:var(--text-dim);cursor:pointer;user-select:none;transition:color .2s,background .2s;position:relative}
+    .chev+.chev::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+      border-top:18px solid transparent;border-bottom:18px solid transparent;border-left:12px solid #041e1c;z-index:1}
+    .chev:hover{color:var(--teal)}.chev.active{color:#fff;background:rgba(2,173,165,.22)}
+    .sitenav{background:#041e1c;display:flex;align-items:center;justify-content:space-between;
+      padding:11px 28px;border-bottom:2px solid var(--teal);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.6)}
+    .brand{font-size:1.05rem;font-weight:800;color:var(--teal);letter-spacing:.06em}
+    .brand::before{content:"🦊 ";font-size:.9rem}
+    .steps-dropdown{position:relative}
+    .steps-btn{background:var(--teal-glow);border:1px solid rgba(2,173,165,.45);color:var(--teal);
+      padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.83rem;font-weight:700}
+    .steps-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);background:#041e1c;
+      border:1px solid rgba(2,173,165,.28);border-radius:10px;min-width:230px;box-shadow:var(--shadow);z-index:200}
+    .steps-menu.open{display:block}
+    .steps-menu a{display:block;padding:10px 16px;color:var(--text-dim);text-decoration:none;font-size:.87rem;
+      border-bottom:1px solid rgba(255,255,255,.05);transition:all .18s}
+    .steps-menu a:last-child{border-bottom:none}
+    .steps-menu a:hover{color:var(--text);background:rgba(2,173,165,.1)}
+    .steps-menu a.current{color:var(--teal);font-weight:700}
+    .hero{background:linear-gradient(135deg,#031a18 0%,#0a3a37 55%,#031a18 100%);
+      padding:52px 28px 44px;text-align:center;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -10%,rgba(2,173,165,.16) 0%,transparent 65%);pointer-events:none}
+    .eyebrow{font-size:.75rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:12px}
+    .hero h1{font-size:clamp(1.7rem,4vw,2.8rem);font-weight:900;line-height:1.1;color:#fff;margin-bottom:12px}
+    .subtitle{font-size:1rem;color:var(--text-dim);max-width:580px;margin:0 auto 22px;line-height:1.65}
+    .pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+    .pill{background:rgba(2,173,165,.14);border:1px solid rgba(2,173,165,.38);color:var(--teal);
+      padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:700;letter-spacing:.04em}
+    .progress-wrap{background:#041e1c;padding:10px 28px;border-bottom:1px solid rgba(2,173,165,.1)}
+    .progress-label{font-size:.72rem;color:var(--text-dim);margin-bottom:5px;display:flex;justify-content:space-between}
+    .progress-track{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),#04d4ca);border-radius:3px}
+    .content{max-width:920px;margin:0 auto;padding:44px 28px}
+    .act-section{margin-bottom:56px}
+    .act-header{display:flex;align-items:center;gap:13px;margin-bottom:22px}
+    .tier-badge{padding:5px 12px;border-radius:6px;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    .t1{background:rgba(2,173,165,.18);color:var(--teal)} .t2{background:rgba(240,192,64,.18);color:var(--accent)}
+    .t3{background:rgba(224,80,80,.18);color:var(--danger)} .t4{background:rgba(200,100,240,.18);color:#c070e0}
+    .act-title{font-size:1.35rem;font-weight:800;color:#fff}
+    .act-desc{color:var(--text-dim);font-size:.9rem;margin-bottom:20px}
+    /* Calibration */
+    .calib-card{background:var(--surface);border:1px solid rgba(2,173,165,.18);border-radius:var(--radius);padding:24px}
+    .calib-q{font-weight:700;color:#fff;margin-bottom:14px}
+    .range-wrap{display:flex;align-items:center;gap:14px}
+    .range-wrap input[type=range]{flex:1;accent-color:var(--teal)}
+    .range-val{min-width:28px;text-align:center;font-weight:800;color:var(--teal);font-size:1.1rem}
+    .range-labels{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-dim);margin-top:4px}
+    /* Fill-in-blank */
+    .fib-list{display:flex;flex-direction:column;gap:18px}
+    .fib-item{background:var(--surface);border:1px solid rgba(2,173,165,.15);border-radius:var(--radius);padding:16px 20px}
+    .fib-q{font-size:.9rem;color:var(--text-dim);margin-bottom:10px;line-height:1.5}
+    .fib-q strong{color:var(--text)}
+    .fib-inputs{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .blank{background:rgba(255,255,255,.05);border:1px solid rgba(2,173,165,.28);border-radius:6px;
+      padding:7px 12px;color:var(--text);font-size:.9rem;width:130px;transition:border-color .2s}
+    .blank:focus{outline:none;border-color:var(--teal)}
+    .blank.correct{border-color:var(--ok);background:rgba(80,200,80,.08)}
+    .blank.wrong{border-color:var(--danger);background:rgba(224,80,80,.08)}
+    /* Debug */
+    .debug-card{background:var(--surface);border:1px solid rgba(240,192,64,.2);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+    .debug-scenario{background:rgba(0,0,0,.3);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:14px;font-size:.88rem;color:var(--text-dim)}
+    .debug-scenario strong{color:var(--text)}
+    /* Code */
+    .code-block{background:#021412;border:1px solid rgba(2,173,165,.2);border-radius:8px;padding:18px;
+      font-family:'Courier New',monospace;font-size:.83rem;line-height:1.7;color:#b8e8e4;overflow-x:auto;margin-bottom:14px}
+    .code-comment{color:#5a8a87}.code-kw{color:#02ADA5}.code-str{color:var(--accent)}
+    /* Textarea */
+    .ta{background:rgba(255,255,255,.04);border:1px solid rgba(2,173,165,.22);border-radius:8px;
+      padding:12px 14px;color:var(--text);font-size:.9rem;line-height:1.6;resize:vertical;width:100%;
+      min-height:110px;font-family:inherit;transition:border-color .2s}
+    .ta:focus{outline:none;border-color:var(--teal)}
+    .ta.code-ta{font-family:'Courier New',monospace;font-size:.83rem;min-height:140px}
+    /* MCQ */
+    .mcq-list{display:flex;flex-direction:column;gap:22px}
+    .mcq-item{background:var(--surface);border:1px solid rgba(2,173,165,.15);border-radius:var(--radius);padding:18px 20px}
+    .mcq-q{font-weight:700;color:#fff;margin-bottom:14px;font-size:.95rem}
+    .mcq-q span{display:inline-block;background:rgba(2,173,165,.18);color:var(--teal);
+      border-radius:50%;width:24px;height:24px;text-align:center;line-height:24px;font-size:.8rem;margin-right:8px}
+    .options{display:flex;flex-direction:column;gap:8px}
+    .opt{display:flex;align-items:center;gap:10px;padding:9px 13px;border:1px solid rgba(255,255,255,.08);
+      border-radius:8px;cursor:pointer;transition:all .2s;font-size:.9rem;color:var(--text-dim)}
+    .opt:hover{border-color:rgba(2,173,165,.35);background:rgba(2,173,165,.06);color:var(--text)}
+    .opt input[type=radio]{accent-color:var(--teal)}
+    .opt.correct{border-color:var(--ok);background:rgba(80,200,80,.1);color:var(--text)}
+    .opt.wrong{border-color:var(--danger);background:rgba(224,80,80,.08)}
+    .mcq-feedback{margin-top:10px;font-size:.84rem;padding:8px 12px;border-radius:7px;display:none}
+    .mcq-feedback.show{display:block}
+    .mcq-feedback.ok{background:rgba(80,200,80,.1);color:var(--ok);border:1px solid rgba(80,200,80,.25)}
+    .mcq-feedback.err{background:rgba(224,80,80,.1);color:var(--danger);border:1px solid rgba(224,80,80,.25)}
+    /* Journal */
+    .journal-list{display:flex;flex-direction:column;gap:16px}
+    .journal-item{background:var(--surface);border:1px solid rgba(2,173,165,.12);border-radius:var(--radius);padding:18px}
+    .journal-q{font-size:.9rem;font-weight:700;color:#fff;margin-bottom:10px}
+    .journal-q span{color:var(--teal);margin-right:6px}
+    /* Score */
+    .score-display{background:var(--surface);border:2px solid var(--teal);border-radius:var(--radius);
+      padding:22px;text-align:center;margin-top:20px}
+    .score-num{font-size:3rem;font-weight:900;color:var(--teal);line-height:1}
+    .score-label{color:var(--text-dim);font-size:.9rem;margin-top:6px}
+    /* Submit */
+    .submit-section{background:var(--surface);border:1px solid rgba(2,173,165,.2);border-radius:var(--radius);padding:26px;text-align:center}
+    .submit-title{font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:8px}
+    .submit-sub{color:var(--text-dim);font-size:.88rem;margin-bottom:22px}
+    .btn{background:var(--teal);color:#fff;border:none;padding:11px 22px;border-radius:8px;
+      font-size:.93rem;font-weight:800;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+    .btn:hover{background:var(--teal-dim);transform:translateY(-1px)}
+    .btn-out{background:transparent;border:2px solid var(--teal);color:var(--teal)}
+    .btn-out:hover{background:rgba(2,173,165,.1)}
+    .btn-lg{padding:15px 36px;font-size:1.05rem;border-radius:10px}
+    .check-btn{padding:8px 16px;font-size:.8rem;background:rgba(2,173,165,.15);border:1px solid rgba(2,173,165,.3);color:var(--teal);border-radius:6px;cursor:pointer;margin-top:12px;font-weight:700}
+    .check-btn:hover{background:rgba(2,173,165,.25)}
+    /* CTA */
+    .cta-section{text-align:center;padding:52px 28px;background:linear-gradient(0deg,rgba(2,173,165,.06),transparent)}
+    .cta-title{font-size:1.35rem;font-weight:800;color:#fff;margin-bottom:8px}
+    .cta-sub{color:var(--text-dim);margin-bottom:24px}
+    .stepnav{display:flex;justify-content:space-between;align-items:center;
+      padding:18px 28px;background:#041e1c;border-top:1px solid rgba(2,173,165,.15);max-width:920px;margin:0 auto}
+    .stepnav a{display:flex;align-items:center;gap:7px;color:var(--teal);text-decoration:none;
+      font-weight:700;font-size:.88rem;padding:8px 15px;border:1px solid rgba(2,173,165,.28);border-radius:8px;transition:all .2s}
+    .stepnav a:hover{background:rgba(2,173,165,.1)}
+    .step-ghost{color:var(--text-dim);font-size:.83rem}
+    footer{background:#031a18;border-top:1px solid rgba(2,173,165,.1);padding:28px;text-align:center;color:var(--text-dim);font-size:.8rem}
+    .foot-brand{font-weight:800;color:var(--teal);margin-bottom:6px;font-size:.9rem}
+    @media(max-width:640px){.fib-inputs{flex-direction:column}.blank{width:100%}}
+  </style>
+</head>
+<body>
+
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+
+<nav class="sitenav">
+  <span class="brand">Radio Foxhunting</span>
+  <div class="steps-dropdown">
+    <button class="steps-btn" id="stepsToggle">Steps ▾</button>
+    <div class="steps-menu" id="stepsMenu">
+      <a href="module-0.html" class="current">0 · Orientation</a>
+      <a href="module-1.html">1 · Morse Code</a>
+      <a href="module-2.html">2 · Radio Basics</a>
+      <a href="module-3.html">3 · Yagi Antenna</a>
+      <a href="module-4.html">4 · Field Guide</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <p class="eyebrow" data-bm="UMPSA STEM LAB · Modul 0 daripada 5 · Aktiviti">UMPSA STEM LAB · Module 0 of 5 · Activities</p>
+  <h1>Orientation Activities</h1>
+  <p class="subtitle">Tiered tasks to consolidate your understanding of ARDF — fill in blanks, debug scenarios, complete code, and reflect in your journal.</p>
+  <div class="pills">
+    <span class="pill">T1 Fill-in-Blanks</span>
+    <span class="pill">T2 Debug</span>
+    <span class="pill">T3 Code</span>
+    <span class="pill">T4 New Task</span>
+  </div>
+</section>
+
+<div class="progress-wrap">
+  <div class="progress-label"><span>Activity Progress</span><span id="actProg">0 / 7 blanks completed</span></div>
+  <div class="progress-track"><div class="progress-fill" id="actBar" style="width:0%"></div></div>
+</div>
+
+<main class="content">
+
+  <!-- Pre-calibration -->
+  <section class="act-section" id="precalib">
+    <div class="act-header">
+      <span class="tier-badge t1">Pre-Calibration</span>
+      <span class="act-title" data-bm="Sebelum Kita Mula">Before We Start</span>
+    </div>
+    <div class="calib-card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <div class="calib-q">How much do you know about radio navigation? <small style="color:var(--text-dim)">(1 = nothing, 5 = expert)</small></div>
+          <div class="range-wrap">
+            <span style="font-size:.75rem;color:var(--text-dim)">1</span>
+            <input type="range" min="1" max="5" value="2" id="preKnow" oninput="document.getElementById('preKnowVal').textContent=this.value">
+            <span style="font-size:.75rem;color:var(--text-dim)">5</span>
+            <span class="range-val" id="preKnowVal">2</span>
+          </div>
+          <div class="range-labels"><span>Complete beginner</span><span>Radio expert</span></div>
+        </div>
+        <div>
+          <div class="calib-q">Predict: how many of the 5 modules will you complete today?</div>
+          <div class="range-wrap">
+            <span style="font-size:.75rem;color:var(--text-dim)">1</span>
+            <input type="range" min="1" max="5" value="3" id="prePredict" oninput="document.getElementById('prePredVal').textContent=this.value">
+            <span style="font-size:.75rem;color:var(--text-dim)">5</span>
+            <span class="range-val" id="prePredVal">3</span>
+          </div>
+          <div class="range-labels"><span>Just 1</span><span>All 5!</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- T1: Fill in Blanks -->
+  <section class="act-section" id="t1">
+    <div class="act-header">
+      <span class="tier-badge t1">Tier 1</span>
+      <span class="act-title" data-bm="Isi Tempat Kosong">Fill in the Blanks</span>
+    </div>
+    <p class="act-desc">Complete each statement with the correct word or phrase. Press "Check Answers" when done.</p>
+    <div class="fib-list" id="fibList">
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q1.</strong> ARDF stands for <em>blank</em> Radio <em>blank</em> Finding.</div>
+        <div class="fib-inputs">
+          <input class="blank" id="b1a" type="text" placeholder="first word…" data-ans="amateur">
+          <span style="color:var(--text-dim);font-size:.85rem">Radio</span>
+          <input class="blank" id="b1b" type="text" placeholder="third word…" data-ans="direction">
+          <span style="color:var(--text-dim);font-size:.85rem">Finding</span>
+        </div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q2.</strong> Foxhunting combines orienteering with <em>blank</em>.</div>
+        <div class="fib-inputs"><input class="blank" id="b2" type="text" placeholder="sport / technology…" data-ans="radio"></div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q3.</strong> There are <em>blank</em> hidden fox transmitters in a standard ARDF competition.</div>
+        <div class="fib-inputs"><input class="blank" id="b3" type="text" placeholder="number…" data-ans="5"></div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q4.</strong> The hunting time limit is <em>blank</em> minutes.</div>
+        <div class="fib-inputs"><input class="blank" id="b4" type="text" placeholder="minutes…" data-ans="80"></div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q5.</strong> Each beacon transmits for <em>blank</em> seconds per 60-second cycle.</div>
+        <div class="fib-inputs"><input class="blank" id="b5" type="text" placeholder="seconds…" data-ans="12"></div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q6.</strong> The rest beacon (heard between each fox) has the callsign <em>blank</em>.</div>
+        <div class="fib-inputs"><input class="blank" id="b6" type="text" placeholder="callsign…" data-ans="mo"></div>
+      </div>
+
+      <div class="fib-item">
+        <div class="fib-q"><strong>Q7.</strong> You navigate the hunt using a <em>blank</em> and a topographic <em>blank</em>.</div>
+        <div class="fib-inputs">
+          <input class="blank" id="b7a" type="text" placeholder="tool 1…" data-ans="compass">
+          <span style="color:var(--text-dim);font-size:.85rem">and a topographic</span>
+          <input class="blank" id="b7b" type="text" placeholder="tool 2…" data-ans="map">
+        </div>
+      </div>
+
+    </div>
+    <button class="check-btn" onclick="checkFIB()">Check Answers →</button>
+    <div id="fibResult" style="margin-top:12px;font-size:.87rem;color:var(--text-dim)"></div>
+  </section>
+
+  <!-- T2: Debug -->
+  <section class="act-section" id="t2">
+    <div class="act-header">
+      <span class="tier-badge t2">Tier 2</span>
+      <span class="act-title" data-bm="Debug Senario">Debug the Scenario</span>
+    </div>
+    <p class="act-desc">Read each flawed scenario. Identify the mistake and write a clear fix.</p>
+
+    <div class="debug-card">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:8px">Debug #1 — Wrong Navigation Tool</div>
+      <div class="debug-scenario"><strong>Scenario:</strong> A team brought a mobile phone GPS instead of a compass and topographic map. They say it's better because it shows their exact location. What's wrong with this approach? What should they use and why?</div>
+      <textarea class="ta" id="d1" placeholder="Identify the problem and explain the correct approach…"></textarea>
+    </div>
+
+    <div class="debug-card">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:8px">Debug #2 — Wrong Radio Band</div>
+      <div class="debug-scenario"><strong>Scenario:</strong> A team is using a 27 MHz CB radio to hunt 144 MHz ARDF beacons. They hear nothing but static. What is the fundamental mistake? What equipment do they actually need?</div>
+      <textarea class="ta" id="d2" placeholder="Explain the frequency mismatch and the correct fix…"></textarea>
+    </div>
+
+    <div class="debug-card">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:8px">Debug #3 — Time Penalty Calculation</div>
+      <div class="debug-scenario"><strong>Scenario:</strong> The hunt starts at 09:00 and lasts 80 minutes. A team found Fox 1 at 09:25, Fox 3 at 09:50, and Fox 5 at 10:05. They returned to Finish at 10:35 (95 minutes elapsed). The time limit is 80 minutes. Did they qualify? How is the late return penalised? Calculate their adjusted score.</div>
+      <textarea class="ta" id="d3" placeholder="Determine qualification, apply the penalty rule, show your calculation…"></textarea>
+    </div>
+  </section>
+
+  <!-- T3: Complete the Code -->
+  <section class="act-section" id="t3">
+    <div class="act-header">
+      <span class="tier-badge t3">Tier 3</span>
+      <span class="act-title" data-bm="Lengkapkan Kod">Complete the Code</span>
+    </div>
+    <p class="act-desc">The registration system below is incomplete. Read the starter code, then write the missing parts in the editor below.</p>
+    <div class="code-block"><span class="code-comment">// ── Scout Registration System (Starter) ──</span>
+<span class="code-kw">function</span> saveProfile(form) {
+  <span class="code-kw">var</span> profile = {
+    team:  form.teamName.value,
+    name:  form.scoutName.value,
+    <span class="code-comment">// YOUR CODE: add school, age, and a timestamp field</span>
+    <span class="code-comment">// YOUR CODE: save the profile object to localStorage</span>
+    <span class="code-comment">//            using the key  'fox_profile'</span>
+    <span class="code-comment">// YOUR CODE: return a success confirmation string</span>
+    <span class="code-comment">//            e.g. "Team Bravo registered at 10:32"</span>
+  };
+}
+
+<span class="code-comment">// Hint: JSON.stringify() and localStorage.setItem() are your friends</span>
+<span class="code-comment">// Hint: new Date().toLocaleTimeString() gives a readable time</span></div>
+    <textarea class="ta code-ta" id="t3code" placeholder="// Write your completed saveProfile function here…
+function saveProfile(form) {
+  var profile = {
+    team:  form.teamName.value,
+    name:  form.scoutName.value,
+    school: form.school.value,    // add school
+    age:    form.ageGroup.value,  // add age group
+    timestamp: new Date().toISOString()  // add timestamp
+  };
+  localStorage.setItem('fox_profile', JSON.stringify(profile));
+  return 'Team ' + profile.team + ' registered at ' + new Date().toLocaleTimeString();
+}"></textarea>
+  </section>
+
+  <!-- T4: New Task -->
+  <section class="act-section" id="t4">
+    <div class="act-header">
+      <span class="tier-badge t4">Tier 4</span>
+      <span class="act-title">New Task</span>
+    </div>
+    <div class="debug-card" style="border-color:rgba(200,100,240,.2)">
+      <div style="font-weight:800;color:#c070e0;margin-bottom:10px">🦊 Extension Challenge</div>
+      <p style="color:var(--text-dim);font-size:.9rem;margin-bottom:14px">
+        Add a <strong style="color:var(--text)">"find log"</strong> feature to the registration system. When a scout finds a fox, they should be able to log:
+      </p>
+      <ul style="padding-left:18px;color:var(--text-dim);font-size:.9rem;margin-bottom:14px">
+        <li style="margin-bottom:5px">The <strong style="color:var(--text)">beacon ID</strong> (e.g. MOE, MOI…)</li>
+        <li style="margin-bottom:5px">The <strong style="color:var(--text)">time found</strong> (from input)</li>
+        <li style="margin-bottom:5px">A <strong style="color:var(--text)">GPS coordinate</strong> or landmark description</li>
+      </ul>
+      <p style="color:var(--text-dim);font-size:.9rem">
+        The widget should display a <strong style="color:var(--text)">running total score</strong> (1 point per fox found). Data should persist in <code style="color:var(--teal)">localStorage</code> under the key <code style="color:var(--teal)">'fox_finds'</code>.
+      </p>
+    </div>
+    <label style="font-size:.82rem;font-weight:700;color:var(--text-dim);display:block;margin-bottom:8px">Your design plan and/or code:</label>
+    <textarea class="ta code-ta" id="t4code" style="min-height:180px" placeholder="// Plan your solution or write the code here…
+// Think about: What data structure will you use for fox_finds?
+// How will you add a new entry? How will you display the log?
+// How will you calculate the running score?"></textarea>
+  </section>
+
+  <!-- Concept Check MCQ -->
+  <section class="act-section" id="mcq">
+    <div class="act-header">
+      <span class="tier-badge t1">Concept Check</span>
+      <span class="act-title" data-bm="5 Soalan Pantas">5 Quick Questions</span>
+    </div>
+    <p class="act-desc">Select the best answer for each question. Instant feedback is provided.</p>
+    <div class="mcq-list">
+
+      <div class="mcq-item">
+        <div class="mcq-q"><span>1</span>What does ARDF stand for?</div>
+        <div class="options" id="mc1">
+          <label class="opt"><input type="radio" name="mc1" value="a"> Automated Radio Detection Framework</label>
+          <label class="opt"><input type="radio" name="mc1" value="b"> Amateur Radio Direction Finding</label>
+          <label class="opt"><input type="radio" name="mc1" value="c"> Advanced Radio Data Format</label>
+          <label class="opt"><input type="radio" name="mc1" value="d"> Analogue Radio Directional Feed</label>
+        </div>
+        <div class="mcq-feedback" id="fb1"></div>
+      </div>
+
+      <div class="mcq-item">
+        <div class="mcq-q"><span>2</span>How many hidden beacons are used in a standard ARDF competition?</div>
+        <div class="options" id="mc2">
+          <label class="opt"><input type="radio" name="mc2" value="a"> 3</label>
+          <label class="opt"><input type="radio" name="mc2" value="b"> 4</label>
+          <label class="opt"><input type="radio" name="mc2" value="c"> 5</label>
+          <label class="opt"><input type="radio" name="mc2" value="d"> 10</label>
+        </div>
+        <div class="mcq-feedback" id="fb2"></div>
+      </div>
+
+      <div class="mcq-item">
+        <div class="mcq-q"><span>3</span>What is the role of the MO beacon?</div>
+        <div class="options" id="mc3">
+          <label class="opt"><input type="radio" name="mc3" value="a"> It is the strongest fox and scores double points</label>
+          <label class="opt"><input type="radio" name="mc3" value="b"> It marks the rest period between each fox transmission, helping hunters synchronise</label>
+          <label class="opt"><input type="radio" name="mc3" value="c"> It broadcasts the GPS coordinates of all foxes</label>
+          <label class="opt"><input type="radio" name="mc3" value="d"> It is used only by officials to track hunter positions</label>
+        </div>
+        <div class="mcq-feedback" id="fb3"></div>
+      </div>
+
+      <div class="mcq-item">
+        <div class="mcq-q"><span>4</span>On which frequency band do standard ARDF competitions operate?</div>
+        <div class="options" id="mc4">
+          <label class="opt"><input type="radio" name="mc4" value="a"> 27 MHz (CB radio)</label>
+          <label class="opt"><input type="radio" name="mc4" value="b"> 88–108 MHz (FM broadcast)</label>
+          <label class="opt"><input type="radio" name="mc4" value="c"> 144 MHz (2-metre amateur band)</label>
+          <label class="opt"><input type="radio" name="mc4" value="d"> 900 MHz (cellular band)</label>
+        </div>
+        <div class="mcq-feedback" id="fb4"></div>
+      </div>
+
+      <div class="mcq-item">
+        <div class="mcq-q"><span>5</span>Radio foxhunting (ARDF) primarily combines which two activities?</div>
+        <div class="options" id="mc5">
+          <label class="opt"><input type="radio" name="mc5" value="a"> Swimming and electronics</label>
+          <label class="opt"><input type="radio" name="mc5" value="b"> Orienteering and radio direction finding</label>
+          <label class="opt"><input type="radio" name="mc5" value="c"> Cycling and amateur radio</label>
+          <label class="opt"><input type="radio" name="mc5" value="d"> Archery and satellite communication</label>
+        </div>
+        <div class="mcq-feedback" id="fb5"></div>
+      </div>
+
+    </div>
+    <div class="score-display" id="mcqScore" style="display:none">
+      <div class="score-num" id="mcqScoreNum">0</div>
+      <div class="score-label">out of 5 correct</div>
+    </div>
+  </section>
+
+  <!-- Journal -->
+  <section class="act-section" id="journal">
+    <div class="act-header">
+      <span class="tier-badge" style="background:rgba(128,200,128,.18);color:#80d080">Journal</span>
+      <span class="act-title" data-bm="Soalan Refleksi">Reflection Prompts</span>
+    </div>
+    <p class="act-desc">Write at least 2–3 sentences for each prompt. These are saved locally and not marked for correctness — be honest!</p>
+    <div class="journal-list">
+      <div class="journal-item">
+        <div class="journal-q"><span>J1</span>What excited you most about foxhunting before you started today?</div>
+        <textarea class="ta" id="j1" placeholder="Write your thoughts here…"></textarea>
+      </div>
+      <div class="journal-item">
+        <div class="journal-q"><span>J2</span>How is radio foxhunting like a puzzle? What are the different pieces that fit together?</div>
+        <textarea class="ta" id="j2" placeholder="Think about the different skills and equipment involved…"></textarea>
+      </div>
+      <div class="journal-item">
+        <div class="journal-q"><span>J3</span>What radio or electronics knowledge did you already have coming in? What concepts are completely new to you?</div>
+        <textarea class="ta" id="j3" placeholder="Be specific — name concepts or experiences…"></textarea>
+      </div>
+      <div class="journal-item">
+        <div class="journal-q"><span>J4</span>How would working as a team help you perform better in a fox hunt?</div>
+        <textarea class="ta" id="j4" placeholder="Think about roles, communication, and decision-making…"></textarea>
+      </div>
+      <div class="journal-item">
+        <div class="journal-q"><span>J5</span>What skill from school, another sport, or everyday life could help you succeed in a fox hunt?</div>
+        <textarea class="ta" id="j5" placeholder="Think broadly — navigation, maths, problem-solving, teamwork…"></textarea>
+      </div>
+    </div>
+    <button class="check-btn" onclick="saveJournal()">💾 Save Journal</button>
+    <span id="journalSaved" style="margin-left:12px;font-size:.83rem;color:var(--ok);display:none">Saved ✓</span>
+  </section>
+
+  <!-- Post-calibration -->
+  <section class="act-section" id="postcalib">
+    <div class="act-header">
+      <span class="tier-badge t1">Post-Calibration</span>
+      <span class="act-title" data-bm="Selepas Aktiviti Ini">After These Activities</span>
+    </div>
+    <div class="calib-card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <div class="calib-q">How well do you now understand ARDF basics? <small style="color:var(--text-dim)">(1–5)</small></div>
+          <div class="range-wrap">
+            <span style="font-size:.75rem;color:var(--text-dim)">1</span>
+            <input type="range" min="1" max="5" value="3" id="postKnow" oninput="document.getElementById('postKnowVal').textContent=this.value">
+            <span style="font-size:.75rem;color:var(--text-dim)">5</span>
+            <span class="range-val" id="postKnowVal">3</span>
+          </div>
+        </div>
+        <div>
+          <div class="calib-q">How confident are you about the upcoming field hunt?</div>
+          <div class="range-wrap">
+            <span style="font-size:.75rem;color:var(--text-dim)">1</span>
+            <input type="range" min="1" max="5" value="3" id="postConfidence" oninput="document.getElementById('postConfVal').textContent=this.value">
+            <span style="font-size:.75rem;color:var(--text-dim)">5</span>
+            <span class="range-val" id="postConfVal">3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GS Submit -->
+  <section class="act-section" id="submit">
+    <div class="submit-section">
+      <div class="submit-title">Submit Your Work</div>
+      <div class="submit-sub">Your responses are compiled and ready to send to your facilitator via Google Sheets.</div>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-lg" onclick="submitToGS()">📤 Submit to Google Sheets</button>
+        <button class="btn btn-out btn-lg" onclick="downloadLocal()">📥 Download My Answers</button>
+      </div>
+      <div id="submitMsg" style="margin-top:14px;font-size:.87rem;color:var(--text-dim)"></div>
+    </div>
+  </section>
+
+</main>
+
+<div class="cta-section">
+  <div class="cta-title">Module 0 Complete!</div>
+  <p class="cta-sub">Head to Module 1 to learn Morse Code</p>
+  <a href="module-1.html" class="btn btn-lg">Module 1: Morse Code →</a>
+</div>
+
+<nav class="stepnav">
+  <a href="module-0.html">← Back to Orientation</a>
+  <a href="module-1.html">Module 1: Morse Code →</a>
+</nav>
+
+<footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a> &middot;
+      <a href="module-0.html">Module 0</a> &middot;
+      <a href="module-1.html">Module 1</a> &middot;
+      <a href="module-2.html">Module 2</a> &middot;
+      <a href="module-3.html">Module 3</a> &middot;
+      <a href="module-4.html">Module 4</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative
+      <a href="https://ee.ump.edu.my/hazlina/" target="_blank" aria-label="Personal website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" aria-label="Email">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Chev bar ──
+var seeClicks=0,seeTmr;
+document.getElementById('see-box').addEventListener('click',function(){
+  seeClicks++;clearTimeout(seeTmr);
+  if(seeClicks>=3){window.location.href='teacher-0.html';seeClicks=0;return;}
+  seeTmr=setTimeout(function(){seeClicks=0;},680);
+});
+document.querySelectorAll('.chev').forEach(function(c){
+  c.addEventListener('click',function(){
+    document.querySelectorAll('.chev').forEach(function(x){x.classList.remove('active');});
+    c.classList.add('active');
+  });
+});
+document.getElementById('stepsToggle').addEventListener('click',function(e){
+  e.stopPropagation();document.getElementById('stepsMenu').classList.toggle('open');
+});
+document.addEventListener('click',function(){document.getElementById('stepsMenu').classList.remove('open');});
+
+// ── Fill-in-blank checking ──
+var fibAnswers={b1a:'amateur',b1b:'direction',b2:'radio',b3:'5',b4:'80',b5:'12',b6:'mo',b7a:'compass',b7b:'map'};
+function checkFIB(){
+  var correct=0,total=0;
+  Object.keys(fibAnswers).forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    total++;
+    var val=el.value.trim().toLowerCase();
+    if(val===fibAnswers[id]||val.includes(fibAnswers[id])){
+      el.classList.add('correct');el.classList.remove('wrong');correct++;
+    } else {
+      el.classList.add('wrong');el.classList.remove('correct');
+    }
+  });
+  var pct=Math.round((correct/total)*100);
+  document.getElementById('actBar').style.width=pct+'%';
+  document.getElementById('actProg').textContent=correct+' / '+total+' blanks correct';
+  document.getElementById('fibResult').innerHTML=
+    '<span style="color:'+(correct===total?'var(--ok)':'var(--accent)')+'">'+
+    correct+'/'+total+' correct ('+pct+'%)</span>'+
+    (correct<total?' — review the highlighted blanks and try again.':' — All correct! Great work! ✓');
+}
+
+// ── MCQ ──
+var mcqAns={mc1:'b',mc2:'c',mc3:'b',mc4:'c',mc5:'b'};
+var mcqFeedback={
+  mc1:'"Amateur Radio Direction Finding" — each word of the acronym.',
+  mc2:'Standard ARDF uses exactly 5 hidden transmitters, each transmitting for 12 seconds per cycle.',
+  mc3:'MO transmits between each fox, acting as a rest/separator so hunters can synchronise the cycle.',
+  mc4:'Standard ARDF competitions use the 144 MHz (2-metre) amateur band for 2m fox hunting.',
+  mc5:'ARDF uniquely combines orienteering (map &amp; compass navigation) with radio direction finding.'
+};
+var mcqScore=0;
+document.querySelectorAll('input[type=radio]').forEach(function(radio){
+  radio.addEventListener('change',function(){
+    var name=this.name;
+    var correct=mcqAns[name];
+    var fb=document.getElementById('fb'+name.replace('mc',''));
+    var opts=document.querySelectorAll('#'+name+' .opt');
+    opts.forEach(function(opt){
+      var r=opt.querySelector('input');
+      if(r.value===correct) opt.classList.add('correct');
+      else if(r.checked) opt.classList.add('wrong');
+    });
+    if(this.value===correct){
+      fb.className='mcq-feedback show ok';
+      fb.innerHTML='✓ Correct! '+mcqFeedback[name];
+      mcqScore++;
+    } else {
+      fb.className='mcq-feedback show err';
+      fb.innerHTML='✗ Not quite. '+mcqFeedback[name];
+    }
+    var answeredAll=Object.keys(mcqAns).every(function(k){return document.querySelector('input[name='+k+']:checked');});
+    if(answeredAll){
+      var s=document.getElementById('mcqScore');
+      s.style.display='block';
+      document.getElementById('mcqScoreNum').textContent=Object.keys(mcqAns).filter(function(k){
+        var r=document.querySelector('input[name='+k+']:checked');
+        return r&&r.value===mcqAns[k];
+      }).length;
+    }
+  });
+});
+
+// ── Journal save ──
+function saveJournal(){
+  var data={};
+  ['j1','j2','j3','j4','j5'].forEach(function(id){
+    data[id]=(document.getElementById(id)||{}).value||'';
+  });
+  try{localStorage.setItem('fox_journal_0',JSON.stringify(data));}catch(e){}
+  document.getElementById('journalSaved').style.display='inline';
+  setTimeout(function(){document.getElementById('journalSaved').style.display='none';},2500);
+}
+// Auto-load journal
+try{
+  var jd=JSON.parse(localStorage.getItem('fox_journal_0')||'null');
+  if(jd){['j1','j2','j3','j4','j5'].forEach(function(id){var el=document.getElementById(id);if(el&&jd[id])el.value=jd[id];});}
+}catch(e){}
+
+// ── GS Submit ──
+var GS_URL='https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; // ← replace with real GS webhook
+function gatherData(){
+  var profile={};
+  try{profile=JSON.parse(localStorage.getItem('fox_profile')||'{}');}catch(e){}
+  return {
+    module:0,timestamp:new Date().toISOString(),
+    team:profile.team||'',scout:profile.name||'',school:profile.school||'',age:profile.age||'',
+    preKnow:document.getElementById('preKnow').value,prePredict:document.getElementById('prePredict').value,
+    b1a:document.getElementById('b1a').value,b1b:document.getElementById('b1b').value,
+    b2:document.getElementById('b2').value,b3:document.getElementById('b3').value,
+    b4:document.getElementById('b4').value,b5:document.getElementById('b5').value,
+    b6:document.getElementById('b6').value,b7a:document.getElementById('b7a').value,b7b:document.getElementById('b7b').value,
+    d1:document.getElementById('d1').value,d2:document.getElementById('d2').value,d3:document.getElementById('d3').value,
+    t3code:document.getElementById('t3code').value,t4code:document.getElementById('t4code').value,
+    mcqScore:Object.keys(mcqAns).filter(function(k){var r=document.querySelector('input[name='+k+']:checked');return r&&r.value===mcqAns[k];}).length,
+    j1:document.getElementById('j1').value,j2:document.getElementById('j2').value,
+    j3:document.getElementById('j3').value,j4:document.getElementById('j4').value,j5:document.getElementById('j5').value,
+    postKnow:document.getElementById('postKnow').value,postConfidence:document.getElementById('postConfidence').value
+  };
+}
+function submitToGS(){
+  saveJournal();
+  var data=gatherData();
+  var msg=document.getElementById('submitMsg');
+  msg.textContent='Submitting…';
+  if(GS_URL.includes('YOUR_SCRIPT_ID')){
+    msg.innerHTML='⚠️ GS URL not configured. <a href="#" onclick="downloadLocal();return false;" style="color:var(--teal)">Download locally instead.</a>';
+    return;
+  }
+  fetch(GS_URL,{method:'POST',body:JSON.stringify(data)})
+    .then(function(){msg.innerHTML='<span style="color:var(--ok)">✅ Submitted successfully!</span>';})
+    .catch(function(){msg.innerHTML='<span style="color:var(--danger)">Submit failed — use Download instead.</span>';});
+}
+function downloadLocal(){
+  var data=gatherData();
+  var lines=['Radio Foxhunting — Module 0 Activity Submission','='.repeat(50),''];
+  Object.entries(data).forEach(function(kv){lines.push(kv[0]+': '+kv[1]);});
+  var blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='module0_submission.txt';a.click();
+}
+</script>
+<script>
+/* ── Triple-click SEE → teacher notes ── */
+(function(){
+  var box = document.getElementById('see-box');
+  if (!box) return;
+  var clicks = 0, timer;
+  box.addEventListener('click', function() {
+    clicks++;
+    clearTimeout(timer);
+    timer = setTimeout(function() { clicks = 0; }, 800);
+    if (clicks >= 3) {
+      clicks = 0;
+      window.location.href = 'teacher-0.html';
+    }
+  });
+})();
+</script>
+<script>
+/* ── lang.js inlined ── */
+/**
+ * lang.js  — Radio Foxhunting LMS bilingual engine (EN / BM)
+ * Injects a language toggle into .sitenav, applies data-bm attributes.
+ * Sets window.rfLang = 'en' | 'bm' for activity scripts.
+ */
+(function () {
+  'use strict';
+  var lang = 'en';
+  try { lang = localStorage.getItem('rf_lang') || 'en'; } catch (e) {}
+  window.rfLang = lang;
+
+  function applyLang(l) {
+    window.rfLang = l;
+    document.querySelectorAll('[data-bm]').forEach(function (el) {
+      if (!el.hasAttribute('data-en')) el.setAttribute('data-en', el.innerHTML);
+      el.innerHTML = (l === 'bm') ? el.getAttribute('data-bm') : el.getAttribute('data-en');
+    });
+    document.querySelectorAll('[data-bm-ph]').forEach(function (el) {
+      if (!el.hasAttribute('data-en-ph')) el.setAttribute('data-en-ph', el.placeholder);
+      el.placeholder = (l === 'bm') ? el.getAttribute('data-bm-ph') : el.getAttribute('data-en-ph');
+    });
+    var btn = document.getElementById('rf-lang-btn');
+    if (btn) btn.textContent = (l === 'bm') ? 'EN' : 'BM';
+    document.documentElement.lang = (l === 'bm') ? 'ms' : 'en';
+  }
+
+  function injectToggle() {
+    var nav = document.querySelector('.sitenav') || document.querySelector('nav');
+    if (!nav || document.getElementById('rf-lang-btn')) return;
+    var btn = document.createElement('button');
+    btn.id = 'rf-lang-btn';
+    btn.textContent = (lang === 'bm') ? 'EN' : 'BM';
+    btn.title = 'Toggle language / Tukar bahasa';
+    btn.style.cssText = 'background:rgba(2,173,165,.15);border:1px solid var(--teal);color:var(--teal);border-radius:6px;padding:.28rem .72rem;font-size:.78rem;font-weight:800;cursor:pointer;letter-spacing:.06em;margin-left:auto;flex-shrink:0;transition:background .15s;';
+    btn.addEventListener('click', function () {
+      lang = (lang === 'en') ? 'bm' : 'en';
+      try { localStorage.setItem('rf_lang', lang); } catch (e) {}
+      applyLang(lang);
+    });
+    nav.style.display = 'flex';
+    nav.style.alignItems = 'center';
+    nav.appendChild(btn);
+  }
+
+  function init() { injectToggle(); applyLang(lang); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else { init(); }
+})();
+</script>
+<script>
+/* ── tracker.js inlined ── */
+/**
+ * Radio Foxhunting LMS — Analytics Tracker v2
+ * • Sends events to Google Sheets via Apps Script
+ * • Tracks geolocation (IP-based), device type, completion milestones
+ * • Manages completion state in localStorage
+ */
+(function () {
+  'use strict';
+
+  // ── Config ────────────────────────────────────────────────────────────────
+  var SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+  // ── Page / module detection ───────────────────────────────────────────────
+  function getModule() {
+    var p = window.location.pathname.split('/').pop() || 'index.html';
+    if (p === 'index.html' || p === '') return 'Home';
+    var m = p.match(/module-(\d+)\.html/);   if (m) return 'M' + m[1];
+    var a = p.match(/module-activity-(\d+)/); if (a) return 'Activity-M' + a[1];
+    var t = p.match(/teacher-(\d+)/);         if (t) return 'Teacher-M' + t[1];
+    if (p === 'teacher-index.html') return 'Teacher-Hub';
+    if (p === 'survey-pre.html')  return 'Survey-Pre';
+    if (p === 'survey-post.html') return 'Survey-Post';
+    if (p === 'register.html')    return 'Register';
+    if (p === 'certificate.html') return 'Certificate';
+    return p.replace('.html', '');
+  }
+
+  function getLang() {
+    try { var b=document.querySelector('.lang-btn.active'); return b?b.textContent.trim():'EN'; } catch(e){return 'EN';}
+  }
+
+  // ── Session / participant ─────────────────────────────────────────────────
+  function getSessionId() {
+    try {
+      var id = localStorage.getItem('rf_sid');
+      if (!id) { id = 'rf_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); localStorage.setItem('rf_sid', id); }
+      return id;
+    } catch(e) { return 'rf_' + Date.now(); }
+  }
+
+  function getParticipant() {
+    try {
+      var p = JSON.parse(localStorage.getItem('rf_participant') || '{}');
+      return { participant_name: p.full_name||'', participant_id: p.matric_no||'', level: p.level||'', school_code: p.school_code||'', home_state: p.home_state||'' };
+    } catch(e) { return {}; }
+  }
+
+  // ── Device info ───────────────────────────────────────────────────────────
+  function getDevice() {
+    var ua = navigator.userAgent;
+    var device = /Mobi|Android/i.test(ua) ? 'Mobile' : /iPad|Tablet/i.test(ua) ? 'Tablet' : 'Desktop';
+    var os = /Windows/i.test(ua)?'Windows':/Mac/i.test(ua)?'Mac':/Android/i.test(ua)?'Android':/iPhone|iPad/i.test(ua)?'iOS':/Linux/i.test(ua)?'Linux':'Other';
+    return { device: device, os: os };
+  }
+
+  // ── Geolocation (IP-based, fetched once per session) ─────────────────────
+  function getGeoCache() {
+    try { return JSON.parse(localStorage.getItem('rf_geo') || 'null'); } catch(e){return null;}
+  }
+  function fetchGeo(cb) {
+    var cached = getGeoCache();
+    if (cached) { cb(cached); return; }
+    try {
+      fetch('https://ipapi.co/json/', {mode:'cors'})
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var geo = { country: d.country_name||'', region: d.region||'', city: d.city||'', isp: d.org||'' };
+          try { localStorage.setItem('rf_geo', JSON.stringify(geo)); } catch(e){}
+          cb(geo);
+        })
+        .catch(function(){ cb({}); });
+    } catch(e) { cb({}); }
+  }
+
+  // ── Send event ────────────────────────────────────────────────────────────
+  function send(eventName, extra, geo) {
+    if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
+    var payload = Object.assign({
+      survey: 'analytics',
+      event: eventName,
+      module: getModule(),
+      lang: getLang(),
+      session_id: getSessionId(),
+      timestamp: new Date().toISOString(),
+      referrer: document.referrer ? (document.referrer.split('/').pop()||'direct') : 'direct'
+    }, getParticipant(), getDevice(), geo||{}, extra||{});
+    try { fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload), keepalive:true }); }
+    catch(e) {}
+  }
+
+  // ── Completion tracking in localStorage ──────────────────────────────────
+  var mod = getModule();
+
+  // Mark module as visited
+  if (mod.match(/^M\d+$/)) {
+    try {
+      var visited = JSON.parse(localStorage.getItem('rf_visited_modules') || '[]');
+      var mNum = parseInt(mod.replace('M',''));
+      if (visited.indexOf(mNum) === -1) { visited.push(mNum); localStorage.setItem('rf_visited_modules', JSON.stringify(visited)); }
+    } catch(e) {}
+  }
+
+  // Mark activity as submitted (called by activity submit buttons)
+  window.rfMarkActivity = function(num) {
+    try {
+      var done = JSON.parse(localStorage.getItem('rf_activities_done') || '[]');
+      if (done.indexOf(num) === -1) { done.push(num); localStorage.setItem('rf_activities_done', JSON.stringify(done)); }
+    } catch(e) {}
+  };
+
+  // Mark post-survey done
+  window.rfMarkPostDone = function() {
+    try { localStorage.setItem('rf_post_done', '1'); } catch(e) {}
+  };
+
+  // Check full completion: visited M0-M4 + activities 1-4 + post-survey
+  window.rfIsComplete = function() {
+    try {
+      var visited = JSON.parse(localStorage.getItem('rf_visited_modules') || '[]');
+      var acts = JSON.parse(localStorage.getItem('rf_activities_done') || '[]');
+      var post = localStorage.getItem('rf_post_done') === '1';
+      var allModules = [0,1,2,3,4].every(function(n){ return visited.indexOf(n) !== -1; });
+      var allActs = [1,2,3,4].every(function(n){ return acts.indexOf(n) !== -1; });
+      return allModules && allActs && post;
+    } catch(e) { return false; }
+  };
+
+  // ── Auto fire page_view with geo ──────────────────────────────────────────
+  fetchGeo(function(geo) {
+    send('page_view', {}, geo);
+  });
+
+  // ── Time on page ──────────────────────────────────────────────────────────
+  var t0 = Date.now();
+  window.addEventListener('beforeunload', function() {
+    var s = Math.round((Date.now()-t0)/1000);
+    if (s > 3) send('time_spent', {seconds:s});
+  });
+
+  // ── Forward nav click ─────────────────────────────────────────────────────
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest('a[href],button');
+    if (!el) return;
+    var href = el.getAttribute('href') || '';
+    if ((href.match(/module-\d+\.html/) || href === 'index.html') && mod.match(/^(M\d+|Activity-M\d+)$/)) {
+      send('module_forward', {target: href});
+    }
+  });
+
+  window.rfTrack = send;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morse Code Activities · Module 1 · Radio Foxhunting</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── shared activity styles ── */
+    .tier-header {
+      display:flex; align-items:center; gap:.75rem; margin-bottom:1rem; flex-wrap:wrap;
+    }
+    .tier-badge {
+      background:var(--teal); color:#08312F; font-size:.75rem; font-weight:800;
+      padding:.3rem .7rem; border-radius:20px; text-transform:uppercase; letter-spacing:.06em;
+    }
+    .tier-title { font-size:1.1rem; font-weight:700; }
+
+    /* ── Fill-in-blanks ── */
+    .fib-list { list-style:none; padding:0; display:grid; gap:.75rem; }
+    .fib-item {
+      background:var(--surface); border:1px solid var(--border); border-radius:10px;
+      padding:1rem 1.2rem; display:flex; flex-wrap:wrap; align-items:center; gap:.5rem;
+    }
+    .fib-item label { flex:1; min-width:200px; line-height:1.6; }
+    .fib-input {
+      background:#0a1f1e; border:1px solid var(--border); border-radius:6px;
+      color:#cde8e6; padding:.35rem .7rem; font-family:monospace; font-size:1rem;
+      width:100px; text-align:center;
+    }
+    .fib-input:focus { outline:2px solid var(--teal); }
+    .fib-status { font-size:1.2rem; min-width:1.5rem; }
+    .fib-feedback { width:100%; font-size:.82rem; }
+    .correct { color:#4ade80; }
+    .wrong   { color:#f87171; }
+
+    /* ── Debug exercises ── */
+    .debug-box {
+      background:var(--surface); border:1px solid var(--border); border-radius:10px;
+      padding:1.2rem; margin-bottom:1rem;
+    }
+    .debug-prompt { margin-bottom:.75rem; font-size:.95rem; line-height:1.6; }
+    .debug-prompt code { background:#0a1f1e; padding:.15rem .4rem; border-radius:4px; font-size:.9rem; }
+    .debug-textarea {
+      width:100%; min-height:90px; resize:vertical; background:#0a1f1e;
+      border:1px solid var(--border); border-radius:8px; color:#cde8e6;
+      padding:.7rem; font-family:monospace; font-size:.9rem; box-sizing:border-box;
+    }
+    .debug-textarea:focus { outline:2px solid var(--teal); }
+    .char-count { font-size:.78rem; color:var(--muted); margin-top:.3rem; }
+
+    /* ── Global overflow guard ── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { overflow-x: hidden; max-width: 100vw; }
+
+    /* ── Jigsaw matching ── */
+    .jigsaw-arena {
+      display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin:1.2rem 0;
+      min-width:0;
+    }
+    .jigsaw-arena > div { min-width:0; overflow:hidden; }
+    @media(max-width:640px){
+      .jigsaw-arena{ grid-template-columns:1fr; }
+      .jigsaw-card { font-size:.82rem; padding:.5rem .65rem; }
+      .ltr-btn { font-size:.72rem; padding:.25rem .4rem; min-width:28px; }
+      .morse-display { font-size:.85rem; letter-spacing:.06em; }
+    }
+    .jigsaw-col-label { font-size:.78rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); margin-bottom:.5rem; }
+    .jigsaw-card {
+      background:var(--surface); border:2px solid var(--border); border-radius:10px;
+      padding:.65rem .75rem; cursor:pointer; user-select:none; transition:all .18s;
+      font-size:.88rem; line-height:1.4; min-height:44px;
+      display:flex; align-items:center; word-break:break-all; overflow:hidden;
+      min-width:0;
+    }
+    .jigsaw-card:hover { border-color:var(--teal); background:rgba(2,173,165,.08); }
+    .jigsaw-card.selected { border-color:#D99A10; background:rgba(217,154,16,.12); }
+    .jigsaw-card.matched-ok  { border-color:#4ade80; background:rgba(74,222,128,.1); pointer-events:none; }
+    .jigsaw-card.matched-err { border-color:#f87171; background:rgba(248,113,113,.1); animation:shake .3s; }
+    .jigsaw-card.used { opacity:.45; pointer-events:none; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+    .morse-mono { font-family:monospace; font-size:.95rem; letter-spacing:.1em; word-break:break-word; overflow-wrap:anywhere; }
+    .jigsaw-score-row { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-top:.75rem; }
+
+    /* ── Mission Composer ── */
+    .mission-brief {
+      background:color-mix(in srgb, var(--teal) 8%, transparent);
+      border:1px dashed var(--teal); border-radius:12px; padding:1.2rem 1rem; margin-bottom:1.2rem;
+      overflow:hidden;
+    }
+    .mission-brief h3 { color:var(--teal); margin-bottom:.6rem; font-size:1rem; }
+    .mission-brief p { font-size:.9rem; line-height:1.6; color:var(--text-muted); }
+    .mission-brief strong { color:var(--text); }
+    .morse-ref-table { width:100%; border-collapse:collapse; font-size:.78rem; margin:1rem 0; }
+    .morse-ref-table th { background:rgba(2,173,165,.15); color:var(--teal); padding:.3rem .5rem; text-align:left; font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; }
+    .morse-ref-table td { padding:.25rem .5rem; border-bottom:1px solid var(--border); white-space:nowrap; }
+    .morse-ref-table tr:last-child td { border-bottom:none; }
+    .mission-step { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.1rem; margin-bottom:.9rem; overflow:hidden; }
+    .mission-step-label { font-size:.75rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); margin-bottom:.5rem; }
+    .mission-input {
+      width:100%; max-width:100%; background:#0a1f1e; border:1px solid var(--border); border-radius:8px;
+      color:#cde8e6; padding:.65rem .9rem; font-size:.95rem; box-sizing:border-box;
+      font-family:inherit;
+    }
+    .mission-input:focus { outline:2px solid var(--teal); }
+    .morse-display {
+      font-family:monospace; font-size:.95rem; letter-spacing:.1em; color:var(--teal);
+      background:#0a1f1e; border-radius:8px; padding:.65rem .9rem; min-height:42px;
+      margin-top:.5rem; word-break:break-all; overflow-wrap:anywhere; white-space:pre-wrap;
+    }
+    .letter-picker { display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.6rem; max-width:100%; overflow:hidden; }
+    .ltr-btn {
+      background:var(--surface); border:1px solid var(--border); border-radius:6px;
+      color:var(--text); font-size:.8rem; font-weight:700; padding:.3rem .5rem;
+      cursor:pointer; transition:all .15s; min-width:32px; text-align:center; flex-shrink:0;
+    }
+    .ltr-btn:hover { border-color:var(--teal); color:var(--teal); }
+    .ltr-btn.active-ltr { border-color:var(--teal); background:rgba(2,173,165,.15); color:var(--teal); }
+
+    .check-result {
+      margin-top:.6rem; font-size:.88rem; padding:.6rem .9rem;
+      border-radius:8px; display:none;
+    }
+    .check-result.pass { background:rgba(74,222,128,.12); color:#4ade80; display:block; }
+    .check-result.fail { background:rgba(248,113,113,.12); color:#f87171; display:block; }
+
+    /* ── MCQ ── */
+    .mcq-list { display:grid; gap:1rem; }
+    .mcq-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1rem 1.2rem;
+    }
+    .mcq-question { font-weight:600; margin-bottom:.75rem; }
+    .mcq-options { list-style:none; padding:0; display:grid; gap:.4rem; }
+    .mcq-option {
+      display:flex; align-items:center; gap:.6rem; cursor:pointer;
+      padding:.5rem .8rem; border-radius:8px; border:1px solid transparent;
+      transition:background .15s, border-color .15s;
+    }
+    .mcq-option:hover { background:rgba(2,173,165,.1); border-color:var(--teal); }
+    .mcq-option.selected { background:rgba(2,173,165,.15); border-color:var(--teal); }
+    .mcq-option.correct-ans  { background:rgba(74,222,128,.12); border-color:#4ade80; }
+    .mcq-option.wrong-ans    { background:rgba(248,113,113,.12); border-color:#f87171; }
+    .mcq-radio { width:16px; height:16px; accent-color:var(--teal); }
+
+    /* ── Journal ── */
+    .journal-list { display:grid; gap:1rem; }
+    .journal-item { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.2rem; }
+    .journal-prompt { font-size:.95rem; font-weight:600; margin-bottom:.6rem; }
+    .journal-textarea {
+      width:100%; min-height:80px; resize:vertical; background:#0a1f1e;
+      border:1px solid var(--border); border-radius:8px; color:#cde8e6;
+      padding:.7rem; font-size:.9rem; box-sizing:border-box; font-family:inherit;
+    }
+    .journal-textarea:focus { outline:2px solid var(--teal); }
+    .journal-wc { font-size:.78rem; color:var(--muted); margin-top:.25rem; }
+
+    /* ── Section card overflow ── */
+    .section-card { overflow:hidden; }
+
+    /* ── Calibration sliders ── */
+    .calib-block { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.4rem; }
+    .calib-row { display:grid; gap:.5rem; margin-bottom:1.2rem; }
+    .calib-label { font-weight:600; font-size:.95rem; }
+    .calib-slider { width:100%; accent-color:var(--teal); }
+    .calib-val { font-size:.9rem; color:var(--teal); font-weight:700; }
+
+    /* ── Score box ── */
+    .score-box {
+      background:color-mix(in srgb, var(--teal) 12%, transparent);
+      border:1px solid var(--teal); border-radius:10px; padding:1rem 1.4rem;
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap;
+      gap:.5rem; display:none;
+    }
+    .score-box.show { display:flex; }
+    .score-val { font-size:1.8rem; font-weight:700; color:var(--teal); }
+    .score-label { font-size:.85rem; color:var(--muted); }
+
+    /* ── Calibration result ── */
+    .calib-result { font-size:.9rem; color:var(--teal); font-weight:600; }
+
+
+  </style>
+</head>
+<body>
+
+<!-- ░░ CHEV BAR ░░ -->
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+
+<!-- ░░ SITE NAV ░░ -->
+<nav class="sitenav">
+  <a href="index.html" class="brand">Radio Foxhunting</a>
+  <div class="steps-dropdown">
+    <button class="steps-btn" id="stepsToggle"><span data-bm="Modul &#9662;">Modules &#9662;</span></button>
+    <div class="steps-menu" id="stepsMenu">
+      <a href="module-0.html">0 · Orientation</a>
+      <a href="module-1.html" class="current">1 · Morse Code</a>
+      <a href="module-2.html">2 · Map Reading</a>
+      <a href="module-3.html">3 · Yagi Antenna</a>
+      <a href="module-4.html">4 · Field Guide</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ░░ HERO ░░ -->
+<header class="hero">
+  <p class="hero-eyebrow" data-bm="MAKMAL STEM UMPSA · Modul 1 · Kod Morse">UMPSA STEM LAB · Module 1 · Morse Code</p>
+  <h1 class="hero-title" data-bm="Aktiviti Kod Morse">Morse Code Activities</h1>
+  <p class="hero-subtitle">
+    <span data-bm="Empat peringkat cabaran — isi tempat kosong, nyahpepijat &amp; terang, jigsau kod, &amp; komposer misi.">Four tiers of challenge — fill-in-blanks, debug &amp; explain, write the code, extend it.</span>
+  </p>
+  <div class="hero-pills">
+    <span class="pill" data-bm="Tier 1 · Isi Kosong">Tier 1 · Fill Blanks</span>
+    <span class="pill" data-bm="Tier 2 · Nyahpepijat">Tier 2 · Debug</span>
+    <span class="pill" data-bm="Tier 3 · Jigsau">Tier 3 · Jigsaw</span>
+    <span class="pill" data-bm="Tier 4 · Misi">Tier 4 · Mission</span>
+  </div>
+</header>
+
+<!-- ░░ PROGRESS BAR ░░ -->
+<div class="progress-bar-wrap" aria-label="Activity progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  <div class="progress-bar" id="actProgress" style="width:0%"></div>
+  <span class="progress-label" id="actProgressLabel" data-bm="0 daripada 4 peringkat selesai">0 of 4 tiers complete</span>
+</div>
+
+<main class="content">
+
+  <!-- ░░ PRE-CALIBRATION ░░ -->
+  <section class="section-card" id="pre-calib">
+    <h2 class="section-title" data-bm="<span class=&quot;section-num&quot;>☉</span> Sebelum Bermula"><span class="section-num">☉</span> Before We Start</h2>
+    <p><span data-bm="Luangkan masa untuk meramal prestasi anda. Ini membantu anda menyedari perubahan keyakinan selepas latihan.">Take a moment to predict your performance. This helps you notice how your confidence changes after practise.</span></p>
+    <div class="calib-block">
+      <div class="calib-row">
+        <label class="calib-label" for="preConf">How confident are you about Morse code right now? (1 = not at all, 5 = very)</label>
+        <input type="range" id="preConf" class="calib-slider" min="1" max="5" value="3" step="1" />
+        <span class="calib-val" id="preConfVal">3</span>
+      </div>
+      <div class="calib-row">
+        <label class="calib-label" for="prePred">How many of the 4 activity tiers do you predict you will complete?</label>
+        <input type="range" id="prePred" class="calib-slider" min="0" max="4" value="2" step="1" />
+        <span class="calib-val" id="prePredVal">2</span>
+      </div>
+      <button class="btn" id="savePreCalib" data-bm="Simpan &amp; Mula ↓">Save &amp; Begin ↓</button>
+      <p class="calib-result" id="preCalibMsg" style="margin-top:.6rem; display:none;"></p>
+    </div>
+  </section>
+
+  <!-- ░░ TIER 1 — Fill in the Blanks ░░ -->
+  <section class="section-card" id="tier1">
+    <div class="tier-header">
+      <span class="tier-badge">Tier 1</span>
+      <span class="tier-title" data-bm="Isi Tempat Kosong">Fill in the Blanks</span>
+    </div>
+    <p data-bm="Lengkapkan setiap ayat. Jawapan disemak secara automatik (tidak sensitif huruf besar/kecil). Markah ditunjukkan selepas semua 7 diperiksa.">Complete each sentence. Answers are checked automatically (case-insensitive). Score shown after checking all 7.</p>
+
+    <ul class="fib-list" id="fibList">
+      <li class="fib-item" data-answer="-- --- ." data-hint="hyphen hyphen space hyphen hyphen hyphen space dot">
+        <label>The beacon <strong>MOE</strong> transmits the pattern: &nbsp;<input class="fib-input" placeholder="__ __ __" />&nbsp;</label>
+        <span class="fib-status">—</span>
+        <span class="fib-feedback"></span>
+      </li>
+      <li class="fib-item" data-answer="80" data-hint="milliseconds: one unit">
+        <label>A <strong>dit</strong> lasts <input class="fib-input" placeholder="?" style="width:70px" /> milliseconds.</label>
+        <span class="fib-status">—</span>
+        <span class="fib-feedback"></span>
+      </li>
+      <li class="fib-item" data-answer="3" data-hint="count the beats">
+        <label>A <strong>dah</strong> is <input class="fib-input" placeholder="?" style="width:60px" /> times longer than a dit.</label>
+        <span class="fib-status">—</span>
+        <span class="fib-feedback"></span>
+      </li>
+      <li class="fib-item" data-answer="700" data-hint="the standard ARDF tone">
+        <label>ARDF beacons use a tone of <input class="fib-input" placeholder="?" style="width:80px" /> Hz.</label>
+        <span class="fib-status">—</span>
+        <span class="fib-feedback"></span>
+      </li>
+      <li class="fib-item" data-answer="4" data-hint="count the dits in MOH">
+        <label>How many <strong>dits</strong> does <strong>MOH</strong> have? <input class="fib-input" placeholder="?" style="width:60px" /></label>
+        <span class="fib-status">—</span>
+        <span class="fib-feedback"></span>
+      </li>
+      <li class="fib-item" data-answer="mo" data-hint="the rest period callsign">
+        <label>The rest-period beacon (no unique identifier) is called: <input class="fib-input" placeholder="??" style="width:70px" /></label>
+        <span class="fib-status">—</span>
+        <span class="fib-feedback"></span>
+      </li>
+      <li class="fib-item" data-answer="12" data-hint="seconds per slot">
+        <label>Each beacon transmits for <input class="fib-input" placeholder="?" style="width:70px" /> seconds per cycle.</label>
+        <span class="fib-status">—</span>
+        <span class="fib-feedback"></span>
+      </li>
+    </ul>
+
+    <div style="margin-top:1rem; display:flex; gap:.75rem; flex-wrap:wrap;">
+      <button class="btn" id="checkFib" data-bm="Semak Jawapan">Check Answers</button>
+      <button class="btn btn-outline" id="resetFib" data-bm="Tetapkan Semula">Reset</button>
+    </div>
+    <div class="score-box" id="fibScore">
+      <div>
+        <div class="score-val" id="fibScoreVal">0/7</div>
+        <div class="score-label" data-bm="Markah Tier 1">Tier 1 Score</div>
+      </div>
+      <div id="fibScoreMsg" style="font-size:.9rem; max-width:300px;"></div>
+    </div>
+  </section>
+
+  <!-- ░░ TIER 2 — Debug & Explain ░░ -->
+  <section class="section-card" id="tier2">
+    <div class="tier-header">
+      <span class="tier-badge">Tier 2</span>
+      <span class="tier-title" data-bm="Nyahpepijat &amp; Terang">Debug &amp; Explain</span>
+    </div>
+    <p data-bm="Tiga latihan. Setiap satu menerangkan kesilapan. Betulkan dan terangkan sebab anda dalam bahasa sendiri (minimum 10 aksara).">Three exercises. Each describes a mistake. Fix it and explain your reasoning in your own words (minimum 10 characters).</p>
+
+    <!-- Exercise 1 -->
+    <div class="debug-box" id="dbg1">
+      <p class="debug-quest" style="font-weight:700; margin-bottom:.4rem;">Exercise 1</p>
+      <p class="debug-prompt">
+        This Morse pattern is claimed to be for beacon <strong>MOI</strong>:
+        <code>-- --- .</code>
+        What is wrong with it? Write the correct pattern and explain why.
+      </p>
+      <textarea class="debug-textarea" id="dbg1Text" placeholder="Type your fix and explanation here…" aria-label="Debug exercise 1 answer"></textarea>
+      <p class="char-count" id="dbg1cc">0 characters (min 10)</p>
+    </div>
+
+    <!-- Exercise 2 -->
+    <div class="debug-box" id="dbg2">
+      <p class="debug-quest" style="font-weight:700; margin-bottom:.4rem;">Exercise 2</p>
+      <p class="debug-prompt">
+        A scout programmed the Morse player with <code>DIT = 240</code> and <code>DAH = 80</code>.
+        What is wrong with these values? What should they be and why does the ratio matter?
+      </p>
+      <textarea class="debug-textarea" id="dbg2Text" placeholder="Type your fix and explanation here…" aria-label="Debug exercise 2 answer"></textarea>
+      <p class="char-count" id="dbg2cc">0 characters (min 10)</p>
+    </div>
+
+    <!-- Exercise 3 -->
+    <div class="debug-box" id="dbg3">
+      <p class="debug-quest" style="font-weight:700; margin-bottom:.4rem;">Exercise 3</p>
+      <p class="debug-prompt">
+        In the field you hear the sequence <strong>–– ––– · · ·</strong> (MO followed by 3 short pulses).
+        Which beacon is this? Explain your reasoning and why it matters for navigation.
+      </p>
+      <textarea class="debug-textarea" id="dbg3Text" placeholder="Type your identification and explanation…" aria-label="Debug exercise 3 answer"></textarea>
+      <p class="char-count" id="dbg3cc">0 characters (min 10)</p>
+    </div>
+
+    <div style="margin-top:1rem; display:flex; gap:.75rem; flex-wrap:wrap;">
+      <button class="btn" id="checkDebug" data-bm="Hantar Latihan Nyahpepijat">Submit Debug Exercises</button>
+    </div>
+    <div class="check-result" id="debugResult"></div>
+  </section>
+
+  <!-- ░░ TIER 3 — Morse Jigsaw ░░ -->
+  <section class="section-card" id="tier3">
+    <div class="tier-header">
+      <span class="tier-badge">Tier 3</span>
+      <span class="tier-title" data-bm="Jigsau Morse — Padankan Corak">Morse Jigsaw — Match the Pattern</span>
+    </div>
+    <p data-bm="Padankan setiap huruf dengan corak kod Morse. Klik <strong>huruf</strong>, kemudian klik <strong>corak</strong> yang sepadan. Hijau = betul. 14 pasangan keseluruhan.">Match each letter to its Morse code pattern. Click a <strong>letter</strong>, then click the matching <strong>pattern</strong>. Green = correct. 14 pairs in total.</p>
+
+    <div class="jigsaw-arena">
+      <div>
+        <div class="jigsaw-col-label">Letters</div>
+        <div id="jigsawLetters" style="display:grid; gap:.5rem;"></div>
+      </div>
+      <div>
+        <div class="jigsaw-col-label">Morse Patterns</div>
+        <div id="jigsawPatterns" style="display:grid; gap:.5rem;"></div>
+      </div>
+    </div>
+
+    <div class="jigsaw-score-row">
+      <button class="btn" id="jigsawReset" data-bm="↺ Kocok &amp; Mula Semula">↺ Shuffle &amp; Restart</button>
+      <span id="jigsawScore" style="font-size:.95rem; color:var(--teal); font-weight:700; display:none;"></span>
+    </div>
+    <div class="check-result" id="jigsawResult"></div>
+  </section>
+
+  <!-- ░░ TIER 4 — Mission Composer ░░ -->
+  <section class="section-card" id="tier4">
+    <div class="tier-header">
+      <span class="tier-badge">Tier 4</span>
+      <span class="tier-title" data-bm="Komposer Misi — Enkod Laporan Anda">Mission Composer — Encode Your Report</span>
+    </div>
+
+    <div class="mission-brief">
+      <h3>🦊 Fox Found! Send Your Report</h3>
+      <p>You've just located Fox <strong>3</strong> at grid square <strong>B4</strong> during the ARDF hunt. The relay station can only receive <strong>Morse code</strong>. Use the alphabet table below and the letter picker to encode a short confirmation message, then answer the debrief questions.</p>
+    </div>
+
+    <!-- Quick reference table: A–Z Morse -->
+    <details style="margin-bottom:1rem;">
+      <summary style="cursor:pointer; color:var(--teal); font-weight:700; font-size:.9rem;">📖 Morse Reference Table (tap to open)</summary>
+      <div style="overflow-x:auto; margin-top:.6rem;">
+      <table class="morse-ref-table">
+        <tr><th>Letter</th><th>Morse</th><th>Letter</th><th>Morse</th><th>Letter</th><th>Morse</th><th>Letter</th><th>Morse</th></tr>
+        <tr><td>A</td><td class="morse-mono">·−</td><td>H</td><td class="morse-mono">····</td><td>O</td><td class="morse-mono">−−−</td><td>V</td><td class="morse-mono">···−</td></tr>
+        <tr><td>B</td><td class="morse-mono">−···</td><td>I</td><td class="morse-mono">··</td><td>P</td><td class="morse-mono">·−−·</td><td>W</td><td class="morse-mono">·−−</td></tr>
+        <tr><td>C</td><td class="morse-mono">−·−·</td><td>J</td><td class="morse-mono">·−−−</td><td>Q</td><td class="morse-mono">−−·−</td><td>X</td><td class="morse-mono">−··−</td></tr>
+        <tr><td>D</td><td class="morse-mono">−··</td><td>K</td><td class="morse-mono">−·−</td><td>R</td><td class="morse-mono">·−·</td><td>Y</td><td class="morse-mono">−·−−</td></tr>
+        <tr><td>E</td><td class="morse-mono">·</td><td>L</td><td class="morse-mono">·−··</td><td>S</td><td class="morse-mono">···</td><td>Z</td><td class="morse-mono">−−··</td></tr>
+        <tr><td>F</td><td class="morse-mono">··−·</td><td>M</td><td class="morse-mono">−−</td><td>T</td><td class="morse-mono">−</td><td>1</td><td class="morse-mono">·−−−−</td></tr>
+        <tr><td>G</td><td class="morse-mono">−−·</td><td>N</td><td class="morse-mono">−·</td><td>U</td><td class="morse-mono">··−</td><td>SOS</td><td class="morse-mono">···−−−···</td></tr>
+      </table>
+      </div>
+    </details>
+
+    <!-- Step 1: Decode the incoming message -->
+    <div class="mission-step">
+      <div class="mission-step-label">Step 1 · Decode the Incoming Message</div>
+      <p style="font-size:.9rem; color:var(--text-muted); margin-bottom:.6rem;">The relay station just sent you this: <span class="morse-mono" style="color:var(--teal);">·−··&nbsp;&nbsp;&nbsp;·−&nbsp;&nbsp;&nbsp;·−··&nbsp;&nbsp;&nbsp;··&nbsp;&nbsp;&nbsp;−·</span></p>
+      <p style="font-size:.85rem; color:var(--text-muted);">What does it say? (5 letters, no spaces needed)</p>
+      <input class="mission-input" id="missionDecode" type="text" maxlength="10" placeholder="Type your decoded word…" autocomplete="off" />
+      <div id="missionDecodeResult" style="font-size:.85rem; margin-top:.4rem;"></div>
+    </div>
+
+    <!-- Step 2: Compose your reply using letter picker -->
+    <div class="mission-step">
+      <div class="mission-step-label">Step 2 · Compose Your Report (4–6 letters)</div>
+      <p style="font-size:.9rem; color:var(--text-muted); margin-bottom:.5rem;">Click letters to build your Morse report. Aim for a short, clear message — e.g. <strong>FOUND</strong>, <strong>FOX3B</strong>, <strong>DONE</strong>.</p>
+      <div class="letter-picker" id="letterPicker"></div>
+      <div style="display:flex; align-items:center; gap:.75rem; margin-top:.75rem; flex-wrap:wrap;">
+        <button class="btn" id="missionBackspace" style="padding:.4rem .9rem; font-size:.85rem;">⌫ Back</button>
+        <button class="btn btn-outline" id="missionClear" style="padding:.4rem .9rem; font-size:.85rem;">Clear</button>
+      </div>
+      <div class="morse-display" id="missionMorse">—</div>
+      <div style="font-size:.8rem; color:var(--text-muted); margin-top:.3rem;">Your message: <span id="missionLetters" style="color:var(--text); font-weight:700; letter-spacing:.1em;">—</span></div>
+    </div>
+
+    <!-- Step 3: Debrief questions -->
+    <div class="mission-step">
+      <div class="mission-step-label">Step 3 · Debrief (2 short questions)</div>
+      <p style="font-size:.9rem; color:var(--text-muted); margin-bottom:.75rem;">Answer in your own words — minimum 10 words each.</p>
+
+      <p style="font-weight:600; font-size:.9rem; margin-bottom:.4rem;">Q1 · Why is a short message better than a long one in a radio hunt?</p>
+      <textarea class="mission-input" id="missionQ1" rows="3" placeholder="Your answer…" style="resize:vertical;"></textarea>
+      <div class="char-count" id="missionQ1wc">0 words (min 10)</div>
+
+      <p style="font-weight:600; font-size:.9rem; margin:.9rem 0 .4rem;">Q2 · What would happen if two scouts transmitted on the same frequency at the same time?</p>
+      <textarea class="mission-input" id="missionQ2" rows="3" placeholder="Your answer…" style="resize:vertical;"></textarea>
+      <div class="char-count" id="missionQ2wc">0 words (min 10)</div>
+    </div>
+
+    <div style="margin-top:.75rem; display:flex; gap:.75rem; flex-wrap:wrap;">
+      <button class="btn" id="checkMission">Submit Mission</button>
+    </div>
+    <div class="check-result" id="tier4Result"></div>
+  </section>
+
+  <!-- ░░ CONCEPT CHECK ░░ -->
+  <section class="section-card" id="conceptCheck">
+    <h2 class="section-title"><span class="section-num">★</span> Concept Check</h2>
+    <p>5 multiple-choice questions. You need <strong>80%</strong> (4/5) to pass.</p>
+
+    <div class="mcq-list" id="mcqList">
+      <!-- MCQ built by JS -->
+    </div>
+
+    <div style="margin-top:1rem; display:flex; gap:.75rem; flex-wrap:wrap;">
+      <button class="btn" id="submitMCQ">Submit Answers</button>
+      <button class="btn btn-outline" id="retryMCQ" style="display:none;">Retry</button>
+    </div>
+    <div class="score-box" id="mcqScore">
+      <div>
+        <div class="score-val" id="mcqScoreVal">0/5</div>
+        <div class="score-label">Concept Check</div>
+      </div>
+      <div id="mcqScoreMsg" style="font-size:.9rem; max-width:300px;"></div>
+    </div>
+  </section>
+
+  <!-- ░░ REFLECTIVE JOURNAL ░░ -->
+  <section class="section-card" id="journal">
+    <h2 class="section-title"><span class="section-num">✍</span> Reflective Journal</h2>
+    <p>Answer each prompt thoughtfully — minimum <strong>15 words</strong> each. These are your own thoughts; there are no wrong answers.</p>
+
+    <div class="journal-list" id="journalList">
+      <!-- built by JS -->
+    </div>
+
+    <div style="margin-top:1rem;">
+      <button class="btn" id="saveJournal">Save Journal</button>
+    </div>
+    <div class="check-result" id="journalResult"></div>
+  </section>
+
+  <!-- ░░ POST-CALIBRATION ░░ -->
+  <section class="section-card" id="post-calib">
+    <h2 class="section-title"><span class="section-num">☽</span> Reflect on Your Learning</h2>
+    <p>Now that you have completed the activities, revisit your predictions.</p>
+
+    <div class="calib-block">
+      <div class="calib-row">
+        <label class="calib-label" for="postConf">How confident are you about Morse code NOW? (1–5)</label>
+        <input type="range" id="postConf" class="calib-slider" min="1" max="5" value="3" step="1" />
+        <span class="calib-val" id="postConfVal">3</span>
+      </div>
+      <div class="calib-row">
+        <label class="calib-label" for="postActual">How many tiers did you actually complete? (0–4)</label>
+        <input type="range" id="postActual" class="calib-slider" min="0" max="4" value="0" step="1" />
+        <span class="calib-val" id="postActualVal">0</span>
+      </div>
+      <button class="btn" id="calcCalib">Calculate Calibration Index</button>
+      <div style="margin-top:.9rem;" id="calibIndexResult"></div>
+    </div>
+  </section>
+
+  <!-- ░░ SUBMIT ░░ -->
+  <section class="section-card" id="submitBlock">
+    <h2 class="section-title"><span class="section-num">→</span> Submit to Facilitator</h2>
+    <p>When you are happy with your responses, send them to the Google Sheets record.</p>
+    <div style="margin-bottom:.75rem; font-size:.9rem; color:var(--muted);" id="submitSummary"></div>
+    <button class="btn btn-cta" id="submitAll" onclick="if(window.rfMarkActivity)rfMarkActivity(1)">Submit All Responses</button>
+    <div class="check-result" id="submitResult"></div>
+  </section>
+
+  <!-- STEP NAV -->
+  <nav class="stepnav" aria-label="Module navigation">
+    <a href="module-1.html" class="stepnav-prev">← Lesson</a>
+    <a href="module-2.html" class="stepnav-next">Map Reading →</a>
+  </nav>
+
+</main>
+
+<!-- ░░ FOOTER ░░ -->
+<footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a> &middot;
+      <a href="module-0.html">Module 0</a> &middot;
+      <a href="module-1.html">Module 1</a> &middot;
+      <a href="module-2.html">Module 2</a> &middot;
+      <a href="module-3.html">Module 3</a> &middot;
+      <a href="module-4.html">Module 4</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative
+      <a href="https://ee.ump.edu.my/hazlina/" target="_blank" aria-label="Personal website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" aria-label="Email">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Google Sheets endpoint (set externally or placeholder) ─────────────────
+var GS_ENDPOINT = window.GS_ENDPOINT || '#';
+
+// ── Calibration sliders ────────────────────────────────────────────────────
+function bindSlider(inputId, displayId) {
+  var inp = document.getElementById(inputId);
+  var disp = document.getElementById(displayId);
+  function update(){ disp.textContent = inp.value; }
+  inp.addEventListener('input', update);
+  update();
+}
+bindSlider('preConf','preConfVal');
+bindSlider('prePred','prePredVal');
+bindSlider('postConf','postConfVal');
+bindSlider('postActual','postActualVal');
+
+var preCalibSaved = false;
+document.getElementById('savePreCalib').addEventListener('click', function() {
+  preCalibSaved = true;
+  var msg = document.getElementById('preCalibMsg');
+  msg.textContent = 'Saved! Confidence: ' + document.getElementById('preConf').value +
+    '/5 · Predicted tiers: ' + document.getElementById('prePred').value;
+  msg.style.display = 'block';
+  this.textContent = 'Saved ✓';
+  this.disabled = true;
+});
+
+// ── Tier 1: Fill in the Blanks ─────────────────────────────────────────────
+var fibItems = document.querySelectorAll('.fib-item');
+
+function checkFib() {
+  var score = 0;
+  fibItems.forEach(function(item) {
+    var ans = item.dataset.answer.toLowerCase();
+    var inp = item.querySelector('.fib-input');
+    var val = inp.value.trim().toLowerCase();
+    var status = item.querySelector('.fib-status');
+    var fb = item.querySelector('.fib-feedback');
+    if (val === ans) {
+      score++;
+      status.textContent = '✓';
+      status.className = 'fib-status correct';
+      fb.textContent = '';
+      inp.style.borderColor = '#4ade80';
+    } else {
+      status.textContent = '✗';
+      status.className = 'fib-status wrong';
+      fb.textContent = 'Hint: ' + item.dataset.hint;
+      fb.className = 'fib-feedback wrong';
+      inp.style.borderColor = '#f87171';
+    }
+  });
+
+  var box = document.getElementById('fibScore');
+  box.classList.add('show');
+  document.getElementById('fibScoreVal').textContent = score + '/7';
+  var msgs = ['Keep going — review the lesson!','Good effort — a few to revisit.','Solid! One more revision.','Great job!','Perfect score! 🦊'];
+  document.getElementById('fibScoreMsg').textContent = msgs[Math.min(score-3,4)] || msgs[0];
+  updateProgress();
+  return score;
+}
+
+document.getElementById('checkFib').addEventListener('click', checkFib);
+document.getElementById('resetFib').addEventListener('click', function() {
+  fibItems.forEach(function(item) {
+    item.querySelector('.fib-input').value = '';
+    item.querySelector('.fib-input').style.borderColor = '';
+    item.querySelector('.fib-status').textContent = '—';
+    item.querySelector('.fib-status').className = 'fib-status';
+    item.querySelector('.fib-feedback').textContent = '';
+  });
+  document.getElementById('fibScore').classList.remove('show');
+});
+
+// char count for debug textareas
+['dbg1','dbg2','dbg3'].forEach(function(id) {
+  var ta = document.getElementById(id+'Text');
+  var cc = document.getElementById(id+'cc');
+  ta.addEventListener('input', function() {
+    var n = ta.value.trim().length;
+    cc.textContent = n + ' characters (min 10)';
+    cc.style.color = n >= 10 ? '#4ade80' : 'var(--muted)';
+  });
+});
+
+// ── Tier 2: Debug submit ───────────────────────────────────────────────────
+document.getElementById('checkDebug').addEventListener('click', function() {
+  var all = ['dbg1','dbg2','dbg3'];
+  var ok = all.every(function(id) {
+    return document.getElementById(id+'Text').value.trim().length >= 10;
+  });
+  var res = document.getElementById('debugResult');
+  if (ok) {
+    res.textContent = '✓ All three debug exercises submitted. Great critical thinking!';
+    res.className = 'check-result pass';
+  } else {
+    res.textContent = '✗ Please write at least 10 characters in each exercise before submitting.';
+    res.className = 'check-result fail';
+  }
+  if (ok) updateProgress();
+});
+
+// ── Tier 3: Morse Jigsaw ──────────────────────────────────────────────────
+var JIGSAW_PAIRS = [
+  {letter:'A', morse:'·−'},   {letter:'E', morse:'·'},
+  {letter:'I', morse:'··'},   {letter:'M', morse:'−−'},
+  {letter:'N', morse:'−·'},   {letter:'O', morse:'−−−'},
+  {letter:'R', morse:'·−·'},  {letter:'S', morse:'···'},
+  {letter:'T', morse:'−'},    {letter:'U', morse:'··−'},
+  {letter:'MOE', morse:'−− −−− ·'},    {letter:'MOI', morse:'−− −−− ··'},
+  {letter:'MOH', morse:'−− −−− ···'},  {letter:'MO5', morse:'−− −−− ·····'}
+];
+
+function shuffleArr(arr){ return arr.slice().sort(function(){return Math.random()-.5;}); }
+
+var jigsawSelected = null; // {type:'letter'|'pattern', idx:Number, el:Element}
+var jigsawMatched  = 0;
+var jigsawOrder    = [];
+
+function buildJigsaw(){
+  jigsawSelected = null; jigsawMatched = 0;
+  jigsawOrder = shuffleArr(JIGSAW_PAIRS.map(function(_,i){return i;}));
+  var letCol = document.getElementById('jigsawLetters');
+  var patCol = document.getElementById('jigsawPatterns');
+  letCol.innerHTML = ''; patCol.innerHTML = '';
+  document.getElementById('jigsawScore').style.display = 'none';
+  var res = document.getElementById('jigsawResult');
+  res.className = 'check-result'; res.textContent = '';
+
+  var shuffledPat = shuffleArr(jigsawOrder.slice());
+
+  jigsawOrder.forEach(function(pairIdx, i){
+    var pair = JIGSAW_PAIRS[pairIdx];
+    var lBtn = document.createElement('div');
+    lBtn.className = 'jigsaw-card';
+    lBtn.dataset.type = 'letter'; lBtn.dataset.idx = pairIdx;
+    lBtn.textContent = pair.letter;
+    lBtn.addEventListener('click', jigsawClick);
+    letCol.appendChild(lBtn);
+  });
+
+  shuffledPat.forEach(function(pairIdx){
+    var pair = JIGSAW_PAIRS[pairIdx];
+    var pBtn = document.createElement('div');
+    pBtn.className = 'jigsaw-card morse-mono';
+    pBtn.dataset.type = 'pattern'; pBtn.dataset.idx = pairIdx;
+    pBtn.textContent = pair.morse;
+    pBtn.addEventListener('click', jigsawClick);
+    patCol.appendChild(pBtn);
+  });
+}
+
+function jigsawClick(e){
+  var card = e.currentTarget;
+  if(card.classList.contains('matched-ok') || card.classList.contains('used')) return;
+
+  if(!jigsawSelected){
+    // First click — select it
+    document.querySelectorAll('.jigsaw-card.selected').forEach(function(c){c.classList.remove('selected');});
+    card.classList.add('selected');
+    jigsawSelected = {type: card.dataset.type, idx: +card.dataset.idx, el: card};
+    return;
+  }
+
+  // Second click
+  var first = jigsawSelected;
+  jigsawSelected = null;
+  document.querySelectorAll('.jigsaw-card.selected').forEach(function(c){c.classList.remove('selected');});
+
+  if(first.el === card) return; // clicked same card
+
+  // Must be letter+pattern pair
+  if(first.type === card.dataset.type){
+    // Same column — re-select new card
+    card.classList.add('selected');
+    jigsawSelected = {type: card.dataset.type, idx: +card.dataset.idx, el: card};
+    return;
+  }
+
+  var letterIdx = first.type === 'letter' ? first.idx : +card.dataset.idx;
+  var patternIdx= first.type === 'pattern'? first.idx : +card.dataset.idx;
+  var letterEl  = first.type === 'letter' ? first.el  : card;
+  var patternEl = first.type === 'pattern'? first.el  : card;
+
+  if(letterIdx === patternIdx){
+    // ✅ Correct
+    letterEl.classList.add('matched-ok');
+    patternEl.classList.add('matched-ok');
+    letterEl.classList.add('used');
+    patternEl.classList.add('used');
+    jigsawMatched++;
+    if(jigsawMatched === JIGSAW_PAIRS.length){
+      var sc = document.getElementById('jigsawScore');
+      sc.textContent = '🎉 All ' + JIGSAW_PAIRS.length + ' pairs matched! Tier 3 complete.';
+      sc.style.display = 'inline';
+      var res = document.getElementById('jigsawResult');
+      res.textContent = '✓ Perfect! You matched all Morse patterns correctly.';
+      res.className = 'check-result pass';
+      updateProgress();
+    }
+  } else {
+    // ❌ Wrong — flash red then reset
+    letterEl.classList.add('matched-err');
+    patternEl.classList.add('matched-err');
+    setTimeout(function(){
+      letterEl.classList.remove('matched-err');
+      patternEl.classList.remove('matched-err');
+    }, 500);
+  }
+}
+
+document.getElementById('jigsawReset').addEventListener('click', buildJigsaw);
+buildJigsaw();
+
+// ── Tier 4: Mission Composer ────────────────────────────────────────────────
+// ── Tier 4: Mission Composer JS ───────────────────────────────────────────
+var MORSE_MAP = {
+  'A':'.-','B':'-...','C':'-.-.','D':'-..','E':'.','F':'..-.','G':'--.','H':'....','I':'..','J':'.---',
+  'K':'-.-','L':'.-..','M':'--','N':'-.','O':'---','P':'.--.','Q':'--.-','R':'.-.','S':'...','T':'-',
+  'U':'..-','V':'...-','W':'.--','X':'-..-','Y':'-.--','Z':'--..'
+};
+// Use · and − for display
+var MORSE_DISPLAY = {};
+Object.keys(MORSE_MAP).forEach(function(k){
+  MORSE_DISPLAY[k] = MORSE_MAP[k].replace(/\./g,'·').replace(/-/g,'−');
+});
+
+// Build letter picker A–Z + 0–9
+var picker = document.getElementById('letterPicker');
+'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(function(ltr){
+  var btn = document.createElement('button');
+  btn.className = 'ltr-btn'; btn.textContent = ltr;
+  btn.addEventListener('click', function(){ missionAddLetter(ltr); });
+  picker.appendChild(btn);
+});
+
+var missionWord = [];
+function missionAddLetter(ltr){
+  if(missionWord.length >= 8) return;
+  missionWord.push(ltr);
+  renderMission();
+}
+document.getElementById('missionBackspace').addEventListener('click', function(){
+  missionWord.pop(); renderMission();
+});
+document.getElementById('missionClear').addEventListener('click', function(){
+  missionWord = []; renderMission();
+});
+function renderMission(){
+  var letters = missionWord.join('');
+  var morse = missionWord.map(function(l){ return MORSE_DISPLAY[l]||'?'; }).join('   ');
+  document.getElementById('missionLetters').textContent = letters || '—';
+  document.getElementById('missionMorse').textContent = morse || '—';
+}
+
+// Step 1 decode check: LATIN (·− · − ·· −·) = wait, the message is '·−·· ·−ˉ− ·−·· ·· −·' = L A L I N ... 
+// Actually let's decode: L=·−·· A=·− L=·−·· I=·· N=−· => LALIN
+// Let's fix the display and accepted answer
+var MISSION_DECODE_ANSWER = 'LALIN';
+var decodeInput = document.getElementById('missionDecode');
+decodeInput.addEventListener('input', function(){
+  var val = decodeInput.value.trim().toUpperCase().replace(/\s/g,'');
+  var res = document.getElementById('missionDecodeResult');
+  if(val === MISSION_DECODE_ANSWER){
+    res.textContent = '✓ Correct! LALIN = proceed to launch point.';
+    res.style.color = '#4ade80';
+  } else if(val.length >= 5){
+    res.textContent = '✗ Not quite — check each symbol against the table.';
+    res.style.color = '#f87171';
+  } else {
+    res.textContent = '';
+  }
+});
+
+// Word count for debrief
+['missionQ1','missionQ2'].forEach(function(id){
+  var ta = document.getElementById(id);
+  var wc = document.getElementById(id+'wc');
+  ta.addEventListener('input', function(){
+    var words = ta.value.trim().split(/\s+/).filter(Boolean).length;
+    wc.textContent = words + ' words (min 10)';
+    wc.style.color = words >= 10 ? '#4ade80' : 'var(--muted)';
+  });
+});
+
+document.getElementById('checkMission').addEventListener('click', function(){
+  var decoded = (document.getElementById('missionDecode').value.trim().toUpperCase() === MISSION_DECODE_ANSWER);
+  var composed = missionWord.length >= 4;
+  var q1words = document.getElementById('missionQ1').value.trim().split(/\s+/).filter(Boolean).length;
+  var q2words = document.getElementById('missionQ2').value.trim().split(/\s+/).filter(Boolean).length;
+  var debriefOk = q1words >= 10 && q2words >= 10;
+  var res = document.getElementById('tier4Result');
+  var issues = [];
+  if(!decoded) issues.push('decode the Step 1 message');
+  if(!composed) issues.push('compose a message of at least 4 letters in Step 2');
+  if(!debriefOk) issues.push('write at least 10 words in each debrief question');
+  if(issues.length === 0){
+    res.textContent = '✓ Mission complete! Great work encoding and decoding Morse messages.';
+    res.className = 'check-result pass';
+    updateProgress();
+  } else {
+    res.textContent = '✗ Almost — please: ' + issues.join('; ') + '.';
+    res.className = 'check-result fail';
+  }
+});
+
+// ── MCQ ─────────────────────────────────────────────────────────────────────
+var MCQ_DATA = [
+  {
+    q:'What is the frequency of ARDF beacon tones?',
+    opts:['440 Hz','700 Hz','1000 Hz','2400 Hz'],
+    correct:1
+  },
+  {
+    q:'How long is a dit (short Morse pulse) in standard ARDF timing?',
+    opts:['20 ms','40 ms','80 ms','160 ms'],
+    correct:2
+  },
+  {
+    q:'Which beacon has the MOST dits after the MO prefix?',
+    opts:['MOE','MOI','MOH','MO5'],
+    correct:3
+  },
+  {
+    q:'How many numbered beacons are used in a standard ARDF event?',
+    opts:['3','4','5','6'],
+    correct:2
+  },
+  {
+    q:'What Morse pattern does the beacon MOI transmit?',
+    opts:['-- --- .','-- --- ..','-- --- ...','-- ---'],
+    correct:1
+  }
+];
+
+var mcqAnswers = new Array(MCQ_DATA.length).fill(-1);
+
+var mcqList = document.getElementById('mcqList');
+MCQ_DATA.forEach(function(q, qi) {
+  var card = document.createElement('div');
+  card.className = 'mcq-card';
+  var ul = '<ul class="mcq-options">';
+  q.opts.forEach(function(opt, oi) {
+    ul += '<li class="mcq-option" data-qi="'+qi+'" data-oi="'+oi+'">' +
+      '<input type="radio" class="mcq-radio" name="mcq'+qi+'" id="mcq'+qi+'o'+oi+'" />' +
+      '<label for="mcq'+qi+'o'+oi+'">'+opt+'</label></li>';
+  });
+  ul += '</ul>';
+  card.innerHTML = '<p class="mcq-question">'+(qi+1)+'. '+q.q+'</p>'+ul;
+  mcqList.appendChild(card);
+});
+
+document.addEventListener('click', function(e) {
+  var opt = e.target.closest('.mcq-option');
+  if (!opt) return;
+  var qi = +opt.dataset.qi;
+  var oi = +opt.dataset.oi;
+  var group = document.querySelectorAll('[data-qi="'+qi+'"]');
+  group.forEach(function(o){ o.classList.remove('selected'); });
+  opt.classList.add('selected');
+  opt.querySelector('input').checked = true;
+  mcqAnswers[qi] = oi;
+});
+
+document.getElementById('submitMCQ').addEventListener('click', function() {
+  var score = 0;
+  MCQ_DATA.forEach(function(q, qi) {
+    var group = document.querySelectorAll('[data-qi="'+qi+'"]');
+    group.forEach(function(o) {
+      o.classList.remove('correct-ans','wrong-ans');
+      var oi = +o.dataset.oi;
+      if (oi === q.correct) o.classList.add('correct-ans');
+      else if (oi === mcqAnswers[qi]) o.classList.add('wrong-ans');
+    });
+    if (mcqAnswers[qi] === q.correct) score++;
+  });
+
+  var box = document.getElementById('mcqScore');
+  box.classList.add('show');
+  document.getElementById('mcqScoreVal').textContent = score+'/5';
+  var pass = score >= 4;
+  document.getElementById('mcqScoreMsg').textContent = pass
+    ? 'Passed! Well done — you understand the key concepts.'
+    : 'Score below 80%. Review the lesson and try again.';
+  document.getElementById('retryMCQ').style.display = pass ? 'none' : 'inline-flex';
+  document.getElementById('submitMCQ').disabled = true;
+  if (pass) updateProgress();
+});
+
+document.getElementById('retryMCQ').addEventListener('click', function() {
+  mcqAnswers.fill(-1);
+  document.querySelectorAll('.mcq-option').forEach(function(o){
+    o.classList.remove('selected','correct-ans','wrong-ans');
+    o.querySelector('input').checked = false;
+  });
+  document.getElementById('mcqScore').classList.remove('show');
+  document.getElementById('submitMCQ').disabled = false;
+  this.style.display = 'none';
+});
+
+// ── Reflective Journal ─────────────────────────────────────────────────────
+var JOURNAL_PROMPTS = [
+  'What surprised you about Morse code timing?',
+  'How would you remember which beacon is which in the field?',
+  'If you were designing ARDF beacons, what would you change and why?',
+  'Describe how Morse code connects to computational thinking.',
+  'How might you use sound patterns in other navigation or communication situations?'
+];
+
+var journalList = document.getElementById('journalList');
+JOURNAL_PROMPTS.forEach(function(prompt, i) {
+  var div = document.createElement('div');
+  div.className = 'journal-item';
+  div.innerHTML =
+    '<p class="journal-prompt">'+(i+1)+'. '+prompt+'</p>' +
+    '<textarea class="journal-textarea" id="journal'+i+'" placeholder="Write your thoughts here…" aria-label="Journal prompt '+(i+1)+'"></textarea>' +
+    '<p class="journal-wc" id="journalwc'+i+'">0 words (min 15)</p>';
+  journalList.appendChild(div);
+
+  var ta = div.querySelector('textarea');
+  var wc = div.querySelector('.journal-wc');
+  ta.addEventListener('input', function() {
+    var words = ta.value.trim().split(/\s+/).filter(Boolean).length;
+    wc.textContent = words + ' words (min 15)';
+    wc.style.color = words >= 15 ? '#4ade80' : 'var(--muted)';
+  });
+});
+
+document.getElementById('saveJournal').addEventListener('click', function() {
+  var allOk = JOURNAL_PROMPTS.every(function(_, i) {
+    var words = document.getElementById('journal'+i).value.trim().split(/\s+/).filter(Boolean).length;
+    return words >= 15;
+  });
+  var res = document.getElementById('journalResult');
+  if (allOk) {
+    res.textContent = '✓ Journal saved. Thoughtful responses recorded!';
+    res.className = 'check-result pass';
+    updateProgress();
+  } else {
+    res.textContent = '✗ Please write at least 15 words in each journal prompt.';
+    res.className = 'check-result fail';
+  }
+});
+
+// ── Post calibration ───────────────────────────────────────────────────────
+document.getElementById('calcCalib').addEventListener('click', function() {
+  var pred = +document.getElementById('prePred').value;
+  var actual = +document.getElementById('postActual').value;
+  var preConf = +document.getElementById('preConf').value;
+  var postConf = +document.getElementById('postConf').value;
+  var idx = actual - pred;
+  var confDelta = postConf - preConf;
+  var msg = 'Calibration Index: ' + (idx >= 0 ? '+' : '') + idx +
+    ' (predicted '+pred+', completed '+actual+'). ' +
+    'Confidence change: ' + (confDelta >= 0 ? '+' : '') + confDelta + '/5.';
+  if (idx > 0) msg += ' You did better than expected — great growth mindset!';
+  else if (idx === 0) msg += ' Accurate self-assessment!';
+  else msg += ' You predicted more than you completed — a good target to aim for next time.';
+
+  document.getElementById('calibIndexResult').textContent = msg;
+  document.getElementById('calibIndexResult').style.color = 'var(--teal)';
+});
+
+// ── Progress tracker ───────────────────────────────────────────────────────
+var tiersComplete = [false,false,false,false];
+function updateProgress() {
+  // Heuristic: count submitted tiers by checking pass states
+  var t1 = document.getElementById('fibScore').classList.contains('show');
+  var t2 = document.getElementById('debugResult').classList.contains('pass');
+  var t3 = document.getElementById('jigsawResult').classList.contains('pass');
+  var t4 = document.getElementById('tier4Result').classList.contains('pass');
+  var done = [t1,t2,t3,t4].filter(Boolean).length;
+  var pct = done * 25;
+  document.getElementById('actProgress').style.width = pct + '%';
+  document.getElementById('actProgressLabel').textContent = done + ' of 4 tiers complete';
+  document.querySelector('.progress-bar-wrap').setAttribute('aria-valuenow', pct);
+  updateSubmitSummary();
+}
+
+// ── Submit Summary ─────────────────────────────────────────────────────────
+function updateSubmitSummary() {
+  var parts = [];
+  parts.push('Tier 1: ' + (document.getElementById('fibScore').classList.contains('show') ? document.getElementById('fibScoreVal').textContent : 'not submitted'));
+  parts.push('Tier 2: ' + (document.getElementById('debugResult').classList.contains('pass') ? 'submitted' : 'not submitted'));
+  parts.push('Tier 3: ' + (document.getElementById('jigsawResult').classList.contains('pass') ? 'complete' : 'not complete'));
+  parts.push('Tier 4: ' + (document.getElementById('tier4Result').classList.contains('pass') ? 'complete' : 'not complete'));
+  parts.push('Concept Check: ' + (document.getElementById('mcqScore').classList.contains('show') ? document.getElementById('mcqScoreVal').textContent : 'not taken'));
+  document.getElementById('submitSummary').textContent = parts.join(' · ');
+}
+
+// ── Submit to Google Sheets ────────────────────────────────────────────────
+document.getElementById('submitAll').addEventListener('click', function() {
+  var payload = {
+    sheet: 'Act_1',
+    timestamp: new Date().toISOString(),
+    pre_confidence: document.getElementById('preConf').value,
+    pre_predicted: document.getElementById('prePred').value,
+    tier1_score: document.getElementById('fibScoreVal').textContent,
+    tier2_submitted: document.getElementById('debugResult').classList.contains('pass') ? 1 : 0,
+    tier3_jigsaw: document.getElementById('jigsawResult').classList.contains('pass') ? 1 : 0,
+    tier4_mission: document.getElementById('tier4Result').classList.contains('pass') ? 1 : 0,
+    tier4_message: document.getElementById('missionLetters') ? document.getElementById('missionLetters').textContent : '',
+    mcq_score: document.getElementById('mcqScoreVal').textContent,
+    journal_0: (document.getElementById('journal0') || {}).value || '',
+    journal_1: (document.getElementById('journal1') || {}).value || '',
+    journal_2: (document.getElementById('journal2') || {}).value || '',
+    journal_3: (document.getElementById('journal3') || {}).value || '',
+    journal_4: (document.getElementById('journal4') || {}).value || '',
+    post_confidence: document.getElementById('postConf').value,
+    post_actual: document.getElementById('postActual').value
+  };
+
+  var res = document.getElementById('submitResult');
+
+  if (GS_ENDPOINT === '#') {
+    res.textContent = '⚠ No Google Sheets endpoint configured. Data logged to console.';
+    res.className = 'check-result fail';
+    console.log('Act_1 submission payload:', payload);
+    return;
+  }
+
+  fetch(GS_ENDPOINT, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  }).then(function() {
+    res.textContent = '✓ Data submitted successfully!';
+    res.className = 'check-result pass';
+  }).catch(function(err) {
+    res.textContent = '✗ Submission failed. Please tell your facilitator.';
+    res.className = 'check-result fail';
+    console.error(err);
+  });
+});
+
+// init summary
+updateSubmitSummary();
+</script>
+<script>
+/* ── Triple-click SEE → teacher notes ── */
+(function(){
+  var box = document.getElementById('see-box');
+  if (!box) return;
+  var clicks = 0, timer;
+  box.addEventListener('click', function() {
+    clicks++;
+    clearTimeout(timer);
+    timer = setTimeout(function() { clicks = 0; }, 800);
+    if (clicks >= 3) {
+      clicks = 0;
+      window.location.href = 'teacher-1.html';
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  var btn=document.getElementById('stepsToggle');
+  var menu=document.getElementById('stepsMenu');
+  if(btn&&menu){
+    btn.addEventListener('click',function(e){e.stopPropagation();menu.classList.toggle('open');});
+    document.addEventListener('click',function(){menu.classList.remove('open');});
+  }
+})();
+</script>
+
+<script>
+/* ── lang.js inlined ── */
+/**
+ * lang.js  — Radio Foxhunting LMS bilingual engine (EN / BM)
+ * Injects a language toggle into .sitenav, applies data-bm attributes.
+ * Sets window.rfLang = 'en' | 'bm' for activity scripts.
+ */
+(function () {
+  'use strict';
+  var lang = 'en';
+  try { lang = localStorage.getItem('rf_lang') || 'en'; } catch (e) {}
+  window.rfLang = lang;
+
+  function applyLang(l) {
+    window.rfLang = l;
+    document.querySelectorAll('[data-bm]').forEach(function (el) {
+      if (!el.hasAttribute('data-en')) el.setAttribute('data-en', el.innerHTML);
+      el.innerHTML = (l === 'bm') ? el.getAttribute('data-bm') : el.getAttribute('data-en');
+    });
+    document.querySelectorAll('[data-bm-ph]').forEach(function (el) {
+      if (!el.hasAttribute('data-en-ph')) el.setAttribute('data-en-ph', el.placeholder);
+      el.placeholder = (l === 'bm') ? el.getAttribute('data-bm-ph') : el.getAttribute('data-en-ph');
+    });
+    var btn = document.getElementById('rf-lang-btn');
+    if (btn) btn.textContent = (l === 'bm') ? 'EN' : 'BM';
+    document.documentElement.lang = (l === 'bm') ? 'ms' : 'en';
+  }
+
+  function injectToggle() {
+    var nav = document.querySelector('.sitenav') || document.querySelector('nav');
+    if (!nav || document.getElementById('rf-lang-btn')) return;
+    var btn = document.createElement('button');
+    btn.id = 'rf-lang-btn';
+    btn.textContent = (lang === 'bm') ? 'EN' : 'BM';
+    btn.title = 'Toggle language / Tukar bahasa';
+    btn.style.cssText = 'background:rgba(2,173,165,.15);border:1px solid var(--teal);color:var(--teal);border-radius:6px;padding:.28rem .72rem;font-size:.78rem;font-weight:800;cursor:pointer;letter-spacing:.06em;margin-left:auto;flex-shrink:0;transition:background .15s;';
+    btn.addEventListener('click', function () {
+      lang = (lang === 'en') ? 'bm' : 'en';
+      try { localStorage.setItem('rf_lang', lang); } catch (e) {}
+      applyLang(lang);
+    });
+    nav.style.display = 'flex';
+    nav.style.alignItems = 'center';
+    nav.appendChild(btn);
+  }
+
+  function init() { injectToggle(); applyLang(lang); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else { init(); }
+})();
+</script>
+<script>
+/* ── tracker.js inlined ── */
+/**
+ * Radio Foxhunting LMS — Analytics Tracker v2
+ * • Sends events to Google Sheets via Apps Script
+ * • Tracks geolocation (IP-based), device type, completion milestones
+ * • Manages completion state in localStorage
+ */
+(function () {
+  'use strict';
+
+  // ── Config ────────────────────────────────────────────────────────────────
+  var SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+  // ── Page / module detection ───────────────────────────────────────────────
+  function getModule() {
+    var p = window.location.pathname.split('/').pop() || 'index.html';
+    if (p === 'index.html' || p === '') return 'Home';
+    var m = p.match(/module-(\d+)\.html/);   if (m) return 'M' + m[1];
+    var a = p.match(/module-activity-(\d+)/); if (a) return 'Activity-M' + a[1];
+    var t = p.match(/teacher-(\d+)/);         if (t) return 'Teacher-M' + t[1];
+    if (p === 'teacher-index.html') return 'Teacher-Hub';
+    if (p === 'survey-pre.html')  return 'Survey-Pre';
+    if (p === 'survey-post.html') return 'Survey-Post';
+    if (p === 'register.html')    return 'Register';
+    if (p === 'certificate.html') return 'Certificate';
+    return p.replace('.html', '');
+  }
+
+  function getLang() {
+    try { var b=document.querySelector('.lang-btn.active'); return b?b.textContent.trim():'EN'; } catch(e){return 'EN';}
+  }
+
+  // ── Session / participant ─────────────────────────────────────────────────
+  function getSessionId() {
+    try {
+      var id = localStorage.getItem('rf_sid');
+      if (!id) { id = 'rf_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); localStorage.setItem('rf_sid', id); }
+      return id;
+    } catch(e) { return 'rf_' + Date.now(); }
+  }
+
+  function getParticipant() {
+    try {
+      var p = JSON.parse(localStorage.getItem('rf_participant') || '{}');
+      return { participant_name: p.full_name||'', participant_id: p.matric_no||'', level: p.level||'', school_code: p.school_code||'', home_state: p.home_state||'' };
+    } catch(e) { return {}; }
+  }
+
+  // ── Device info ───────────────────────────────────────────────────────────
+  function getDevice() {
+    var ua = navigator.userAgent;
+    var device = /Mobi|Android/i.test(ua) ? 'Mobile' : /iPad|Tablet/i.test(ua) ? 'Tablet' : 'Desktop';
+    var os = /Windows/i.test(ua)?'Windows':/Mac/i.test(ua)?'Mac':/Android/i.test(ua)?'Android':/iPhone|iPad/i.test(ua)?'iOS':/Linux/i.test(ua)?'Linux':'Other';
+    return { device: device, os: os };
+  }
+
+  // ── Geolocation (IP-based, fetched once per session) ─────────────────────
+  function getGeoCache() {
+    try { return JSON.parse(localStorage.getItem('rf_geo') || 'null'); } catch(e){return null;}
+  }
+  function fetchGeo(cb) {
+    var cached = getGeoCache();
+    if (cached) { cb(cached); return; }
+    try {
+      fetch('https://ipapi.co/json/', {mode:'cors'})
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var geo = { country: d.country_name||'', region: d.region||'', city: d.city||'', isp: d.org||'' };
+          try { localStorage.setItem('rf_geo', JSON.stringify(geo)); } catch(e){}
+          cb(geo);
+        })
+        .catch(function(){ cb({}); });
+    } catch(e) { cb({}); }
+  }
+
+  // ── Send event ────────────────────────────────────────────────────────────
+  function send(eventName, extra, geo) {
+    if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
+    var payload = Object.assign({
+      survey: 'analytics',
+      event: eventName,
+      module: getModule(),
+      lang: getLang(),
+      session_id: getSessionId(),
+      timestamp: new Date().toISOString(),
+      referrer: document.referrer ? (document.referrer.split('/').pop()||'direct') : 'direct'
+    }, getParticipant(), getDevice(), geo||{}, extra||{});
+    try { fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload), keepalive:true }); }
+    catch(e) {}
+  }
+
+  // ── Completion tracking in localStorage ──────────────────────────────────
+  var mod = getModule();
+
+  // Mark module as visited
+  if (mod.match(/^M\d+$/)) {
+    try {
+      var visited = JSON.parse(localStorage.getItem('rf_visited_modules') || '[]');
+      var mNum = parseInt(mod.replace('M',''));
+      if (visited.indexOf(mNum) === -1) { visited.push(mNum); localStorage.setItem('rf_visited_modules', JSON.stringify(visited)); }
+    } catch(e) {}
+  }
+
+  // Mark activity as submitted (called by activity submit buttons)
+  window.rfMarkActivity = function(num) {
+    try {
+      var done = JSON.parse(localStorage.getItem('rf_activities_done') || '[]');
+      if (done.indexOf(num) === -1) { done.push(num); localStorage.setItem('rf_activities_done', JSON.stringify(done)); }
+    } catch(e) {}
+  };
+
+  // Mark post-survey done
+  window.rfMarkPostDone = function() {
+    try { localStorage.setItem('rf_post_done', '1'); } catch(e) {}
+  };
+
+  // Check full completion: visited M0-M4 + activities 1-4 + post-survey
+  window.rfIsComplete = function() {
+    try {
+      var visited = JSON.parse(localStorage.getItem('rf_visited_modules') || '[]');
+      var acts = JSON.parse(localStorage.getItem('rf_activities_done') || '[]');
+      var post = localStorage.getItem('rf_post_done') === '1';
+      var allModules = [0,1,2,3,4].every(function(n){ return visited.indexOf(n) !== -1; });
+      var allActs = [1,2,3,4].every(function(n){ return acts.indexOf(n) !== -1; });
+      return allModules && allActs && post;
+    } catch(e) { return false; }
+  };
+
+  // ── Auto fire page_view with geo ──────────────────────────────────────────
+  fetchGeo(function(geo) {
+    send('page_view', {}, geo);
+  });
+
+  // ── Time on page ──────────────────────────────────────────────────────────
+  var t0 = Date.now();
+  window.addEventListener('beforeunload', function() {
+    var s = Math.round((Date.now()-t0)/1000);
+    if (s > 3) send('time_spent', {seconds:s});
+  });
+
+  // ── Forward nav click ─────────────────────────────────────────────────────
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest('a[href],button');
+    if (!el) return;
+    var href = el.getAttribute('href') || '';
+    if ((href.match(/module-\d+\.html/) || href === 'index.html') && mod.match(/^(M\d+|Activity-M\d+)$/)) {
+      send('module_forward', {target: href});
+    }
+  });
+
+  window.rfTrack = send;
+})();
+</script>
+</body>
+</html>

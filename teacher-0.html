@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facilitator Guide – Module 0 · Radio Foxhunting</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root{--teal:#02ADA5;--teal-dim:#017a74;--bg:#f4f8f8;--surface:#fff;--surface2:#f0f6f6;
+      --text:#1a3330;--text-dim:#4a7370;--accent:#0a5f5a;--border:#d0e8e6;
+      --ok:#1a8040;--danger:#c0392b;--warn:#b07800;--radius:10px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;line-height:1.6}
+    /* Gate */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /* Top bar */
+    .teacher-bar{background:var(--teal);color:#fff;padding:8px 28px;font-size:.78rem;font-weight:700;
+      letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+    .sitenav{background:#041e1c;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:52px;border-bottom:2px solid var(--teal);position:sticky;top:0;z-index:100;}
+    .brand{font-size:1.05rem;font-weight:800;color:var(--teal);letter-spacing:.06em}
+    .brand::before{content:"🦊 "}
+    .nav-link{color:#7ab8b5;text-decoration:none;font-size:.85rem;font-weight:700;
+      padding:7px 14px;border:1px solid rgba(2,173,165,.3);border-radius:7px;transition:all .2s}
+    .nav-link:hover{background:rgba(2,173,165,.15);color:#02ADA5}
+    /* Hero */
+    .hero{background:linear-gradient(135deg,rgba(2,53,51,.18) 0%,var(--bg) 100%);
+      padding:52px 28px 44px;text-align:center;position:relative}
+    .teacher-badge{background:rgba(2,173,165,.2);border:1px solid var(--teal);color:var(--teal);padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;}
+    .hero h1{font-size:clamp(1.7rem,4vw,2.8rem);font-weight:900;color:#fff;margin-bottom:10px}
+    .hero-sub{color:#7ab8b5;font-size:.95rem;max-width:600px;margin:0 auto}
+    /* Content */
+    .content{max-width:980px;margin:0 auto;padding:44px 28px}
+    .t-section{margin-bottom:52px}
+    .t-section h2{font-size:1.3rem;font-weight:800;color:var(--accent);margin-bottom:18px;
+      display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+    .t-section h3{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:10px;margin-top:18px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:14px}
+    .answer-key{background:#f0fbf9;border:2px solid var(--teal);border-radius:var(--radius);padding:18px 22px;margin-bottom:14px}
+    .ak-label{font-size:.72rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+      color:var(--teal);margin-bottom:8px}
+    .ak-q{font-weight:700;color:var(--text);margin-bottom:6px;font-size:.92rem}
+    .ak-a{background:#e8f7f5;border-left:3px solid var(--teal);padding:10px 14px;border-radius:0 7px 7px 0;
+      font-size:.87rem;color:var(--text);line-height:1.6}
+    .ak-a code{background:rgba(2,173,165,.12);padding:1px 6px;border-radius:4px;font-family:monospace;color:var(--teal)}
+    .callout{border-radius:var(--radius);padding:16px 20px;margin-bottom:14px}
+    .callout.warn{background:#fdf8ec;border:1px solid #e8d080;border-left:4px solid var(--warn)}
+    .callout.info{background:#f0fbf9;border:1px solid #b0dfd8;border-left:4px solid var(--teal)}
+    .callout.danger{background:#fdf0f0;border:1px solid #e8b0b0;border-left:4px solid var(--danger)}
+    .callout-title{font-weight:800;font-size:.9rem;margin-bottom:8px}
+    .callout.warn .callout-title{color:var(--warn)}.callout.info .callout-title{color:var(--teal)}.callout.danger .callout-title{color:var(--danger)}
+    .callout p,.callout li{font-size:.87rem;color:var(--text-dim);line-height:1.55}
+    .callout ul{padding-left:18px}.callout li{margin-bottom:5px}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    th{background:#e8f7f5;color:var(--accent);padding:10px 14px;text-align:left;font-weight:700;border-bottom:2px solid var(--border)}
+    td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim)}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#f8fdfc}
+    .tag{display:inline-block;padding:3px 9px;border-radius:5px;font-size:.72rem;font-weight:700;margin:1px}
+    .tag-ok{background:#d4f0df;color:#1a7040}.tag-warn{background:#fdf0cc;color:#8a6000}.tag-err{background:#fde8e8;color:#a02020}
+    .code-block{background:#f5faf9;border:1px solid var(--border);border-radius:8px;padding:16px;
+      font-family:'Courier New',monospace;font-size:.82rem;line-height:1.7;color:#1a3330;overflow-x:auto}
+    .gs-schema{background:#fff;border:2px solid var(--border);border-radius:var(--radius);overflow:hidden}
+    .gs-schema-header{background:var(--teal);color:#fff;padding:10px 16px;font-weight:800;font-size:.85rem}
+    .gs-cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0}
+    .gs-col{padding:8px 12px;border:1px solid var(--border);font-size:.78rem}
+    .gs-col-head{font-weight:700;color:var(--text);background:#f0f7f6}
+    .gs-col-type{color:var(--text-dim);font-size:.7rem}
+    footer{background:#031a18;padding:24px 28px;text-align:center;color:#7ab8b5;font-size:.8rem}
+    /* ── Module nav ── */
+    .mod-nav{background:#031714;border-bottom:1px solid rgba(2,173,165,.2);display:flex;align-items:center;gap:4px;padding:0 1.25rem;height:38px;flex-wrap:wrap;}
+    .mod-nav-label{font-size:.72rem;font-weight:700;color:#7bbfba;margin-right:.5rem;white-space:nowrap;}
+    .mod-nav-item{font-size:.78rem;font-weight:600;color:#7bbfba;text-decoration:none;padding:3px 10px;border-radius:4px;border:1px solid transparent;transition:all .15s;}
+    .mod-nav-item:hover{background:rgba(2,173,165,.15);color:var(--teal);}
+    .mod-nav-item.active{background:var(--teal);color:#041e1c;border-color:var(--teal);}
+    .back-link{color:var(--teal);text-decoration:none;font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem;}
+    .back-link:hover{text-decoration:underline;}
+    .eyebrow{font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:.4rem;}
+    @media(max-width:640px){.gs-cols{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+<!-- MODULE NAV -->
+<nav class="mod-nav">
+  <span class="mod-nav-label">📋 Teacher Guides:</span>
+  <a href="teacher-0.html" class="mod-nav-item active">M0 Orientation</a>
+  <a href="teacher-1.html" class="mod-nav-item">M1 Morse Code</a>
+  <a href="teacher-2.html" class="mod-nav-item">M2 Map Reading</a>
+  <a href="teacher-3.html" class="mod-nav-item">M3 Yagi Antenna</a>
+  <a href="teacher-4.html" class="mod-nav-item">M4 Field Strategy</a>
+</nav>
+
+<!-- SITENAV -->
+<nav class="sitenav">
+  <a href="module-0.html" class="brand">🦊 Radio Foxhunting</a>
+  <div style="display:flex;align-items:center;gap:.75rem;">
+    <a href="module-0.html" class="back-link">← Student View</a>
+    <span class="teacher-badge">Teacher View</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" style="background:linear-gradient(135deg,rgba(2,53,51,.18) 0%,var(--bg) 100%);border-bottom:2px solid var(--teal);padding:2.5rem 1.25rem 2rem;">
+  <div style="max-width:980px;margin:0 auto;">
+    <p class="eyebrow">Module 0 of 5 — Teacher Guide</p>
+    <h1 style="font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:900;color:var(--text);margin-bottom:.4rem;">Orientation — Facilitator Notes</h1>
+    <p style="color:var(--text-dim);font-size:.92rem;">Answer keys, teaching notes, common confusions, and Google Sheets submission schema for Module 0.</p>
+  </div>
+</header>
+
+<main class="content">
+
+  <!-- Workshop Overview -->
+  <section class="t-section">
+    <h2>📋 Workshop Overview</h2>
+    <div class="card">
+      <p style="margin-bottom:14px">Module 0 is the <strong>onboarding module</strong>. Scouts arrive with no assumed ARDF knowledge. By the end, every scout should understand the competition structure, have collected and identified their equipment, and have registered their team profile.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+        <div style="background:var(--surface2);border-radius:8px;padding:14px">
+          <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:5px">Duration</div>
+          <div style="font-size:.88rem;color:var(--text-dim)">30 minutes (orientation) + 20 min activities</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:14px">
+          <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:5px">Age Groups</div>
+          <div style="font-size:.88rem;color:var(--text-dim)">Junior (12–14), Senior (15–17), Open (18+)</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:14px">
+          <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:5px">Team Size</div>
+          <div style="font-size:.88rem;color:var(--text-dim)">2–4 scouts per team recommended</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:14px">
+          <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:5px">Prerequisite</div>
+          <div style="font-size:.88rem;color:var(--text-dim)">None — open to all scouts</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Learning Goals -->
+  <section class="t-section">
+    <h2>🎯 Orientation Learning Goals</h2>
+    <div class="card">
+      <p style="margin-bottom:12px;font-size:.9rem;color:var(--text-dim)">By the end of Module 0 every scout should be able to:</p>
+      <ul style="padding-left:18px;display:flex;flex-direction:column;gap:8px">
+        <li style="font-size:.9rem">Define ARDF and explain how it differs from regular orienteering</li>
+        <li style="font-size:.9rem">Identify the 5 beacons (MOE–MO5) and the MO rest beacon by their Morse patterns</li>
+        <li style="font-size:.9rem">Identify each piece of equipment by name and purpose</li>
+        <li style="font-size:.9rem">Explain why 144 MHz equipment is used (not CB radio or phone GPS)</li>
+        <li style="font-size:.9rem">Register a team profile and understand the scoring/time-penalty rules</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- T1 Answers -->
+  <section class="t-section">
+    <h2>✅ T1: Fill-in-Blanks — Answer Key</h2>
+
+    <div class="answer-key">
+      <div class="ak-label">Q1</div>
+      <div class="ak-q">ARDF stands for <em>blank</em> Radio <em>blank</em> Finding.</div>
+      <div class="ak-a"><strong>Amateur</strong> Radio <strong>Direction</strong> Finding<br>
+        <em>Accept: "amateur" / "AMATEUR" / any capitalisation. "Direction" must be exact — accept "directional" with note.</em></div>
+    </div>
+
+    <div class="answer-key">
+      <div class="ak-label">Q2</div>
+      <div class="ak-q">Foxhunting combines orienteering with ___</div>
+      <div class="ak-a"><strong>radio</strong> (or "radio direction finding", "ARDF", "electronics"). Do not accept "GPS" or "phone".</div>
+    </div>
+
+    <div class="answer-key">
+      <div class="ak-label">Q3</div>
+      <div class="ak-q">There are ___ hidden foxes in standard ARDF.</div>
+      <div class="ak-a"><strong>5</strong> — this is the ITU/IARU standard. Note: some local events use 3 foxes for beginners, but the standard answer here is 5.</div>
+    </div>
+
+    <div class="answer-key">
+      <div class="ak-label">Q4</div>
+      <div class="ak-q">The hunting time limit is ___ minutes.</div>
+      <div class="ak-a"><strong>80</strong> minutes. This is the standard for 144 MHz ARDF events per IARU Region 3 rules.</div>
+    </div>
+
+    <div class="answer-key">
+      <div class="ak-label">Q5</div>
+      <div class="ak-q">Each beacon transmits for ___ seconds per cycle.</div>
+      <div class="ak-a"><strong>12</strong> seconds. The full cycle is 60 seconds: 5 foxes × 12 s = 60 s. The MO rest beacon fills remaining time.</div>
+    </div>
+
+    <div class="answer-key">
+      <div class="ak-label">Q6</div>
+      <div class="ak-q">The rest beacon callsign is ___</div>
+      <div class="ak-a"><strong>MO</strong> — accept "MO beacon". The MO transmission signals the start/end of each cycle. It is also the Start/Finish beacon.</div>
+    </div>
+
+    <div class="answer-key">
+      <div class="ak-label">Q7</div>
+      <div class="ak-q">You navigate using a ___ and topographic ___</div>
+      <div class="ak-a"><strong>compass</strong> and topographic <strong>map</strong>. Accept "baseplate compass" and "topo map". Do NOT accept GPS, phone, or app — these are prohibited in official ARDF.</div>
+    </div>
+  </section>
+
+  <!-- T2 Answers -->
+  <section class="t-section">
+    <h2>🐛 T2: Debug Scenarios — Model Answers</h2>
+
+    <h3>Debug #1 — Wrong Navigation Tool</h3>
+    <div class="answer-key">
+      <div class="ak-label">Model Answer</div>
+      <div class="ak-a">
+        <strong>Problem:</strong> Mobile phone GPS relies on satellite positioning and network data — it drains battery quickly, may lose signal under tree cover, and (most importantly) is prohibited in ARDF competitions as it bypasses the navigation challenge.<br><br>
+        <strong>Fix:</strong> Use a baseplate compass to take magnetic bearings to the signal source, and a 1:10,000 topographic map to plot position and plan routes. These skills are the core of ARDF — the challenge is combining radio direction-finding with traditional land navigation.
+      </div>
+    </div>
+
+    <h3>Debug #2 — Wrong Radio Band</h3>
+    <div class="answer-key">
+      <div class="ak-label">Model Answer</div>
+      <div class="ak-a">
+        <strong>Problem:</strong> A 27 MHz CB radio is designed to receive signals in the 26–28 MHz range. ARDF beacons transmit on 144 MHz (2-metre amateur band). The two bands are completely different — the CB radio cannot receive the beacon at all.<br><br>
+        <strong>Fix:</strong> Use a 144 MHz handheld amateur radio receiver (e.g. Yaesu FT-60, Baofeng UV-5R) paired with a 3-element Yagi antenna tuned for 144 MHz.
+      </div>
+    </div>
+
+    <h3>Debug #3 — Time Penalty Calculation</h3>
+    <div class="answer-key">
+      <div class="ak-label">Model Answer</div>
+      <div class="ak-a">
+        <strong>Analysis:</strong> Time limit = 80 min. Elapsed at finish = 95 min. Late by 15 minutes.<br><br>
+        <strong>Standard penalty rule:</strong> 1 point deducted per full minute late (varies by event — confirm with your competition rules). Some events use: score = (80 − elapsed_minutes) per fox if returned on time; if late, each late minute subtracts points from total.<br><br>
+        <strong>Simplified scoring:</strong> 3 foxes found. Using formula: 1 point per fox, −1 per minute late → Score = 3 − 15 = −12 (disqualified in most events; they score 0). <br>
+        <em>Note: in IARU rules, teams finishing more than 5 minutes late are typically classified outside the result list.</em>
+      </div>
+    </div>
+  </section>
+
+  <!-- T3 Answer -->
+  <section class="t-section">
+    <h2>💻 T3: Complete the Code — Reference Solution</h2>
+    <div class="code-block">function saveProfile(form) {
+  var profile = {
+    team:      form.teamName.value,
+    name:      form.scoutName.value,
+    school:    form.school.value,        // added school
+    age:       form.ageGroup.value,      // added age group
+    timestamp: new Date().toISOString()  // added ISO timestamp
+  };
+
+  // Save to localStorage
+  localStorage.setItem('fox_profile', JSON.stringify(profile));
+
+  // Return success confirmation
+  var time = new Date().toLocaleTimeString('en-MY', {hour:'2-digit', minute:'2-digit'});
+  return 'Team "' + profile.team + '" registered at ' + time;
+}
+
+// Verification: load and display
+function loadAndVerify() {
+  var raw = localStorage.getItem('fox_profile');
+  if (!raw) return 'No profile found';
+  var p = JSON.parse(raw);
+  return 'Loaded: ' + p.team + ' | ' + p.name + ' | ' + p.school + ' | ' + p.age;
+}</div>
+    <div class="callout info">
+      <div class="callout-title">Marking Notes</div>
+      <ul>
+        <li>Award marks for: correct field names, JSON.stringify, localStorage.setItem, return statement</li>
+        <li>Partial credit for: correct structure without localStorage save</li>
+        <li>Do not penalise for minor variable naming differences</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- T4 Answer -->
+  <section class="t-section">
+    <h2>🦊 T4: New Task — Find Log Feature (Reference Design)</h2>
+    <div class="code-block">// T4 Reference: Find Log with Running Score
+var foxFinds = [];
+try { foxFinds = JSON.parse(localStorage.getItem('fox_finds') || '[]'); } catch(e) {}
+
+function logFind(beaconID, timeFound, coordinate) {
+  var entry = {
+    beacon:     beaconID,      // e.g. 'MOE'
+    time:       timeFound,     // e.g. '10:32'
+    location:   coordinate,    // e.g. 'Grid A3' or '3.812, 103.331'
+    score:      1,             // 1 point per fox
+    loggedAt:   new Date().toISOString()
+  };
+  foxFinds.push(entry);
+  localStorage.setItem('fox_finds', JSON.stringify(foxFinds));
+  renderLog();
+  return 'Running score: ' + foxFinds.length + ' / 5';
+}
+
+function renderLog() {
+  // Build HTML table from foxFinds array
+  // Show beacon, time, location, running total
+}
+
+function getTotalScore() {
+  return foxFinds.reduce(function(sum, f) { return sum + f.score; }, 0);
+}</div>
+    <div class="callout info">
+      <div class="callout-title">Assessment Criteria for T4</div>
+      <ul>
+        <li><strong>Meets:</strong> Correct data structure, uses localStorage, shows running total</li>
+        <li><strong>Exceeds:</strong> Handles duplicates (can't log same fox twice), includes timestamp, renders to DOM</li>
+        <li><strong>Extension:</strong> Validates against allowed beacon IDs (MOE, MOI, MOS, MOH, MO5)</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Equipment notes -->
+  <section class="t-section">
+    <h2>🎒 Equipment Checklist — Facilitator Notes</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Item</th><th>Why Critical</th><th>Common Issue</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>Yagi Antenna</td><td>Directional — essential for bearing-taking</td><td>Wrong element spacing</td><td>Verify boom length: 3 elements, tuned for 144 MHz (λ/2 = ~1 m)</td></tr>
+          <tr><td>Handheld Radio</td><td>Must receive 144 MHz FM</td><td>Scouts bring CB radios</td><td>Pre-check all radios are tuned to correct beacon frequency before start</td></tr>
+          <tr><td>Compass</td><td>Direction finding without GPS</td><td>Scouts try phone GPS</td><td>Confiscate GPS devices; reinforce rule before starting</td></tr>
+          <tr><td>Topo Map</td><td>Plot bearings, plan route</td><td>Map not laminated (rain)</td><td>Pre-laminate or use zip-lock bags; ensure North arrow visible</td></tr>
+          <tr><td>Fox Log Sheet</td><td>Record beacon ID + time at each punch</td><td>Lost or forgotten</td><td>Attach to clipboard; spare sheets at Start/Finish</td></tr>
+          <tr><td>Walking Shoes</td><td>Safety — uneven terrain</td><td>Sandals/thongs worn</td><td>Enforce at sign-in; turn back non-compliant scouts</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Common Confusions -->
+  <section class="t-section">
+    <h2>⚠️ Common Scout Confusions</h2>
+
+    <div class="callout warn">
+      <div class="callout-title">Confusion 1: CB Radio vs VHF (144 MHz)</div>
+      <p style="margin-bottom:8px">"My dad has a CB radio at home — can I use that?" — Very common question, especially from older scouts.</p>
+      <p><strong>Explain:</strong> CB radio operates at 27 MHz (HF band). ARDF beacons transmit at 144 MHz (VHF band). The antenna size, receiver circuitry and propagation characteristics are completely different. A CB radio simply cannot receive a 144 MHz signal — it's the wrong radio for the wrong frequency. Use: Baofeng UV-5R, Yaesu FT-60, or any VHF/UHF amateur handheld.</p>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Confusion 2: GPS / Phone Navigation vs Compass + Map</div>
+      <p style="margin-bottom:8px">Scouts often assume a phone is "better" than a compass. This misunderstands both the sport and the rules.</p>
+      <p><strong>Explain:</strong> (1) ARDF rules prohibit electronic positioning devices — using one = disqualification. (2) The sport deliberately develops compass and map skills. (3) Phones may lose signal under dense canopy. (4) A baseplate compass + topo map is faster when you know how to use them.</p>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">Confusion 3: "Just follow the loudest signal"</div>
+      <p><strong>Explain:</strong> VHF signals reflect off trees and hills — the loudest direction is not always the direct path to the fox. Scouts need to triangulate using multiple bearings from different positions, and switch to body-shielding when close. This is taught in Module 4.</p>
+    </div>
+  </section>
+
+  <!-- Mixed-age tips -->
+  <section class="t-section">
+    <h2>👥 Tips for Mixed-Age Groups</h2>
+    <div class="card">
+      <ul style="padding-left:18px;display:flex;flex-direction:column;gap:10px">
+        <li style="font-size:.9rem"><strong>Junior scouts (12–14):</strong> Focus on T1 and MCQ. T3 and T4 may be optional extension for this group. Pair with Senior or Open scout in the field.</li>
+        <li style="font-size:.9rem"><strong>Senior scouts (15–17):</strong> Should complete all tiers. Encourage them to explain the code tasks to juniors.</li>
+        <li style="font-size:.9rem"><strong>Open category (18+):</strong> Expected to complete all tiers including T4. May assist facilitators with equipment setup and younger scouts.</li>
+        <li style="font-size:.9rem"><strong>Mixed teams in the field:</strong> Assign roles — one person holds the antenna, one reads the compass, one marks the map. Rotate roles between foxes.</li>
+        <li style="font-size:.9rem"><strong>Language:</strong> Key terms (Yagi, attenuator, bearing, azimuth) should be introduced bilingually (English + Bahasa Melayu) for Malaysian scouts.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- GS Schema -->
+  <section class="t-section">
+    <h2>📊 Google Sheets Submission Schema — Module 0</h2>
+    <div class="callout info" style="margin-bottom:16px">
+      <div class="callout-title">Setup Instructions</div>
+      <p>Create a new Google Sheet. Row 1 = headers below. Deploy a Google Apps Script web app (POST) that appends form data as a new row. Paste the deployment URL into <code>GS_URL</code> in module-activity-0.html.</p>
+    </div>
+    <div class="gs-schema">
+      <div class="gs-schema-header">Google Sheet: fox_hunt_submissions — Module 0 Columns</div>
+      <div class="gs-cols">
+        <div class="gs-col gs-col-head">Column A<div class="gs-col-type">timestamp</div></div>
+        <div class="gs-col gs-col-head">Column B<div class="gs-col-type">module (0)</div></div>
+        <div class="gs-col gs-col-head">Column C<div class="gs-col-type">team</div></div>
+        <div class="gs-col gs-col-head">Column D<div class="gs-col-type">scout_name</div></div>
+        <div class="gs-col gs-col-head">Column E<div class="gs-col-type">school</div></div>
+        <div class="gs-col gs-col-head">Column F<div class="gs-col-type">age_group</div></div>
+        <div class="gs-col gs-col-head">Column G<div class="gs-col-type">pre_know (1–5)</div></div>
+        <div class="gs-col gs-col-head">Column H<div class="gs-col-type">pre_predict</div></div>
+        <div class="gs-col gs-col-head">Column I<div class="gs-col-type">t1_b1a</div></div>
+        <div class="gs-col gs-col-head">Column J<div class="gs-col-type">t1_b1b</div></div>
+        <div class="gs-col gs-col-head">Column K<div class="gs-col-type">t1_b2..b7b</div></div>
+        <div class="gs-col gs-col-head">Column L<div class="gs-col-type">t2_d1 (debug 1)</div></div>
+        <div class="gs-col gs-col-head">Column M<div class="gs-col-type">t2_d2</div></div>
+        <div class="gs-col gs-col-head">Column N<div class="gs-col-type">t2_d3</div></div>
+        <div class="gs-col gs-col-head">Column O<div class="gs-col-type">t3_code</div></div>
+        <div class="gs-col gs-col-head">Column P<div class="gs-col-type">t4_code</div></div>
+        <div class="gs-col gs-col-head">Column Q<div class="gs-col-type">mcq_score (0–5)</div></div>
+        <div class="gs-col gs-col-head">Column R–V<div class="gs-col-type">journal j1–j5</div></div>
+        <div class="gs-col gs-col-head">Column W<div class="gs-col-type">post_know</div></div>
+        <div class="gs-col gs-col-head">Column X<div class="gs-col-type">post_confidence</div></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a> &middot;
+      <a href="module-0.html">Module 0</a> &middot;
+      <a href="module-1.html">Module 1</a> &middot;
+      <a href="module-2.html">Module 2</a> &middot;
+      <a href="module-3.html">Module 3</a> &middot;
+      <a href="module-4.html">Module 4</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative
+      <a href="https://ee.ump.edu.my/hazlina/" target="_blank" aria-label="Personal website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" aria-label="Email">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+/* ── Triple-click SEE → teacher notes ── */
+(function(){
+  var box = document.getElementById('see-box');
+  if (!box) return;
+  var clicks = 0, timer;
+  box.addEventListener('click', function() {
+    clicks++;
+    clearTimeout(timer);
+    timer = setTimeout(function() { clicks = 0; }, 800);
+    if (clicks >= 3) {
+      clicks = 0;
+      window.location.href = 'teacher-0.html';
+    }
+  });
+})();
+</script>
+</body>
+</html>

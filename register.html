@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Participant Registration — Radio Foxhunting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --bg:#071412;--surface:#0d1f1d;--surface2:#122221;
+  --border:rgba(2,173,165,.18);--border-str:rgba(2,173,165,.4);
+  --text:#e0efee;--muted:#7bbfba;--teal:#02ADA5;--teal-glow:rgba(2,173,165,.12);
+  --red:#e05252;--font:'Space Grotesk',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;padding-bottom:3rem;}
+
+/* ── Topbar ── */
+.topbar{background:#041e1c;border-bottom:2px solid var(--teal);padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.brand{font-weight:800;font-size:1rem;color:var(--teal);text-decoration:none;}
+.badge{background:rgba(2,173,165,.2);border:1px solid var(--teal);color:var(--teal);padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;}
+
+/* ── Hero ── */
+.hero{background:linear-gradient(135deg,rgba(2,53,51,.22) 0%,var(--bg) 100%);border-bottom:2px solid var(--teal);padding:2rem 1.25rem 1.75rem;}
+.hero-inner{max-width:780px;margin:0 auto;}
+.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:.35rem;}
+.hero h1{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:800;margin-bottom:.35rem;}
+.hero p{color:var(--muted);font-size:.9rem;}
+
+/* ── Form card ── */
+.wrap{max-width:780px;margin:2rem auto;padding:0 1.25rem;}
+.card{background:var(--surface);border:2px solid var(--border-str);border-radius:14px;padding:1.75rem;}
+.card-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.card-header .icon{font-size:1.4rem;}
+.card-header h2{font-size:1rem;font-weight:800;}
+.card-header .req-note{font-size:.78rem;color:var(--muted);margin-left:auto;}
+.req-note .star{color:#f0a030;}
+
+/* ── Field grid ── */
+.field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.85rem;}
+.field-full{grid-column:1/-1;}
+.field{display:flex;flex-direction:column;gap:.3rem;}
+.field label{font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:.3rem;}
+.field label .star{color:#f0a030;font-size:.8rem;}
+.field input,.field select{background:var(--surface2);border:1px solid var(--border-str);color:var(--text);border-radius:7px;padding:.55rem .75rem;font-size:.9rem;font-family:var(--font);outline:none;transition:border .15s,box-shadow .15s;width:100%;}
+.field input:focus,.field select:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-glow);}
+.field input::placeholder{color:var(--muted);}
+.field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237bbfba' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;padding-right:2.2rem;}
+.field select option{background:#0d1f1d;}
+.field .err-msg{font-size:.75rem;color:var(--red);display:none;}
+.field.has-error input,.field.has-error select{border-color:var(--red);}
+.field.has-error .err-msg{display:block;}
+
+/* ── Confirm button ── */
+.confirm-row{margin-top:1.75rem;}
+.btn-confirm{width:100%;background:var(--teal);color:#041e1c;font-weight:800;font-size:1.05rem;border:none;padding:.9rem 2rem;border-radius:10px;cursor:pointer;font-family:var(--font);transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.btn-confirm:hover{opacity:.88;}
+.btn-confirm:disabled{opacity:.5;cursor:not-allowed;}
+#status{text-align:center;margin-top:.75rem;font-size:.88rem;color:var(--muted);min-height:1.2rem;}
+#status.err{color:var(--red);}
+
+/* ── Success ── */
+#success{display:none;text-align:center;padding:3rem 1rem;}
+#success .icon{font-size:3rem;margin-bottom:1rem;}
+#success h2{font-size:1.5rem;font-weight:800;color:var(--teal);margin-bottom:.5rem;}
+#success p{color:var(--muted);font-size:.9rem;margin-bottom:1.5rem;}
+.btn-go{display:inline-block;background:var(--teal);color:#041e1c;font-weight:800;padding:.75rem 2rem;border-radius:8px;text-decoration:none;font-size:1rem;}
+
+/* ── Privacy note ── */
+.privacy{background:rgba(2,173,165,.06);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;margin-top:1rem;font-size:.78rem;color:var(--muted);display:flex;gap:.5rem;}
+.privacy .lock{flex-shrink:0;}
+
+@media(max-width:520px){.field-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">🦊 Radio Foxhunting</a>
+  <span class="badge">JOTA JOTI 2026</span>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">UMPSA STEM Lab · Workshop Registration</p>
+    <h1>👤 Your Details — Fill In Before You Begin</h1>
+    <p>This helps us record your participation in the Radio Foxhunting workshop. All fields marked ★ are required.</p>
+  </div>
+</header>
+
+<div class="wrap">
+<div id="form-area">
+<form id="regForm" onsubmit="submitReg(event)" novalidate>
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">📋</span>
+      <h2>Participant Information</h2>
+      <span class="req-note"><span class="star">★</span> = required</span>
+    </div>
+
+    <div class="field-grid">
+      <!-- Row 1: Name, Matric, Class, Gender, Age -->
+      <div class="field field-full" style="grid-column:1/3">
+        <label>Full Name <span class="star">★</span></label>
+        <input type="text" name="full_name" placeholder="e.g. Ahmad bin Abdullah" required autocomplete="name">
+        <span class="err-msg">Please enter your full name</span>
+      </div>
+
+      <div class="field">
+        <label>Matric / Pupil No. <span class="star">★</span></label>
+        <input type="text" name="matric_no" placeholder="e.g. 24001" required>
+        <span class="err-msg">Required</span>
+      </div>
+
+      <div class="field">
+        <label>Class <span class="star">★</span></label>
+        <input type="text" name="class" placeholder="e.g. 4 Amanah" required>
+        <span class="err-msg">Required</span>
+      </div>
+
+      <div class="field">
+        <label>Gender <span class="star">★</span></label>
+        <select name="gender" required>
+          <option value="" disabled selected>Select…</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Prefer not to say">Prefer not to say</option>
+        </select>
+        <span class="err-msg">Required</span>
+      </div>
+
+      <div class="field">
+        <label>Age <span class="star">★</span></label>
+        <input type="number" name="age" placeholder="e.g. 13" min="9" max="19" required>
+        <span class="err-msg">Required</span>
+      </div>
+
+      <!-- Row 2: State, IC, School Code, Phone -->
+      <div class="field">
+        <label>Home State</label>
+        <select name="home_state">
+          <option value="" selected>— optional —</option>
+          <option>Johor</option><option>Kedah</option><option>Kelantan</option>
+          <option>Melaka</option><option>Negeri Sembilan</option><option>Pahang</option>
+          <option>Perak</option><option>Perlis</option><option>Pulau Pinang</option>
+          <option>Sabah</option><option>Sarawak</option><option>Selangor</option>
+          <option>Terengganu</option><option>WP Kuala Lumpur</option>
+          <option>WP Labuan</option><option>WP Putrajaya</option>
+        </select>
+      </div>
+
+      <div class="field" style="grid-column:span 2">
+        <label>IC / MyKid No.</label>
+        <input type="text" name="ic_no" placeholder="e.g. 120415-06-1234 (optional)">
+      </div>
+
+      <div class="field">
+        <label>School Code</label>
+        <input type="text" name="school_code" placeholder="e.g. BEA0042">
+      </div>
+
+      <div class="field">
+        <label>Phone No.</label>
+        <input type="tel" name="phone" placeholder="+601X-XXXXXXX" autocomplete="tel">
+      </div>
+
+      <!-- Row 3: Email (full width) -->
+      <div class="field field-full">
+        <label>Email Address</label>
+        <input type="email" name="email" placeholder="e.g. ahmad@school.edu.my (optional)" autocomplete="email">
+      </div>
+
+      <!-- School level -->
+      <div class="field field-full">
+        <label>School Level <span class="star">★</span></label>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.15rem;">
+          <label style="all:unset;cursor:pointer;">
+            <input type="radio" name="level" value="Primary" required style="display:none;" id="lvl_pri">
+            <label for="lvl_pri" id="lvl_pri_lbl" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--surface2);border:1px solid var(--border-str);color:var(--muted);padding:.4rem 1rem;border-radius:999px;font-size:.85rem;cursor:pointer;transition:all .15s;">Primary (Std 4–6)</label>
+          </label>
+          <label style="all:unset;cursor:pointer;">
+            <input type="radio" name="level" value="Secondary" style="display:none;" id="lvl_sec">
+            <label for="lvl_sec" id="lvl_sec_lbl" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--surface2);border:1px solid var(--border-str);color:var(--muted);padding:.4rem 1rem;border-radius:999px;font-size:.85rem;cursor:pointer;transition:all .15s;">Secondary (Form 1–5)</label>
+          </label>
+        </div>
+        <span class="err-msg" id="level_err" style="display:none;">Please select your school level</span>
+      </div>
+    </div>
+
+    <div class="privacy">
+      <span class="lock">🔒</span>
+      <span>Your details are recorded only for UMPSA STEM Lab research purposes (JOTA JOTI 2026 Radio Foxhunting Workshop). IC and phone numbers are optional and stored securely in a Google Sheet accessible only to the research team.</span>
+    </div>
+
+    <div class="confirm-row">
+      <button class="btn-confirm" type="submit" id="confirmBtn">
+        ✓ Confirm My Details
+      </button>
+    </div>
+    <div id="status"></div>
+  </div>
+</form>
+</div>
+
+<div id="success">
+  <div class="icon">✅</div>
+  <h2>Details Confirmed!</h2>
+  <p id="success-name">Welcome! Your registration has been saved.<br>You can now begin the Radio Foxhunting workshop.</p>
+  <br>
+  <a href="module-0.html" class="btn-go">🦊 Start the Workshop →</a>
+</div>
+</div>
+
+<script>
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+// Pill radio highlight
+document.querySelectorAll('input[type=radio][name=level]').forEach(function(r){
+  r.addEventListener('change', function(){
+    document.querySelectorAll('input[type=radio][name=level]').forEach(function(x){
+      var lbl = document.getElementById(x.id + '_lbl');
+      if(lbl){ lbl.style.background='var(--surface2)'; lbl.style.borderColor='var(--border-str)'; lbl.style.color='var(--muted)'; }
+    });
+    var lbl = document.getElementById(r.id + '_lbl');
+    if(lbl){ lbl.style.background='var(--teal)'; lbl.style.borderColor='var(--teal)'; lbl.style.color='#041e1c'; lbl.style.fontWeight='700'; }
+    document.getElementById('level_err').style.display='none';
+  });
+});
+
+function validate(fd) {
+  var ok = true;
+  ['full_name','matric_no','class','gender','age'].forEach(function(n){
+    var el = document.querySelector('[name='+n+']');
+    var wrap = el ? el.closest('.field') : null;
+    if(wrap) wrap.classList.remove('has-error');
+    if(!el || !el.value.trim()){
+      if(wrap) wrap.classList.add('has-error');
+      ok = false;
+    }
+  });
+  if(!fd.get('level')){
+    document.getElementById('level_err').style.display='block';
+    ok = false;
+  }
+  return ok;
+}
+
+async function submitReg(e){
+  e.preventDefault();
+  var fd = new FormData(e.target);
+  if(!validate(fd)){ 
+    document.getElementById('status').textContent='Please fill in all required fields (★).';
+    document.getElementById('status').className='err';
+    return; 
+  }
+  var btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  var payload = { survey: 'participant', timestamp: new Date().toISOString() };
+  fd.forEach(function(v,k){ payload[k]=v; });
+
+  // Store in localStorage for use in surveys
+  try { localStorage.setItem('rf_participant', JSON.stringify(payload)); } catch(ex){}
+
+  if(SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE'){
+    showSuccess(payload.full_name);
+    return;
+  }
+  try {
+    await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload), keepalive:true });
+    showSuccess(payload.full_name);
+  } catch(ex){
+    // Even if fetch fails, let them proceed (store local only)
+    showSuccess(payload.full_name);
+  }
+}
+
+function showSuccess(name){
+  document.getElementById('form-area').style.display='none';
+  var s = document.getElementById('success');
+  s.style.display='block';
+  if(name) document.getElementById('success-name').innerHTML =
+    'Welcome, <strong style="color:var(--teal)">' + name + '</strong>! Your registration has been saved.<br>You can now begin the Radio Foxhunting workshop.';
+}
+</script>
+
+<!--
+════════════════════════════════════════════════════════════
+  GOOGLE APPS SCRIPT — add this case to your existing doPost()
+
+  In the doPost function, add this block alongside 'pre'/'post':
+
+  if (data.survey === 'participant') {
+    let sheet = ss.getSheetByName('Participants');
+    if (!sheet) {
+      sheet = ss.insertSheet('Participants');
+      sheet.appendRow(['Timestamp','Full Name','Matric No','Class','Gender','Age',
+        'Level','Home State','IC/MyKid','School Code','Phone','Email']);
+    }
+    sheet.appendRow([
+      data.timestamp, data.full_name, data.matric_no, data.class,
+      data.gender, data.age, data.level, data.home_state||'',
+      data.ic_no||'', data.school_code||'', data.phone||'', data.email||''
+    ]);
+    return ContentService.createTextOutput('ok');
+  }
+
+════════════════════════════════════════════════════════════
+-->
+</body>
+</html>
