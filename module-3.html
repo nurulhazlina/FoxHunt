@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><!-- v3.0-bmlang -->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Module 3 · Yagi Antenna Construction — Radio Foxhunting</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{
+  --teal:#02ADA5;--teal-dim:#017e78;--teal-glow:rgba(2,173,165,0.18);
+  --bg:#08312F;--bg2:#0b3d3a;--bg3:#0f4a46;
+  --text:#d4f0ee;--text-muted:#7bbfba;
+  --border:rgba(2,173,165,0.25);--pill-bg:rgba(2,173,165,0.15);
+  --card-bg:rgba(11,61,58,0.85);--radius:10px;
+  --font:'Segoe UI',system-ui,sans-serif;
+  --gold:#D99A10;--gold-dim:rgba(217,154,16,0.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6}
+a{color:var(--teal)}
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-toggle{display:flex;gap:0;border:2px solid var(--border);border-radius:20px;overflow:hidden;flex-shrink:0}
+.lang-btn{padding:4px 14px;background:transparent;border:none;color:var(--text-muted);font-weight:700;font-size:.78rem;cursor:pointer;transition:all .18s;letter-spacing:.04em}
+.lang-btn.active{background:var(--teal);color:#fff}
+
+/* ── SECTION CARDS ── */
+.section-card{background:var(--card-bg);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px;margin-bottom:28px;
+  box-shadow:0 2px 16px rgba(0,0,0,.25)}
+.section-card h2{color:var(--teal);font-size:1.25rem;margin-bottom:16px;
+  padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section-card h3{color:var(--text);font-size:1rem;margin:16px 0 8px;font-weight:600}
+.section-card p{margin-bottom:12px;color:var(--text)}
+.section-card ul,.section-card ol{padding-left:20px;margin-bottom:12px;color:var(--text)}
+.section-card li{margin-bottom:6px}
+
+/* ── INFO GRID ── */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:14px;margin:14px 0}
+.info-card{background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:14px;text-align:center}
+.info-card .icon{font-size:2rem;margin-bottom:8px}
+.info-card strong{display:block;color:var(--teal);font-size:.9rem;margin-bottom:4px}
+.info-card span{font-size:.82rem;color:var(--text-muted)}
+
+/* ── CANVAS WRAPPERS ── */
+.canvas-wrap{text-align:center;margin:16px 0}
+.canvas-wrap canvas{border:1px solid var(--border);border-radius:8px;
+  background:#041f1e;max-width:100%;cursor:crosshair}
+.canvas-hint{font-size:.78rem;color:var(--text-muted);margin-top:6px;text-align:center}
+.canvas-label{font-size:.78rem;color:var(--text-muted);margin-top:6px;text-align:center}
+
+/* ── DATA TABLE ── */
+.data-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.75rem}
+.data-table th{background:var(--bg3);color:var(--teal);text-align:left;padding:.45rem .65rem;border:1px solid var(--border)}
+.data-table td{padding:.4rem .65rem;border:1px solid var(--border);color:var(--text-muted)}
+.data-table tr:nth-child(even) td{background:rgba(2,173,165,0.04)}
+
+/* ── INFO BOX ── */
+.info-box{background:rgba(217,154,16,0.08);border:1px solid rgba(217,154,16,0.30);
+  border-radius:8px;padding:10px 14px;font-size:.83rem;color:var(--text);margin:.75rem 0}
+.info-box strong{color:var(--gold)}
+
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.75rem}
+@media(max-width:600px){.two-col{grid-template-columns:1fr}}
+
+/* ── BUILD STEPS ── */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.75rem;margin-top:1rem}
+.step-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.85rem;position:relative}
+.step-card .step-num{position:absolute;top:.6rem;right:.75rem;font-size:1.8rem;font-weight:900;color:rgba(2,173,165,0.18);line-height:1}
+.step-card h4{font-size:.88rem;font-weight:700;color:var(--teal);margin-bottom:.35rem;padding-right:2rem}
+.step-card p{font-size:.82rem;color:var(--text-muted)}
+
+/* ── SIGNAL METER ── */
+.signal-wrap{display:flex;flex-direction:column;align-items:center;gap:.6rem;margin-top:.75rem}
+.signal-meter{display:flex;align-items:flex-end;gap:3px;height:50px}
+.signal-bar{width:14px;border-radius:3px 3px 0 0;background:var(--bg3);transition:background .2s,height .15s}
+.signal-label{font-size:.82rem;color:var(--text-muted)}
+
+/* ── YAGI CONTROLS ── */
+.yagi-controls{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:.75rem}
+.yagi-controls label{font-size:.85rem;color:var(--text-muted)}
+.yagi-controls input[type=range]{accent-color:var(--teal);width:180px}
+
+/* ── TABS ── */
+.tab-group{margin-top:14px}
+.tab-bar{display:flex;gap:6px;margin-bottom:-1px;flex-wrap:wrap}
+.tab-btn{background:var(--bg3);border:1px solid var(--border);
+  border-bottom:none;color:var(--text-muted);padding:6px 14px;
+  border-radius:6px 6px 0 0;cursor:pointer;font-size:.85rem;transition:.15s}
+.tab-btn.active{background:var(--card-bg);color:var(--teal);border-bottom:1px solid var(--card-bg)}
+.tab-pane{display:none;border:1px solid var(--border);border-radius:0 6px 6px 6px;padding:16px}
+.tab-pane.active{display:block}
+
+/* ── CODE ── */
+pre{background:#020f0e;border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;font-size:.8rem;color:#a8d8d5;margin-top:.75rem;line-height:1.55}
+code{font-family:'Fira Mono','Consolas',monospace}
+
+/* ── CTA ── */
+.cta-block{text-align:center;padding:32px 20px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--card-bg);margin:28px 0}
+.cta-block h3{color:var(--teal);margin-bottom:8px}
+.cta-block p{color:var(--text-muted);font-size:.9rem;margin-bottom:16px}
+.cta-btn{display:inline-block;background:var(--teal);color:#08312F;
+  font-weight:700;padding:11px 28px;border-radius:6px;text-decoration:none;font-size:.95rem}
+.cta-btn:hover{background:var(--teal-dim);color:#d4f0ee}
+
+/* ── STEP NAV ── */
+.stepnav{display:flex;justify-content:space-between;align-items:center;
+  padding:20px 0;border-top:1px solid var(--border);margin-top:16px;gap:10px}
+.stepnav a{text-decoration:none;background:var(--pill-bg);border:1px solid var(--border);
+  color:var(--teal);padding:8px 18px;border-radius:6px;font-size:.88rem;transition:.15s}
+.stepnav a:hover{background:var(--teal-glow)}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);text-align:center;
+  padding:20px;font-size:.78rem;color:var(--text-muted)}
+
+/* ── GAIN CHART ── */
+.gain-bars{display:flex;gap:8px;align-items:flex-end;height:120px;margin:14px 0;padding:0 8px}
+.gain-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.gain-bar{width:100%;border-radius:4px 4px 0 0;transition:height .5s ease;min-height:4px}
+.gain-bar-label{font-size:.72rem;color:var(--text-muted);text-align:center}
+.gain-bar-val{font-size:.78rem;font-weight:700;color:var(--teal)}
+
+/* ── FORMULA BOX ── */
+.formula-box{background:rgba(217,154,16,.08);border:1px solid rgba(217,154,16,.3);
+  border-radius:8px;padding:14px 18px;margin:14px 0;font-family:monospace;
+  font-size:.95rem;color:var(--gold)}
+</style>
+</head>
+<body>
+
+<!-- CHEV BAR -->
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="chev-see">SEE</div>
+  <div class="chev-think" id="chev-think">THINK</div>
+  <div class="chev-explore" id="chev-explore">EXPLORE</div>
+  <div class="chev-marvel" id="chev-marvel">MARVEL</div>
+</div>
+
+<!-- SITENAV -->
+<nav class="sitenav">
+  <a href="index.html" class="brand">Radio Foxhunting</a>
+  <div class="steps-dropdown">
+    <button class="steps-btn" id="stepsToggle" data-i18n="nav_modules">Modules &#9662;</button>
+    <div class="steps-menu" id="stepsMenu">
+      <a href="module-0.html" data-i18n="nav_m0">0 &middot; Orientation</a>
+      <a href="module-1.html" data-i18n="nav_m1">1 &middot; Morse Code</a>
+      <a href="module-2.html" data-i18n="nav_m2">2 &middot; Map Reading</a>
+      <a href="module-3.html" class="current" data-i18n="nav_m3">3 &middot; Yagi Antenna</a>
+      <a href="module-4.html" data-i18n="nav_m4">4 &middot; Field Guide</a>
+    </div>
+  </div>
+  <div class="lang-toggle" style="margin-left:auto">
+    <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" id="btnBM" onclick="setLang('bm')">BM</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="eyebrow">UMPSA STEM LAB &middot; <span data-i18n="hero_eyebrow">Module 3 of 5</span></p>
+  <h1 data-i18n="hero_title">Yagi Antenna Construction</h1>
+  <p class="subtitle" data-i18n="hero_sub">Build a 3-element tape-measure Yagi for 144 MHz — the essential direction-finding tool for every ARDF foxhunt.</p>
+  <div class="pills">
+    <span class="pill" data-i18n="pill_freq">📡 144 MHz</span>
+    <span class="pill" data-i18n="pill_tape">📏 Tape Measure</span>
+    <span class="pill" data-i18n="pill_elem">⚡ 3 Elements</span>
+    <span class="pill" data-i18n="pill_dir">🎯 Directional</span>
+    <span class="pill" data-i18n="pill_build">🔧 Build &amp; Test</span>
+  </div>
+</section>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span data-i18n="prog_label">Workshop Progress</span>
+    <span data-i18n="prog_detail">Module 3 of 5 &middot; Yagi Antenna</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" style="width:60%"></div></div>
+</div>
+
+<main class="content">
+
+<!-- S0: HOW RADIO WORKS -->
+<div class="section-card">
+  <h2 data-i18n="s0_title">📻 How Radio Works — Why Antennas Matter</h2>
+  <p data-i18n="s0_intro">Radio is invisible — but it is real! When you press the button on a walkie-talkie, electricity inside the radio creates <strong>radio waves</strong> that fly through the air at the speed of light. These waves reach another radio's antenna, turn back into electricity, and you hear a voice. <strong>The antenna is the key link</strong> — it is the bridge between electricity and the open air.</p>
+
+  <div class="canvas-wrap" style="margin:20px 0">
+    <canvas id="radioWaveCanvas" width="560" height="140" style="max-width:100%;background:#041f1e;border-radius:8px;border:1px solid var(--border)"></canvas>
+  </div>
+  <p class="canvas-hint" data-i18n="s0_diag_hint">Radio waves travel from transmitter → through the air → to your antenna → into your receiver</p>
+
+  <div class="info-grid" style="margin-top:16px">
+    <div class="info-card">
+      <div class="icon">⚡</div>
+      <strong data-i18n="s0_c1_title">Transmitter (TX)</strong>
+      <span data-i18n="s0_c1_desc">A walkie-talkie or foxhunt beacon that turns sound or data into radio waves and sends them out via its antenna.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">〰️</div>
+      <strong data-i18n="s0_c2_title">Radio Waves</strong>
+      <span data-i18n="s0_c2_desc">Invisible energy waves travelling at 300,000 km/s. They pass through walls, trees and the atmosphere — no wires needed!</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">📡</div>
+      <strong data-i18n="s0_c3_title">Antenna</strong>
+      <span data-i18n="s0_c3_desc">A carefully sized piece of metal that catches radio waves and converts them back to tiny electrical signals. Shape and size set which frequency it captures best.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">🎧</div>
+      <strong data-i18n="s0_c4_title">Receiver (RX)</strong>
+      <span data-i18n="s0_c4_desc">A radio that amplifies the tiny antenna signal, decodes it, and turns it into sound — voice, beeps, or Morse code.</span>
+    </div>
+  </div>
+
+  <div class="info-box" style="margin-top:14px">
+    <strong data-i18n="s0_freq_title">🌊 Frequency &amp; Wavelength:</strong>
+    <span data-i18n="s0_freq_body">144 MHz means 144 million wave cycles every second. At this speed, one full wave measures about 2.08 metres. Antenna length is directly tied to wavelength — that is why each element in your Yagi is an exact fraction of 2.08 m.</span>
+  </div>
+</div>
+
+<!-- S0b: ANTENNA TYPES GALLERY -->
+<div class="section-card">
+  <h2 data-i18n="s0b_title">📡 Types of Antennas — From Simple to Directional</h2>
+  <p data-i18n="s0b_intro">Not all antennas look or work the same. Some send and receive equally in <strong>all directions</strong> (omnidirectional) — like a torch with no reflector. Others focus energy in <strong>one direction</strong> (directional) — like a spotlight. For foxhunting we need a directional antenna so we can tell WHERE the hidden fox is.</p>
+
+  <div id="antennaTypeGallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:16px 0"></div>
+  <div id="antennaTypeDetail" style="min-height:52px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:.87rem;color:var(--text-muted);margin:4px 0 8px"></div>
+  <p class="canvas-hint" data-i18n="s0b_gallery_hint">Click any antenna sketch to learn about it — then we build the Yagi below 👇</p>
+
+  <div class="info-box" style="margin-top:12px">
+    <strong data-i18n="s0b_key_title">💡 Key Insight:</strong>
+    <span data-i18n="s0b_key_body">An omnidirectional antenna hears the fox but cannot tell you the DIRECTION. A Yagi points at the fox — rotate until signal is strongest and you have your bearing!</span>
+  </div>
+</div>
+
+<!-- S1: WHAT IS A YAGI -->
+<div class="section-card">
+  <h2 data-i18n="s1_title">📡 What is a Yagi Antenna?</h2>
+  <p data-i18n="s1_intro">A Yagi–Uda antenna (commonly called a Yagi) is a <strong>directional</strong> antenna that focuses radio energy in one direction — like a torch beam. For ARDF (Amateur Radio Direction Finding), this directional property lets you determine which direction the hidden transmitter (fox) is located.</p>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="icon">🎯</div>
+      <strong data-i18n="s1_c1_title">Directional Gain</strong>
+      <span data-i18n="s1_c1_desc">Amplifies signals from the front, making distant foxes easier to hear than with a simple whip antenna.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">↔️</div>
+      <strong data-i18n="s1_c2_title">Front-to-Back Ratio</strong>
+      <span data-i18n="s1_c2_desc">How much stronger the front signal is vs the back. A 3-element Yagi achieves ~20 dB — 100× more signal from the front!</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">🔕</div>
+      <strong data-i18n="s1_c3_title">Side Nulls</strong>
+      <span data-i18n="s1_c3_desc">Very little signal arrives from the sides. Rotating to find the null precisely pins down the fox's bearing.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">📐</div>
+      <strong data-i18n="s1_c4_title">Beamwidth</strong>
+      <span data-i18n="s1_c4_desc">The angular spread of the main lobe is ~60–80° for a 3-element Yagi — narrow enough for direction finding.</span>
+    </div>
+  </div>
+  <h3 data-i18n="s1_h3_why">Why Yagi for ARDF?</h3>
+  <p data-i18n="s1_why">The tape-measure Yagi is the foxhunter's weapon of choice: elements fold flat for transport, the build costs less than a meal, and the gain is enough to hear the fox's 5-watt signal from over a kilometre away in dense jungle. Add its sharp nulls for precise bearings and it outperforms every rubber-duck antenna in the field.</p>
+  <div class="info-box"><strong data-i18n="s1_std_title">ARDF Standard:</strong> <span data-i18n="s1_std_body">The 2 metre ARDF band is 144.000–146.000 MHz. Foxes transmit at ~144.500 MHz in most events. Our Yagi is optimised for 144 MHz.</span></div>
+</div>
+
+<!-- S1b: ANTENNA TYPES COMPARISON -->
+<div class="section-card">
+  <h2 data-i18n="s1b_title">📊 Antenna Gain — Rubber Duck to Yagi</h2>
+  <p data-i18n="s1b_intro">Not all antennas are equal. Compare the gain of common ARDF antennas and see why the Yagi dominates in the field. Higher gain = louder signal from one direction. Click an antenna bar to learn more.</p>
+
+  <div id="gainChart" style="margin:16px 0 4px"></div>
+  <div id="gainAntGallery" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:6px 0 10px"></div>
+  <div id="gainDetail" style="padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;font-size:.88rem;min-height:48px;color:var(--text-muted)"></div>
+  <p class="canvas-hint" data-i18n="s1b_hint">Click any sketch or bar to read about that antenna type</p>
+</div>
+
+<!-- S2: ELEMENT LENGTHS -->
+<div class="section-card">
+  <h2 data-i18n="s2_title">📏 Element Lengths for 144 MHz</h2>
+  <p data-i18n="s2_intro">Each element has a precisely calculated length based on the wavelength at 144 MHz (λ = 2.08 m). The tape measure segments are cut and mounted on a PVC boom. Hover over the diagram below to inspect each element.</p>
+
+  <div class="canvas-wrap">
+    <canvas id="yagiDiagram" width="560" height="200" role="img" aria-label="Yagi element diagram" style="cursor:pointer;max-width:100%"></canvas>
+  </div>
+  <p class="canvas-hint" data-i18n="s2_diag_hint">Hover over elements for details &middot; Length drawn to scale</p>
+
+  <table class="data-table" role="table">
+    <thead>
+      <tr>
+        <th data-i18n="s2_col_elem">Element</th>
+        <th data-i18n="s2_col_len">Length (cm)</th>
+        <th data-i18n="s2_col_space">Spacing from Driven</th>
+        <th data-i18n="s2_col_mat">Material</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong data-i18n="s2_ref">Reflector</strong></td><td>104.0</td><td data-i18n="s2_ref_space">36.5 cm behind</td><td data-i18n="s2_mat_tape">Steel tape measure</td></tr>
+      <tr><td><strong data-i18n="s2_drv">Driven Element</strong></td><td>99.4</td><td data-i18n="s2_drv_space">— (reference)</td><td data-i18n="s2_mat_feed">Tape measure + SO-239</td></tr>
+      <tr><td><strong data-i18n="s2_dir">Director</strong></td><td>94.6</td><td data-i18n="s2_dir_space">30.5 cm in front</td><td data-i18n="s2_mat_tape2">Steel tape measure</td></tr>
+    </tbody>
+  </table>
+
+  <div class="formula-box" data-i18n="s2_formula">Half-wavelength (cm) = (14300 ÷ f_MHz) × velocity_factor<br>
+For 144 MHz, vf ≈ 0.97 → λ/2 ≈ (14300 ÷ 144) × 0.97 ≈ 96.4 cm (driven element, then fine-tune)</div>
+
+  <div class="info-box"><strong data-i18n="s2_tip_title">Build Tip:</strong> <span data-i18n="s2_tip_body">Mark each tape segment with coloured nail polish — red for Reflector, teal for Driven, blue for Director — so you never mix them up at a foxhunt.</span></div>
+</div>
+
+<!-- S3: BUILDING STEPS -->
+<div class="section-card">
+  <h2 data-i18n="s3_title">🔧 Building Steps</h2>
+  <p data-i18n="s3_intro">Follow these 8 steps to build the tape-measure Yagi. Work in pairs — one holds, one fastens. Estimated build time: 45–60 minutes.</p>
+
+  <div class="steps-grid">
+    <div class="step-card"><span class="step-num">1</span>
+      <h4 data-i18n="s3_s1_title">Cut Tape Segments</h4>
+      <p data-i18n="s3_s1_desc">Cut three strips: 104.0 cm (Reflector), 99.4 cm (Driven), 94.6 cm (Director). Mark each with nail polish for identification.</p>
+    </div>
+    <div class="step-card"><span class="step-num">2</span>
+      <h4 data-i18n="s3_s2_title">Mark &amp; Drill PVC Boom</h4>
+      <p data-i18n="s3_s2_desc">On 120 cm of ½″ PVC pipe, mark positions: Reflector at 0 cm, Driven at 36.5 cm, Director at 67.0 cm. Drill 4 mm holes at each mark.</p>
+    </div>
+    <div class="step-card"><span class="step-num">3</span>
+      <h4 data-i18n="s3_s3_title">Attach Reflector</h4>
+      <p data-i18n="s3_s3_desc">Thread a self-tapping screw through the centre of the 104 cm tape segment into the boom at 0 cm. Ensure it is perpendicular and centred.</p>
+    </div>
+    <div class="step-card"><span class="step-num">4</span>
+      <h4 data-i18n="s3_s4_title">Mount Driven Element</h4>
+      <p data-i18n="s3_s4_desc">Fit the SO-239 chassis connector on a small PVC saddle at 36.5 cm. Connect each half of the 99.4 cm element to the connector terminals.</p>
+    </div>
+    <div class="step-card"><span class="step-num">5</span>
+      <h4 data-i18n="s3_s5_title">Attach Director</h4>
+      <p data-i18n="s3_s5_desc">Fasten the 94.6 cm tape segment at 67.0 cm from the reflector end. Ensure it is parallel and level with the other elements.</p>
+    </div>
+    <div class="step-card"><span class="step-num">6</span>
+      <h4 data-i18n="s3_s6_title">Solder Coax</h4>
+      <p data-i18n="s3_s6_desc">Prepare 50-ohm RG-58 coax. Solder the centre conductor to the SO-239 centre pin and the shield braid to the outer ground terminal.</p>
+    </div>
+    <div class="step-card"><span class="step-num">7</span>
+      <h4 data-i18n="s3_s7_title">Check SWR</h4>
+      <p data-i18n="s3_s7_desc">Connect an SWR meter, transmit briefly at low power (5 W max). Target SWR ≤ 1.5:1 at 144 MHz. Adjust driven element ±1 cm if needed.</p>
+    </div>
+    <div class="step-card"><span class="step-num">8</span>
+      <h4 data-i18n="s3_s8_title">Wrap &amp; Secure</h4>
+      <p data-i18n="s3_s8_desc">Wrap coax connections with self-amalgamating tape. Secure the coax along the boom with cable ties. Test fold/unfold of tape elements.</p>
+    </div>
+  </div>
+
+  <div class="info-box" style="margin-top:1rem">
+    <strong data-i18n="s3_safety_title">⚠️ Safety:</strong>
+    <span data-i18n="s3_safety_body">Wear safety glasses when cutting tape measure — the coiled spring can snap and cause eye injury. An adult must supervise soldering steps.</span>
+  </div>
+</div>
+
+<!-- S4: USING THE YAGI -->
+<div class="section-card">
+  <h2 data-i18n="s4_title">🦊 Using the Yagi for ARDF</h2>
+  <p data-i18n="s4_intro">Building the antenna is only half the skill — using it correctly in the field is what wins the foxhunt.</p>
+  <div class="two-col">
+    <div>
+      <h3 data-i18n="s4_h3_slow">Slow Rotation Technique</h3>
+      <ol>
+        <li data-i18n="s4_r1">Hold the Yagi horizontal, at waist height, boom parallel to the ground.</li>
+        <li data-i18n="s4_r2">Rotate <em>slowly</em> through 360° while listening to the signal strength.</li>
+        <li data-i18n="s4_r3">Find the direction of <strong>peak signal</strong> (front lobe pointing at fox).</li>
+        <li data-i18n="s4_r4">Note the compass bearing on your map.</li>
+        <li data-i18n="s4_r5">Confirm by rotating to the <strong>side null</strong> (~90° from front) for a sharper bearing.</li>
+      </ol>
+    </div>
+    <div>
+      <h3 data-i18n="s4_h3_adv">Advanced Techniques</h3>
+      <ul>
+        <li><strong data-i18n="s4_adv1_title">Body shielding:</strong> <span data-i18n="s4_adv1_body">When very close, turn your back to the fox and use your body to attenuate the signal — use the null behind the Yagi for precision.</span></li>
+        <li><strong data-i18n="s4_adv2_title">Close-in technique:</strong> <span data-i18n="s4_adv2_body">Within ~50 m, detach the coax and use a rubber duck — the Yagi overloads the receiver at close range.</span></li>
+        <li><strong data-i18n="s4_adv3_title">Sense antenna:</strong> <span data-i18n="s4_adv3_body">A small omnidirectional element resolves front/back ambiguity in challenging terrain.</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="info-box">
+    <strong data-i18n="s4_trap_title">⚡ Common Trap:</strong>
+    <span data-i18n="s4_trap_body">When the signal is strong in ALL directions, you are very close to the fox (within 50 m). Switch to your rubber duck or a simple dipole for the final approach — the Yagi's gain becomes a liability at close range.</span>
+  </div>
+</div>
+
+<!-- S5: SIGNAL VS DIRECTION INTERACTIVE -->
+<div class="section-card">
+  <h2 data-i18n="s5_title">🔄 Signal Strength vs Direction</h2>
+  <p data-i18n="s5_intro">The Yagi's polar pattern shows a strong front lobe, a weaker back lobe, and nulls on the sides. Drag the slider to rotate the Yagi and see how the signal meter changes. Click the canvas to place the fox anywhere!</p>
+
+  <div class="canvas-wrap">
+    <canvas id="patternCanvas" width="500" height="300" role="img"
+      aria-label="Yagi antenna radiation pattern" style="cursor:crosshair;max-width:100%"></canvas>
+  </div>
+  <div class="yagi-controls">
+    <label for="yagiAngle"><span data-i18n="s5_slider_label">Yagi angle: </span><strong id="angleLabel">0°</strong></label>
+    <input type="range" id="yagiAngle" min="0" max="360" value="0" step="2" aria-label="Rotate Yagi">
+  </div>
+  <div class="signal-wrap">
+    <div class="signal-label" data-i18n="s5_meter_label">Received signal strength</div>
+    <div class="signal-meter" id="signalMeter" aria-label="Signal strength">
+      <div class="signal-bar" style="height:8px"></div>
+      <div class="signal-bar" style="height:8px"></div>
+      <div class="signal-bar" style="height:8px"></div>
+      <div class="signal-bar" style="height:8px"></div>
+      <div class="signal-bar" style="height:8px"></div>
+      <div class="signal-bar" style="height:8px"></div>
+      <div class="signal-bar" style="height:8px"></div>
+    </div>
+    <div class="signal-label" id="signalText" data-i18n="s5_rotate_hint">Rotate the slider to scan →</div>
+  </div>
+  <p class="canvas-label" data-i18n="s5_canvas_hint">Polar pattern: outer ring = maximum gain · Click canvas to place the 🦊 fox</p>
+</div>
+
+<!-- S6: REFERENCE CODE TABS -->
+<div class="section-card">
+  <h2 data-i18n="s6_title">💻 Reference Code</h2>
+  <div class="tab-group">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-formula')" data-i18n="s6_tab1">Element Length Formula</button>
+      <button class="tab-btn" onclick="switchTab(this,'tab-swr')" data-i18n="s6_tab2">SWR Check Guide</button>
+      <button class="tab-btn" onclick="switchTab(this,'tab-ardf')" data-i18n="s6_tab3">ARDF Field Notes</button>
+    </div>
+    <div id="tab-formula" class="tab-pane active">
+<pre><code>// Element length calculator for Yagi antennas
+// Based on: λ/2 × velocity_factor
+
+function elementLength(freqMHz, velocityFactor, element) {
+  var halfWaveCm = (14300 / freqMHz) * velocityFactor;
+  switch(element) {
+    case 'reflector': return (halfWaveCm * 1.05).toFixed(1); // ~5% longer
+    case 'driven':    return (halfWaveCm * 0.97).toFixed(1); // ~3% shorter
+    case 'director':  return (halfWaveCm * 0.90).toFixed(1); // ~10% shorter
+    default: return halfWaveCm.toFixed(1);
+  }
+}
+
+// For 144 MHz, tape measure vf ≈ 0.97:
+console.log('Reflector:', elementLength(144, 0.97, 'reflector'), 'cm'); // → 104.0 cm
+console.log('Driven:   ', elementLength(144, 0.97, 'driven'),    'cm'); // → 96.4 cm (fine-tune to 99.4)
+console.log('Director: ', elementLength(144, 0.97, 'director'),  'cm'); // → 89.8 cm (fine-tune to 94.6)</code></pre>
+    </div>
+    <div id="tab-swr" class="tab-pane">
+<pre><code>// SWR Check Procedure for the tape-measure Yagi
+// Acceptable SWR: 1.0:1 to 1.5:1 at 144.500 MHz
+
+/*
+Equipment needed:
+  - SWR / power meter (e.g., MFJ-822, Comet CMX-200)
+  - 5W radio (Baofeng UV-5R, TYT TH-UV88, etc.)
+  - Short patch coax (PL-259 to PL-259)
+
+Connection: Radio TX → coax → SWR meter → Yagi antenna
+
+Procedure:
+  1. Set radio to 144.500 MHz, low power (1–5 W)
+  2. Key TX for no more than 3 seconds
+  3. Read forward and reflected power
+
+Adjustment guide:
+  SWR 1.0–1.5  ✓  GOOD — antenna is well matched, go foxhunting!
+  SWR 1.5–2.0     Fair — lengthen driven element by 0.5 cm
+  SWR > 2.0    ✗  Check solder joints, coax connector, element straightness
+
+Note: Tape measure elements should be horizontal during the SWR check —
+the same orientation used in the field.
+*/</code></pre>
+    </div>
+    <div id="tab-ardf" class="tab-pane">
+<pre><code>// ARDF Field Notes — bearing log template
+// Copy this into your field notebook or print it
+
+/*
+DATE: _______________  EVENT: _________________________
+FREQUENCY: 144.500 MHz  ANTENNA: 3-el tape-measure Yagi
+
+POSITION 1 ──────────────────────────────────────────
+  Grid Ref:     __ __ __ __ __ __   (6-figure UTM)
+  Bearing:      ___ °   Time: ___:___
+  Signal:       S1 / S2 / S3 / S4 / S5 / S6 / S7 / S8 / S9
+
+POSITION 2 ──────────────────────────────────────────
+  Grid Ref:     __ __ __ __ __ __
+  Bearing:      ___ °   Time: ___:___
+  Signal:       S1 / S2 / S3 / S4 / S5 / S6 / S7 / S8 / S9
+
+POSITION 3 (if available) ───────────────────────────
+  Grid Ref:     __ __ __ __ __ __
+  Bearing:      ___ °   Time: ___:___
+  Signal:       S1 / S2 / S3 / S4 / S5 / S6 / S7 / S8 / S9
+
+TRIANGULATED FOX POSITION: __ __ __ __ __ __
+CONFIDENCE RADIUS: ___ m    FOUND AT: ___:___
+*/</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-block">
+  <h3 data-i18n="cta_title">Ready to Build and Test?</h3>
+  <p data-i18n="cta_sub">Complete the tiered activities — from element-length calculations to field direction-finding practice with the antenna you built.</p>
+  <a href="module-activity-3.html" class="cta-btn" data-i18n="cta_btn">Start Antenna Activities →</a>
+</div>
+
+<!-- ══ RAE ADVANCED SECTION ══════════════════════════════════════════════ -->
+<section class="card" id="raeSection" style="margin-bottom:16px;padding:0;overflow:hidden">
+  <button id="raeToggleBtn" onclick="toggleRAE()" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:none;padding:14px 18px;cursor:pointer;color:var(--text);font-size:1rem;font-weight:700;border-radius:10px;transition:background .2s;" onmouseenter="this.style.background='var(--bg3)'" onmouseleave="this.style.background='var(--bg2)'">
+    <span><span style="background:var(--teal);color:#fff;font-size:.68rem;font-weight:700;border-radius:6px;padding:2px 7px;margin-right:8px" data-i18n="rae_badge">RAE</span><span data-i18n="rae_toggle_label">Advanced Content — RAE Exam Preparation</span></span>
+    <span id="raeChevron" style="font-size:1.1rem;transition:transform .3s;color:var(--teal)">▼</span>
+  </button>
+  <div id="raeContent" style="display:none;padding:16px">
+
+    <!-- TAB BAR -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+      <button class="tab-btn active" id="rae-btn-theory" onclick="switchRaeTab('theory')" data-i18n="rae_tab_theory">Antenna Theory</button>
+      <button class="tab-btn" id="rae-btn-swr" onclick="switchRaeTab('swr')" data-i18n="rae_tab_swr">SWR &amp; Matching</button>
+      <button class="tab-btn" id="rae-btn-calc" onclick="switchRaeTab('calc')" data-i18n="rae_tab_calc">Element Calc.</button>
+      <button class="tab-btn" id="rae-btn-quiz" onclick="switchRaeTab('quiz')" data-i18n="rae_tab_quiz">Practice Q&amp;A</button>
+    </div>
+
+    <!-- ── THEORY PANE ── -->
+    <div class="rae-pane" id="rae-pane-theory">
+      <div style="display:grid;gap:12px">
+
+        <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;border-left:3px solid var(--teal)">
+          <div style="font-weight:700;color:var(--teal);margin-bottom:4px" data-i18n="rae_t_h1">📡 Radiation Patterns &amp; Gain</div>
+          <p style="margin:0;font-size:.88rem;line-height:1.6" data-i18n="rae_t_p1">An <strong>omnidirectional</strong> antenna radiates equally in all horizontal directions. A <strong>directional</strong> antenna (Yagi) focuses energy like a spotlight. Gain is the ratio of focused power versus a reference antenna.</p>
+        </div>
+
+        <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;border-left:3px solid var(--gold)">
+          <div style="font-weight:700;color:var(--gold);margin-bottom:4px" data-i18n="rae_t_h2">📊 dBd vs dBi</div>
+          <p style="margin:0 0 6px;font-size:.88rem;line-height:1.6" data-i18n="rae_t_p2"><strong>dBi</strong> = gain vs theoretical isotropic point source. <strong>dBd</strong> = gain vs half-wave dipole. Formula: <code style="background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px">dBi = dBd + 2.15</code>. Every 3 dB doubles effective radiated power.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:.78rem">
+            <span style="background:rgba(2,173,165,.15);border:1px solid rgba(2,173,165,.4);border-radius:6px;padding:3px 9px">Rubber duck: 2 dBi = −0.15 dBd</span>
+            <span style="background:rgba(2,173,165,.15);border:1px solid rgba(2,173,165,.4);border-radius:6px;padding:3px 9px">3-el Yagi: 10 dBi = 7.85 dBd</span>
+            <span style="background:rgba(217,154,16,.15);border:1px solid rgba(217,154,16,.4);border-radius:6px;padding:3px 9px">5-el Yagi: 13 dBi = 10.85 dBd</span>
+          </div>
+        </div>
+
+        <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;border-left:3px solid var(--teal)">
+          <div style="font-weight:700;color:var(--teal);margin-bottom:4px" data-i18n="rae_t_h3">📐 Beamwidth &amp; Directivity</div>
+          <p style="margin:0;font-size:.88rem;line-height:1.6" data-i18n="rae_t_p3">Beamwidth is the angle between the −3 dB points on the radiation pattern. A 3-element 144 MHz Yagi has a <strong>~70° horizontal beamwidth</strong>. Narrower beam = more gain = harder to aim — key trade-off for foxhunting.</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="background:var(--bg3);border-radius:8px;padding:12px 14px">
+            <div style="font-weight:700;color:var(--text);margin-bottom:4px;font-size:.85rem" data-i18n="rae_t_h4">↕️ Polarization</div>
+            <p style="margin:0;font-size:.82rem;line-height:1.5;color:var(--text-muted)" data-i18n="rae_t_p4">Horizontal elements → horizontal polarization. Fox must match! Cross-polarization penalty ≈ <strong>20 dB</strong> loss.</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:8px;padding:12px 14px">
+            <div style="font-weight:700;color:var(--text);margin-bottom:4px;font-size:.85rem" data-i18n="rae_t_h5">↔️ Front-to-Back Ratio</div>
+            <p style="margin:0;font-size:.82rem;line-height:1.5;color:var(--text-muted)" data-i18n="rae_t_p5">3-el Yagi ≈ <strong>20 dB</strong> F/B ratio — front is 100× stronger than rear. Use rear null to confirm bearing.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── SWR PANE ── -->
+    <div class="rae-pane" id="rae-pane-swr" style="display:none">
+      <div style="display:grid;gap:12px">
+
+        <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;border-left:3px solid var(--teal)">
+          <div style="font-weight:700;color:var(--teal);margin-bottom:8px" data-i18n="rae_s_h1">📶 What is SWR?</div>
+          <p style="margin:0 0 10px;font-size:.88rem;line-height:1.6" data-i18n="rae_s_p1">Standing Wave Ratio measures how well the antenna impedance matches the feedline. A mismatch causes power to reflect back toward the transmitter.</p>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;font-size:.75rem">
+            <div style="background:rgba(2,173,165,.2);border-radius:6px;padding:7px 4px"><div style="font-weight:700;color:var(--teal);font-size:.95rem">1:1</div><div style="color:var(--text-muted)" data-i18n="rae_swr_perfect">Perfect ✓</div></div>
+            <div style="background:rgba(2,173,165,.1);border-radius:6px;padding:7px 4px"><div style="font-weight:700;color:#5cc;font-size:.95rem">1.5:1</div><div style="color:var(--text-muted)" data-i18n="rae_swr_good">~4% loss</div></div>
+            <div style="background:rgba(243,156,18,.1);border-radius:6px;padding:7px 4px"><div style="font-weight:700;color:#f39c12;font-size:.95rem">2:1</div><div style="color:var(--text-muted)" data-i18n="rae_swr_fair">~11% loss</div></div>
+            <div style="background:rgba(231,76,60,.12);border-radius:6px;padding:7px 4px"><div style="font-weight:700;color:#e74c3c;font-size:.95rem">3:1</div><div style="color:var(--text-muted)" data-i18n="rae_swr_poor">~25% loss</div></div>
+          </div>
+        </div>
+
+        <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;border-left:3px solid var(--gold)">
+          <div style="font-weight:700;color:var(--gold);margin-bottom:4px" data-i18n="rae_s_h2">⚡ Impedance</div>
+          <p style="margin:0 0 8px;font-size:.88rem;line-height:1.6" data-i18n="rae_s_p2">Standard coax is <strong>50 Ω</strong>. When antenna impedance differs, power reflects back and SWR rises.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:.8rem">
+            <span style="background:rgba(2,173,165,.15);border:1px solid rgba(2,173,165,.4);border-radius:6px;padding:4px 10px" data-i18n="rae_imp_dipole">Half-wave dipole: 73 Ω</span>
+            <span style="background:rgba(217,154,16,.15);border:1px solid rgba(217,154,16,.4);border-radius:6px;padding:4px 10px" data-i18n="rae_imp_folded">Folded dipole: 288 Ω</span>
+            <span style="background:rgba(2,173,165,.15);border:1px solid rgba(2,173,165,.4);border-radius:6px;padding:4px 10px" data-i18n="rae_imp_coax">50 Ω coax (standard)</span>
+            <span style="background:rgba(2,173,165,.15);border:1px solid rgba(2,173,165,.4);border-radius:6px;padding:4px 10px" data-i18n="rae_imp_yagi3">3-el Yagi driven: ~25–50 Ω</span>
+          </div>
+        </div>
+
+        <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;border-left:3px solid var(--teal)">
+          <div style="font-weight:700;color:var(--teal);margin-bottom:6px" data-i18n="rae_s_h3">🔧 Matching Techniques</div>
+          <div style="display:grid;gap:8px">
+            <div style="font-size:.85rem"><strong style="color:var(--teal)" data-i18n="rae_match1_name">Gamma match</strong> — <span data-i18n="rae_match1_desc">adjustable shorting rod alongside driven element; slide until SWR meter reads minimum.</span></div>
+            <div style="font-size:.85rem"><strong style="color:var(--teal)" data-i18n="rae_match2_name">Beta / hairpin match</strong> — <span data-i18n="rae_match2_desc">a short shorted wire across the feed point; changes impedance without moving parts.</span></div>
+            <div style="font-size:.85rem"><strong style="color:var(--teal)" data-i18n="rae_match3_name">Balun (4:1)</strong> — <span data-i18n="rae_match3_desc">transforms 288 Ω folded dipole to 72 Ω; also converts balanced antenna to unbalanced coax.</span></div>
+          </div>
+        </div>
+
+        <div style="background:rgba(2,173,165,.08);border:1px solid rgba(2,173,165,.3);border-radius:8px;padding:12px 14px;font-size:.85rem" data-i18n="rae_s_tip">💡 <strong>Tape-measure Yagi tip:</strong> The simple dipole driven element gives ~25–50 Ω. Shorten the driven element slightly until SWR &lt; 1.5:1 on a meter or NanoVNA — no matching network needed.</div>
+
+      </div>
+    </div>
+
+    <!-- ── CALC PANE ── -->
+    <div class="rae-pane" id="rae-pane-calc" style="display:none">
+      <div style="display:grid;gap:12px">
+
+        <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;border-left:3px solid var(--teal)">
+          <div style="font-weight:700;color:var(--teal);margin-bottom:6px" data-i18n="rae_c_h1">🔢 Wavelength Formula</div>
+          <div style="text-align:center;font-size:1.1rem;font-weight:700;color:var(--gold);background:var(--bg);border-radius:8px;padding:12px;letter-spacing:.03em">λ (m) = 300 / f (MHz)</div>
+          <div style="text-align:center;margin-top:8px;font-size:.9rem;color:var(--teal)" data-i18n="rae_c_freq">144 MHz → λ = 300 ÷ 144 = <strong>2.083 m</strong></div>
+        </div>
+
+        <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;border-left:3px solid var(--gold)">
+          <div style="font-weight:700;color:var(--gold);margin-bottom:8px" data-i18n="rae_c_h2">📏 3-Element Yagi at 144 MHz — Element Dimensions</div>
+          <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+            <thead>
+              <tr style="color:var(--teal);border-bottom:1px solid rgba(2,173,165,.3)">
+                <th style="text-align:left;padding:5px 8px" data-i18n="rae_tbl_el">Element</th>
+                <th style="text-align:center;padding:5px 4px" data-i18n="rae_tbl_frac">Fraction of λ</th>
+                <th style="text-align:center;padding:5px 4px" data-i18n="rae_tbl_len">Total Length</th>
+                <th style="text-align:center;padding:5px 4px" data-i18n="rae_tbl_arm">Each Arm</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                <td style="padding:6px 8px;color:var(--text-muted)" data-i18n="rae_el_ref">Reflector</td>
+                <td style="text-align:center;padding:6px 4px">0.495 λ</td>
+                <td style="text-align:center;padding:6px 4px;font-weight:700;color:var(--text)">1031 mm</td>
+                <td style="text-align:center;padding:6px 4px;color:var(--text-muted)">516 mm</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,.06);background:rgba(2,173,165,.06)">
+                <td style="padding:6px 8px;color:var(--teal);font-weight:700" data-i18n="rae_el_driven">Driven (dipole)</td>
+                <td style="text-align:center;padding:6px 4px">0.478 λ</td>
+                <td style="text-align:center;padding:6px 4px;font-weight:700;color:var(--teal)">996 mm</td>
+                <td style="text-align:center;padding:6px 4px;color:var(--teal)">498 mm</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 8px;color:var(--text-muted)" data-i18n="rae_el_dir">Director</td>
+                <td style="text-align:center;padding:6px 4px">0.440 λ</td>
+                <td style="text-align:center;padding:6px 4px;font-weight:700;color:var(--text)">917 mm</td>
+                <td style="text-align:center;padding:6px 4px;color:var(--text-muted)">459 mm</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;font-size:.78rem">
+            <span style="background:rgba(2,173,165,.1);border-radius:6px;padding:3px 8px;color:var(--text-muted)" data-i18n="rae_spacing1">Reflector → Driven: 0.20 λ = 417 mm</span>
+            <span style="background:rgba(2,173,165,.1);border-radius:6px;padding:3px 8px;color:var(--text-muted)" data-i18n="rae_spacing2">Driven → Director: 0.15 λ = 312 mm</span>
+          </div>
+        </div>
+
+        <div style="background:rgba(217,154,16,.08);border:1px solid rgba(217,154,16,.3);border-radius:8px;padding:12px 14px;font-size:.85rem" data-i18n="rae_c_p3">⚙️ <strong>Velocity factor correction:</strong> Physical metal elements are slightly shorter electrically than their formula length. Add ≈5 mm per 1 mm of element diameter. For 12 mm aluminium rod: multiply formula length × 1.025. The tape-measure Yagi build lengths already include this adjustment.</div>
+
+      </div>
+    </div>
+
+    <!-- ── QUIZ PANE ── -->
+    <div class="rae-pane" id="rae-pane-quiz" style="display:none">
+      <div style="margin-bottom:10px">
+        <h3 style="margin:0 0 4px;color:var(--teal);font-size:.95rem" data-i18n="rae_quiz_title">🎯 Practice Questions — RAE Antenna &amp; Propagation</h3>
+        <p style="margin:0;font-size:.8rem;color:var(--text-muted)" data-i18n="rae_quiz_hint">Tap any question card to reveal the answer and explanation.</p>
+      </div>
+      <div style="display:grid;gap:8px" id="raeQuizList">
+        <!-- questions injected by JS -->
+      </div>
+    </div>
+
+  </div><!-- /raeContent -->
+</section>
+<!-- ══ END RAE ADVANCED SECTION ════════════════════════════════════════════ -->
+
+<!-- STEP NAV -->
+<div class="stepnav">
+  <a href="module-2.html" data-i18n="nav_prev">← Map Reading</a>
+  <a href="module-activity-3.html" style="background:rgba(2,173,165,.15);border-color:var(--teal)">&#127919; Go to Activity &rarr;</a>
+  <a href="module-4.html" data-i18n="nav_next">Field Guide →</a>
+</div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div style="font-weight:700;color:var(--teal);margin-bottom:6px">See &middot; Think &middot; Explore &middot; Marvel</div>
+  <div style="margin-bottom:6px">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+  <nav style="margin-bottom:8px">
+    <a href="index.html" data-i18n="nav_home">Home</a> &middot;
+    <a href="module-0.html">Module 0</a> &middot;
+    <a href="module-1.html">Module 1</a> &middot;
+    <a href="module-2.html">Module 2</a> &middot;
+    <a href="module-3.html">Module 3</a> &middot;
+    <a href="module-4.html">Module 4</a>
+  </nav>
+  <div>&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative
+    <a href="https://umpsa.edu.my" target="_blank" aria-label="UMPSA website">&#127760;</a>
+    <a href="mailto:hazlina@umpsa.edu.my" aria-label="Email">&#9993;</a>
+  </div>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   BILINGUAL TRANSLATION SYSTEM
+   ══════════════════════════════════════════════════════════ */
+var curLang = 'en';
+
+var TR = {
+en: {
+  s0_title:'📻 How Radio Works — Why Antennas Matter',
+  s0_intro:'Radio is invisible — but it is real! When you press the button on a walkie-talkie, electricity inside the radio creates <strong>radio waves</strong> that fly through the air at the speed of light. These waves reach another radio\'s antenna, turn back into electricity, and you hear a voice. <strong>The antenna is the key link</strong> — it is the bridge between electricity and the open air.',
+  s0_diag_hint:'Radio waves travel from transmitter → through the air → to your antenna → into your receiver',
+  s0_c1_title:'Transmitter (TX)',s0_c1_desc:'A walkie-talkie or foxhunt beacon that turns sound or data into radio waves and sends them out via its antenna.',
+  s0_c2_title:'Radio Waves',s0_c2_desc:'Invisible energy waves travelling at 300,000 km/s. They pass through walls, trees and the atmosphere — no wires needed!',
+  s0_c3_title:'Antenna',s0_c3_desc:'A carefully sized piece of metal that catches radio waves and converts them back to tiny electrical signals. Shape and size set which frequency it captures best.',
+  s0_c4_title:'Receiver (RX)',s0_c4_desc:'A radio that amplifies the tiny antenna signal, decodes it, and turns it into sound — voice, beeps, or Morse code.',
+  s0_freq_title:'🌊 Frequency & Wavelength:',
+  s0_freq_body:'144 MHz means 144 million wave cycles every second. At this speed, one full wave measures about 2.08 metres. Antenna length is directly tied to wavelength — that is why each element in your Yagi is an exact fraction of 2.08 m.',
+
+  s0b_title:'📡 Types of Antennas — From Simple to Directional',
+  s0b_intro:'Not all antennas look or work the same. Some send and receive equally in <strong>all directions</strong> (omnidirectional) — like a torch with no reflector. Others focus energy in <strong>one direction</strong> (directional) — like a spotlight. For foxhunting we need a directional antenna so we can tell WHERE the hidden fox is.',
+  s0b_gallery_hint:'Click any antenna sketch to learn about it — then we build the Yagi below 👇',
+  s0b_key_title:'💡 Key Insight:',
+  s0b_key_body:'An omnidirectional antenna hears the fox but cannot tell you the DIRECTION. A Yagi points at the fox — rotate until signal is strongest and you have your bearing!',
+
+  s0b_whip_name:'Whip / Monopole',s0b_whip_type:'OMNI',
+  s0b_whip_info:'A simple vertical rod — one quarter of a wavelength long. Used on cars and base stations. Transmits in all directions equally. Cannot tell you WHERE a signal comes from.',
+  s0b_duck_name:'Rubber Duck',s0b_duck_type:'OMNI',
+  s0b_duck_info:'A short coiled whip on handheld radios. Easy to carry but weaker signal than a full-length whip. Good for close-range communication — poor for direction finding.',
+  s0b_dipole_name:'Dipole',s0b_dipole_type:'OMNI*',
+  s0b_dipole_info:'Two metal rods pointing in opposite directions, fed at the centre. Very common antenna. Slight figure-of-eight pattern — weak on the ends of the rods. Good for general ARDF listening.',
+  s0b_loop_name:'Mag. Loop',s0b_loop_type:'DIRECTIONAL',
+  s0b_loop_info:'A small magnetic loop with a very sharp null at 90° to the loop plane. Used in ARDF for the 80 m (3.5 MHz) band — spin the loop to find the null and you have a bearing!',
+  s0b_yagi2_name:'2-el Yagi',s0b_yagi2_type:'DIRECTIONAL',
+  s0b_yagi2_info:'A reflector + driven element on a boom. Starting to get directional — more gain than a dipole, useful front-to-back ratio. Simple to build.',
+  s0b_yagi3_name:'3-el Yagi ★',s0b_yagi3_type:'DIRECTIONAL',
+  s0b_yagi3_info:'TODAY\'S BUILD! Reflector + driven + director on a PVC boom. Best balance of gain, directivity and build complexity for ARDF foxhunting at 144 MHz.',
+  star_today:'★ TODAY',
+  s0b_yagi5_name:'5-el Yagi',s0b_yagi5_type:'DIRECTIONAL',
+  s0b_yagi5_info:'Five elements give more gain (≈13 dBi) and a narrower beam. Great for long-range bearings — but heavier and harder to build. Too sensitive for close-in hunting.',
+
+  s1b_hint:'Click any sketch or bar to read about that antenna type',
+
+  nav_modules:'Modules ▾',
+  nav_m0:'0 · Orientation', nav_m1:'1 · Morse Code', nav_m2:'2 · Map Reading',
+  nav_m3:'3 · Yagi Antenna', nav_m4:'4 · Field Guide', nav_home:'Home',
+  nav_prev:'← Map Reading', nav_next:'Field Guide →',
+
+  hero_eyebrow:'Module 3 of 5',
+  hero_title:'Yagi Antenna Construction',
+  hero_sub:'Build a 3-element tape-measure Yagi for 144 MHz — the essential direction-finding tool for every ARDF foxhunt.',
+  pill_freq:'📡 144 MHz', pill_tape:'📏 Tape Measure', pill_elem:'⚡ 3 Elements',
+  pill_dir:'🎯 Directional', pill_build:'🔧 Build & Test',
+  prog_label:'Workshop Progress', prog_detail:'Module 3 of 5 · Yagi Antenna',
+
+  s1_title:'📡 What is a Yagi Antenna?',
+  s1_intro:'A Yagi–Uda antenna (commonly called a Yagi) is a <strong>directional</strong> antenna that focuses radio energy in one direction — like a torch beam. For ARDF (Amateur Radio Direction Finding), this directional property lets you determine which direction the hidden transmitter (fox) is located.',
+  s1_c1_title:'Directional Gain',
+  s1_c1_desc:'Amplifies signals from the front, making distant foxes easier to hear than with a simple whip antenna.',
+  s1_c2_title:'Front-to-Back Ratio',
+  s1_c2_desc:'How much stronger the front signal is vs the back. A 3-element Yagi achieves ~20 dB — 100× more signal from the front!',
+  s1_c3_title:'Side Nulls',
+  s1_c3_desc:'Very little signal arrives from the sides. Rotating to find the null precisely pins down the fox\'s bearing.',
+  s1_c4_title:'Beamwidth',
+  s1_c4_desc:'The angular spread of the main lobe is ~60–80° for a 3-element Yagi — narrow enough for direction finding.',
+  s1_h3_why:'Why Yagi for ARDF?',
+  s1_why:'The tape-measure Yagi is the foxhunter\'s weapon of choice: elements fold flat for transport, the build costs less than a meal, and the gain is enough to hear the fox\'s 5-watt signal from over a kilometre away in dense jungle. Add its sharp nulls for precise bearings and it outperforms every rubber-duck antenna in the field.',
+  s1_std_title:'ARDF Standard:',
+  s1_std_body:'The 2 metre ARDF band is 144.000–146.000 MHz. Foxes transmit at ~144.500 MHz in most events. Our Yagi is optimised for 144 MHz.',
+
+  s1b_title:'📊 Antenna Gain — Rubber Duck to Yagi',
+  s1b_intro:'Not all antennas are equal. Compare the gain of common ARDF antennas and see why the Yagi dominates in the field. Higher gain = louder signal from one direction. Click an antenna bar to learn more.',
+  s1b_hint:'Click any bar to read about that antenna type',
+
+  s2_title:'📏 Element Lengths for 144 MHz',
+  s2_intro:'Each element has a precisely calculated length based on the wavelength at 144 MHz (λ = 2.08 m). The tape measure segments are cut and mounted on a PVC boom. Hover over the diagram below to inspect each element.',
+  s2_diag_hint:'Hover over elements for details · Length drawn to scale',
+  s2_col_elem:'Element', s2_col_len:'Length (cm)',
+  s2_col_space:'Spacing from Driven', s2_col_mat:'Material',
+  s2_ref:'Reflector', s2_ref_space:'36.5 cm behind',
+  s2_drv:'Driven Element', s2_drv_space:'— (reference)',
+  s2_dir:'Director', s2_dir_space:'30.5 cm in front',
+  s2_mat_tape:'Steel tape measure', s2_mat_feed:'Tape measure + SO-239', s2_mat_tape2:'Steel tape measure',
+  s2_formula:'Half-wavelength (cm) = (14300 ÷ f_MHz) × velocity_factor\nFor 144 MHz, vf ≈ 0.97 → λ/2 ≈ (14300 ÷ 144) × 0.97 ≈ 96.4 cm (driven element, then fine-tune)',
+  s2_tip_title:'Build Tip:',
+  s2_tip_body:'Mark each tape segment with coloured nail polish — red for Reflector, teal for Driven, blue for Director — so you never mix them up at a foxhunt.',
+
+  s3_title:'🔧 Building Steps',
+  s3_intro:'Follow these 8 steps to build the tape-measure Yagi. Work in pairs — one holds, one fastens. Estimated build time: 45–60 minutes.',
+  s3_s1_title:'Cut Tape Segments', s3_s1_desc:'Cut three strips: 104.0 cm (Reflector), 99.4 cm (Driven), 94.6 cm (Director). Mark each with nail polish for identification.',
+  s3_s2_title:'Mark & Drill PVC Boom', s3_s2_desc:'On 120 cm of ½″ PVC pipe, mark positions: Reflector at 0 cm, Driven at 36.5 cm, Director at 67.0 cm. Drill 4 mm holes at each mark.',
+  s3_s3_title:'Attach Reflector', s3_s3_desc:'Thread a self-tapping screw through the centre of the 104 cm tape segment into the boom at 0 cm. Ensure it is perpendicular and centred.',
+  s3_s4_title:'Mount Driven Element', s3_s4_desc:'Fit the SO-239 chassis connector on a small PVC saddle at 36.5 cm. Connect each half of the 99.4 cm element to the connector terminals.',
+  s3_s5_title:'Attach Director', s3_s5_desc:'Fasten the 94.6 cm tape segment at 67.0 cm from the reflector end. Ensure it is parallel and level with the other elements.',
+  s3_s6_title:'Solder Coax', s3_s6_desc:'Prepare 50-ohm RG-58 coax. Solder the centre conductor to the SO-239 centre pin and the shield braid to the outer ground terminal.',
+  s3_s7_title:'Check SWR', s3_s7_desc:'Connect an SWR meter, transmit briefly at low power (5 W max). Target SWR ≤ 1.5:1 at 144 MHz. Adjust driven element ±1 cm if needed.',
+  s3_s8_title:'Wrap & Secure', s3_s8_desc:'Wrap coax connections with self-amalgamating tape. Secure the coax along the boom with cable ties. Test fold/unfold of tape elements.',
+  s3_safety_title:'⚠️ Safety:',
+  s3_safety_body:'Wear safety glasses when cutting tape measure — the coiled spring can snap and cause eye injury. An adult must supervise soldering steps.',
+
+  s4_title:'🦊 Using the Yagi for ARDF',
+  s4_intro:'Building the antenna is only half the skill — using it correctly in the field is what wins the foxhunt.',
+  s4_h3_slow:'Slow Rotation Technique',
+  s4_r1:'Hold the Yagi horizontal, at waist height, boom parallel to the ground.',
+  s4_r2:'Rotate <em>slowly</em> through 360° while listening to the signal strength.',
+  s4_r3:'Find the direction of <strong>peak signal</strong> (front lobe pointing at fox).',
+  s4_r4:'Note the compass bearing on your map.',
+  s4_r5:'Confirm by rotating to the <strong>side null</strong> (~90° from front) for a sharper bearing.',
+  s4_h3_adv:'Advanced Techniques',
+  s4_adv1_title:'Body shielding:',
+  s4_adv1_body:'When very close, turn your back to the fox and use your body to attenuate the signal — use the null behind the Yagi for precision.',
+  s4_adv2_title:'Close-in technique:',
+  s4_adv2_body:'Within ~50 m, detach the coax and use a rubber duck — the Yagi overloads the receiver at close range.',
+  s4_adv3_title:'Sense antenna:',
+  s4_adv3_body:'A small omnidirectional element resolves front/back ambiguity in challenging terrain.',
+  s4_trap_title:'⚡ Common Trap:',
+  s4_trap_body:'When the signal is strong in ALL directions, you are very close to the fox (within 50 m). Switch to your rubber duck or a simple dipole for the final approach — the Yagi\'s gain becomes a liability at close range.',
+
+  s5_title:'🔄 Signal Strength vs Direction',
+  s5_intro:'The Yagi\'s polar pattern shows a strong front lobe, a weaker back lobe, and nulls on the sides. Drag the slider to rotate the Yagi and see how the signal meter changes. Click the canvas to place the fox anywhere!',
+  s5_slider_label:'Yagi angle: ',
+  s5_meter_label:'Received signal strength',
+  s5_rotate_hint:'Rotate the slider to scan →',
+  s5_canvas_hint:'Polar pattern: outer ring = maximum gain · Click canvas to place the 🦊 fox',
+
+  s6_title:'💻 Reference Code',
+  s6_tab1:'Element Length Formula', s6_tab2:'SWR Check Guide', s6_tab3:'ARDF Field Notes',
+
+  cta_title:'Ready to Build and Test?',
+  cta_sub:'Complete the tiered activities — from element-length calculations to field direction-finding practice with the antenna you built.',
+  cta_btn:'Start Antenna Activities →',
+
+  gain_duck_name:'Rubber Duck', gain_duck_gain:'+2 dBi',
+  gain_duck_info:'The ubiquitous rubber duck (helical whip) is the weakest antenna in the set: ~2 dBi, omnidirectional. Great for general comms, poor for direction finding. Use it for the final approach when the fox is within 50 m.',
+  gain_dipole_name:'Dipole', gain_dipole_gain:'+2.15 dBi',
+  gain_dipole_info:'A half-wave dipole has the same gain as a rubber duck but radiates in a figure-of-eight pattern perpendicular to the wire — useful for rough direction finding. Easy to build from wire for 144 MHz.',
+  gain_2el_name:'2-el Yagi', gain_2el_gain:'+7 dBi',
+  gain_2el_info:'A 2-element Yagi (reflector + driven element) gives useful front-to-back discrimination and ~7 dBi gain. Narrower beam than a 3-element, less gain, but shorter and lighter.',
+  gain_3el_name:'3-el Yagi', gain_3el_gain:'+10 dBi',
+  gain_3el_info:'The 3-element tape-measure Yagi is the ARDF standard: ~10 dBi gain, ~20 dB front-to-back ratio, beamwidth ~70°. Best balance of gain, directivity and build complexity for a foxhunt.',
+  gain_5el_name:'5-el Yagi', gain_5el_gain:'+13 dBi',
+  gain_5el_info:'A 5-element Yagi reaches ~13 dBi with a narrower 50° beamwidth. Better for long-range fixes but harder to build and too sensitive for close-in work.',
+
+  rae_badge:'RAE',
+  rae_toggle_label:'Advanced Content — RAE Exam Preparation',
+  rae_tab_theory:'Antenna Theory',rae_tab_swr:'SWR & Matching',rae_tab_calc:'Element Calc.',rae_tab_quiz:'Practice Q&A',
+  rae_t_h1:'📡 Radiation Patterns & Gain',
+  rae_t_p1:'An <strong>omnidirectional</strong> antenna (rubber duck, dipole) radiates equally in all horizontal directions. A <strong>directional</strong> antenna (Yagi) focuses energy in one direction like a spotlight. Gain is the ratio of focused power to a reference antenna.',
+  rae_t_h2:'📊 dBd vs dBi',
+  rae_t_p2:'<strong>dBi</strong> = gain vs a theoretical isotropic point source. <strong>dBd</strong> = gain vs a half-wave dipole. Formula: <code style=\'background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px\'>dBi = dBd + 2.15</code>. Every 3\u202fdB doubles the effective radiated power.',
+  rae_t_h3:'📐 Beamwidth & Directivity',
+  rae_t_p3:'Beamwidth is the angle between the \u22123\u202fdB points on the radiation pattern. A 3-element 144\u202fMHz Yagi has a <strong>~70\u00b0 horizontal beamwidth</strong>. Narrower beam = more gain = harder to aim precisely \u2014 the key foxhunting trade-off.',
+  rae_t_h4:'\u2195\ufe0f Polarization',
+  rae_t_p4:'Horizontal elements \u2192 horizontal polarization. The fox must use the same polarization. Cross-polarization causes <strong>~20\u202fdB</strong> signal loss \u2014 always confirm the fox transmits horizontally!',
+  rae_t_h5:'\u2194\ufe0f Front-to-Back Ratio',
+  rae_t_p5:'A 3-element Yagi has ~<strong>20\u202fdB F/B ratio</strong> \u2014 front signal is 100\u00d7 stronger than rear. Rotate 180\u00b0 to use the rear null and confirm your bearing.',
+  rae_s_h1:'📶 What is SWR?',
+  rae_s_p1:'Standing Wave Ratio measures impedance match between antenna and feedline. A mismatch causes power to reflect back toward the transmitter. Keep SWR below 1.5:1 for efficient operation.',
+  rae_swr_perfect:'Perfect \u2713',rae_swr_good:'~4% loss',rae_swr_fair:'~11% loss',rae_swr_poor:'~25% loss',
+  rae_s_h2:'\u26a1 Impedance',
+  rae_s_p2:'Standard coax is <strong>50\u202f\u03a9</strong>. When antenna impedance differs from 50\u202f\u03a9, power reflects back and SWR rises.',
+  rae_imp_dipole:'Half-wave dipole: 73\u202f\u03a9',rae_imp_folded:'Folded dipole: 288\u202f\u03a9',rae_imp_coax:'50\u202f\u03a9 coax (standard)',rae_imp_yagi3:'3-el Yagi driven: ~25\u201350\u202f\u03a9',
+  rae_s_h3:'🔧 Matching Techniques',
+  rae_match1_name:'Gamma match',rae_match1_desc:'adjustable shorting rod alongside driven element; slide until SWR meter reads minimum.',
+  rae_match2_name:'Beta / hairpin match',rae_match2_desc:'a short shorted wire across the feed point; changes impedance without moving parts.',
+  rae_match3_name:'Balun (4:1)',rae_match3_desc:'transforms 288\u202f\u03a9 folded dipole to 72\u202f\u03a9; also converts balanced antenna to unbalanced coax.',
+  rae_s_tip:'💡 <strong>Tape-measure Yagi tip:</strong> The simple dipole driven element gives ~25\u201350\u202f\u03a9. Shorten the driven element slightly until SWR &lt; 1.5:1 on a meter or NanoVNA \u2014 no matching network needed.',
+  rae_c_h1:'🔢 Wavelength Formula',
+  rae_c_freq:'144\u202fMHz \u2192 \u03bb = 300 \u00f7 144 = <strong>2.083\u202fm</strong>',
+  rae_c_h2:'📏 3-Element Yagi at 144\u202fMHz \u2014 Element Dimensions',
+  rae_tbl_el:'Element',rae_tbl_frac:'Fraction of \u03bb',rae_tbl_len:'Total Length',rae_tbl_arm:'Each Arm',
+  rae_el_ref:'Reflector',rae_el_driven:'Driven (dipole)',rae_el_dir:'Director',
+  rae_spacing1:'Reflector \u2192 Driven: 0.20\u202f\u03bb = 417\u202fmm',rae_spacing2:'Driven \u2192 Director: 0.15\u202f\u03bb = 312\u202fmm',
+  rae_c_p3:'\u2699\ufe0f <strong>Velocity factor correction:</strong> Physical metal elements are slightly shorter electrically. Add \u22485\u202fmm per 1\u202fmm of element diameter. For 12\u202fmm aluminium: multiply \u00d7 1.025. Tape-measure Yagi lengths already include this.',
+  rae_quiz_title:'🎯 Practice Questions \u2014 RAE Antenna & Propagation',
+  rae_quiz_hint:'Tap any question card to reveal the answer and explanation.',
+  rae_q1:'Q1. What is the approximate gain of a 3-element 144\u202fMHz Yagi?',
+  rae_q1_a:'a) 2\u202fdBi',rae_q1_b:'b) 6\u202fdBi',rae_q1_c:'c) 10\u202fdBi',rae_q1_d:'d) 20\u202fdBi',
+  rae_q1_ans:'\u2705 <strong>c) ~10\u202fdBi</strong> \u2014 A 3-element Yagi gives ~10\u202fdBi. Each extra parasitic element beyond a dipole adds roughly 3\u202fdB.',
+  rae_q2:'Q2. The relationship between dBd and dBi is:',
+  rae_q2_a:'a) dBi = dBd \u2212 2.15',rae_q2_b:'b) dBi = dBd + 2.15',rae_q2_c:'c) They are equal',rae_q2_d:'d) dBi = 2 \u00d7 dBd',
+  rae_q2_ans:'\u2705 <strong>b) dBi = dBd + 2.15</strong> \u2014 A half-wave dipole (0\u202fdBd) has a gain of 2.15\u202fdBi over the theoretical isotropic radiator.',
+  rae_q3:'Q3. A half-wave dipole has an impedance of approximately:',
+  rae_q3_a:'a) 73\u202f\u03a9',rae_q3_b:'b) 50\u202f\u03a9',rae_q3_c:'c) 150\u202f\u03a9',rae_q3_d:'d) 288\u202f\u03a9',
+  rae_q3_ans:'\u2705 <strong>a) 73\u202f\u03a9</strong> \u2014 Theoretical half-wave dipole in free space \u2248 73\u202f\u03a9. A folded dipole is 4\u00d7 = ~288\u202f\u03a9.',
+  rae_q4:'Q4. What does SWR 1:1 indicate?',
+  rae_q4_a:'a) Half the power is reflected',rae_q4_b:'b) Antenna is broken',rae_q4_c:'c) Perfect impedance match',rae_q4_d:'d) Maximum SWR allowed',
+  rae_q4_ans:'\u2705 <strong>c) Perfect impedance match</strong> \u2014 1:1 SWR means no power is reflected; all transmitter output reaches the antenna.',
+  rae_q5:'Q5. What is the wavelength at 144\u202fMHz?',
+  rae_q5_a:'a) 0.144\u202fm',rae_q5_b:'b) 1.44\u202fm',rae_q5_c:'c) 2.08\u202fm',rae_q5_d:'d) 14.4\u202fm',
+  rae_q5_ans:'\u2705 <strong>c) 2.08\u202fm</strong> \u2014 \u03bb = 300/144 = 2.083\u202fm. Each arm of the driven dipole is \u03bb/4 \u2248 521\u202fmm.',
+  rae_q6:'Q6. Which Yagi element is LONGER than a half-wavelength?',
+  rae_q6_a:'a) Director',rae_q6_b:'b) Driven element',rae_q6_c:'c) Reflector',rae_q6_d:'d) All are equal',
+  rae_q6_ans:'\u2705 <strong>c) Reflector</strong> \u2014 The reflector is ~5% longer than \u03bb/2; the director is ~5% shorter. Both create a phase shift that concentrates energy forward.',
+  rae_q7:'Q7. A 3-element Yagi has a front-to-back ratio of approximately:',
+  rae_q7_a:'a) 6\u202fdB',rae_q7_b:'b) 20\u202fdB',rae_q7_c:'c) 40\u202fdB',rae_q7_d:'d) 60\u202fdB',
+  rae_q7_ans:'\u2705 <strong>b) 20\u202fdB</strong> \u2014 20\u202fdB means the front signal is 100\u00d7 the rear. Use the rear null to confirm a bearing: rotate 180\u00b0 and the signal should nearly disappear.',
+  rae_q8:'Q8. Cross-polarization between transmitter and receiver causes approximately:',
+  rae_q8_a:'a) 3\u202fdB loss',rae_q8_b:'b) 6\u202fdB loss',rae_q8_c:'c) 20\u202fdB loss',rae_q8_d:'d) No effect',
+  rae_q8_ans:'\u2705 <strong>c) ~20\u202fdB loss</strong> \u2014 Vertical fox + horizontal Yagi (or vice versa) causes ~20\u202fdB loss \u2014 signal becomes 100\u00d7 weaker. Always match polarization!',
+},
+
+bm: {
+  s0_title:'📻 Cara Radio Berfungsi — Mengapa Antena Penting',
+  s0_intro:'Radio tidak kelihatan — tetapi ia nyata! Apabila anda menekan butang walkie-talkie, elektrik di dalam radio menghasilkan <strong>gelombang radio</strong> yang terbang melalui udara dengan laju cahaya. Gelombang ini sampai ke antena radio lain, bertukar semula menjadi elektrik, dan anda mendengar suara. <strong>Antena ialah pautan utama</strong> — ia adalah jambatan antara elektrik dan udara terbuka.',
+  s0_diag_hint:'Gelombang radio bergerak dari pemancar → melalui udara → ke antena anda → masuk ke penerima',
+  s0_c1_title:'Pemancar (TX)',s0_c1_desc:'Walkie-talkie atau suar pemancar tersembunyi yang menukar bunyi atau data kepada gelombang radio dan menghantar melalui antenanya.',
+  s0_c2_title:'Gelombang Radio',s0_c2_desc:'Gelombang tenaga tidak kelihatan yang bergerak pada 300,000 km/s. Ia menembusi dinding, pokok dan atmosfera — tiada wayar diperlukan!',
+  s0_c3_title:'Antena',s0_c3_desc:'Sekeping logam bersaiz tepat yang menangkap gelombang radio dan menukarnya semula kepada isyarat elektrik yang kecil. Bentuk dan saiz menentukan frekuensi yang paling baik ditangkap.',
+  s0_c4_title:'Penerima (RX)',s0_c4_desc:'Radio yang menguatkan isyarat kecil dari antena, menyahkodnya, dan menukarnya kepada bunyi — suara, bunyi bip, atau kod Morse.',
+  s0_freq_title:'🌊 Frekuensi & Panjang Gelombang:',
+  s0_freq_body:'144 MHz bermaksud 144 juta kitaran gelombang setiap saat. Pada kelajuan ini, satu gelombang penuh berukuran kira-kira 2.08 meter. Panjang antena berkait langsung dengan panjang gelombang — itulah sebabnya setiap elemen Yagi anda adalah pecahan tepat daripada 2.08 m.',
+
+  s0b_title:'📡 Jenis-Jenis Antena — Dari Mudah ke Berarah',
+  s0b_intro:'Tidak semua antena kelihatan atau berfungsi sama. Sesetengahnya menghantar dan menerima sama rata ke <strong>semua arah</strong> (pelbagai hala) — seperti suluh tanpa reflektor. Yang lain menumpukan tenaga ke <strong>satu arah</strong> (berarah) — seperti sorotan suluh. Untuk memburu musang kami memerlukan antena berarah supaya kami tahu DI MANA pemancar tersembunyi itu berada.',
+  s0b_gallery_hint:'Klik mana-mana lakaran antena untuk mengetahui tentangnya — kemudian kita bina Yagi di bawah 👇',
+  s0b_key_title:'💡 Pandangan Utama:',
+  s0b_key_body:'Antena pelbagai hala mendengar musang tetapi tidak dapat memberitahu anda ARAH. Yagi menghala ke musang — putar sehingga isyarat paling kuat dan anda dapat arah!',
+
+  s0b_whip_name:'Cambuk / Monopol',s0b_whip_type:'PELBAGAI HALA',
+  s0b_whip_info:'Batang menegak mudah — satu suku panjang gelombang. Digunakan pada kereta dan stesen pangkalan. Menghantar ke semua arah sama rata. Tidak dapat memberitahu anda dari MANA isyarat datang.',
+  s0b_duck_name:'Sesungut Getah',s0b_duck_type:'PELBAGAI HALA',
+  s0b_duck_info:'Cambuk gegelung pendek pada radio pegang tangan. Mudah dibawa tetapi isyarat lebih lemah daripada cambuk panjang penuh. Baik untuk komunikasi jarak dekat — lemah untuk pencarian arah.',
+  s0b_dipole_name:'Dipol',s0b_dipole_type:'PELBAGAI HALA*',
+  s0b_dipole_info:'Dua batang logam menghala ke arah bertentangan, disuap di tengah. Antena yang sangat biasa. Corak angka lapan yang sedikit — lemah di hujung batang. Baik untuk mendengar ARDF umum.',
+  s0b_loop_name:'Gegelung Magnet',s0b_loop_type:'BERARAH',
+  s0b_loop_info:'Gegelung magnet kecil dengan nol yang sangat tajam pada 90° ke satah gegelung. Digunakan dalam ARDF untuk jalur 80 m (3.5 MHz) — putar gegelung untuk mencari nol dan anda dapat arah!',
+  s0b_yagi2_name:'Yagi 2 El.',s0b_yagi2_type:'BERARAH',
+  s0b_yagi2_info:'Reflektor + elemen pemacu pada boom. Mula menjadi berarah — lebih gain daripada dipol, nisbah depan-ke-belakang yang berguna. Mudah dibina.',
+  s0b_yagi3_name:'Yagi 3 El. ★',s0b_yagi3_type:'BERARAH',
+  s0b_yagi3_info:'BINAAN HARI INI! Reflektor + pemacu + pengarah pada boom PVC. Keseimbangan terbaik antara gain, keterarahan dan kerumitan binaan untuk memburu musang ARDF pada 144 MHz.',
+  star_today:'★ HARI INI',
+  s0b_yagi5_name:'Yagi 5 El.',s0b_yagi5_type:'BERARAH',
+  s0b_yagi5_info:'Lima elemen memberi lebih gain (≈13 dBi) dan pancaran yang lebih sempit. Bagus untuk arah jarak jauh — tetapi lebih berat dan sukar dibina. Terlalu sensitif untuk memburu jarak dekat.',
+
+  s1b_hint:'Klik mana-mana lakaran atau bar untuk membaca tentang jenis antena tersebut',
+
+  nav_modules:'Modul ▾',
+  nav_m0:'0 · Orientasi', nav_m1:'1 · Kod Morse', nav_m2:'2 · Baca Peta',
+  nav_m3:'3 · Antena Yagi', nav_m4:'4 · Panduan Lapangan', nav_home:'Laman Utama',
+  nav_prev:'← Baca Peta', nav_next:'Panduan Lapangan →',
+
+  hero_eyebrow:'Modul 3 daripada 5',
+  hero_title:'Pembinaan Antena Yagi',
+  hero_sub:'Bina Yagi pita ukur 3 elemen untuk 144 MHz — alat pencari arah penting bagi setiap peserta pemancar tersembunyi ARDF.',
+  pill_freq:'📡 144 MHz', pill_tape:'📏 Pita Ukur', pill_elem:'⚡ 3 Elemen',
+  pill_dir:'🎯 Terarah', pill_build:'🔧 Bina & Uji',
+  prog_label:'Kemajuan Bengkel', prog_detail:'Modul 3 daripada 5 · Antena Yagi',
+
+  s1_title:'📡 Apakah Antena Yagi?',
+  s1_intro:'Antena Yagi–Uda (dipanggil Yagi) ialah antena <strong>berarah</strong> yang menumpukan tenaga radio ke satu arah — seperti sorotan suluh. Dalam ARDF (Pencarian Arah Radio Amatur), sifat berarah ini membolehkan anda menentukan arah pemancar tersembunyi (musang) itu berada.',
+  s1_c1_title:'Gandaan Terarah',
+  s1_c1_desc:'Menguatkan isyarat dari depan, menjadikan musang yang jauh lebih mudah didengari berbanding antena sesungut biasa.',
+  s1_c2_title:'Nisbah Depan-ke-Belakang',
+  s1_c2_desc:'Seberapa jauh lebih kuat isyarat depan berbanding belakang. Yagi 3 elemen mencapai ~20 dB — 100× lebih kuat dari hadapan!',
+  s1_c3_title:'Titik Bisu Sisi',
+  s1_c3_desc:'Sangat sedikit isyarat tiba dari sisi. Putar antena untuk mencari titik bisu dan tentukan bearing musang dengan tepat.',
+  s1_c4_title:'Lebar Rasuk',
+  s1_c4_desc:'Lebar sudut lobus utama ialah ~60–80° bagi Yagi 3 elemen — cukup sempit untuk pencarian arah.',
+  s1_h3_why:'Mengapa Yagi untuk ARDF?',
+  s1_why:'Yagi pita ukur adalah pilihan utama pemburu musang: elemen boleh dilipat rata untuk dibawa, kos pembinaannya murah, dan gandaannya cukup untuk mendengar isyarat 5 watt musang dari lebih satu kilometer dalam hutan tebal. Tambah titik bisu yang tajam untuk bearing tepat dan ia mengatasi semua antena sesungut getah di padang.',
+  s1_std_title:'Standard ARDF:',
+  s1_std_body:'Jalur ARDF 2 meter ialah 144.000–146.000 MHz. Musang memancar pada ~144.500 MHz dalam kebanyakan acara. Yagi kami dioptimumkan untuk 144 MHz.',
+
+  s1b_title:'📊 Gandaan Antena — Sesungut hingga Yagi',
+  s1b_intro:'Tidak semua antena setaraf. Bandingkan gandaan antena ARDF biasa dan lihat mengapa Yagi mendominasi padang. Gandaan lebih tinggi = isyarat lebih kuat dari satu arah. Klik bar antena untuk maklumat lanjut.',
+  s1b_hint:'Klik mana-mana bar untuk membaca tentang jenis antena itu',
+
+  s2_title:'📏 Panjang Elemen untuk 144 MHz',
+  s2_intro:'Setiap elemen mempunyai panjang yang dikira tepat berdasarkan panjang gelombang pada 144 MHz (λ = 2.08 m). Segmen pita ukur dipotong dan dipasang pada batang PVC. Gerak tetikus di atas rajah untuk memeriksa setiap elemen.',
+  s2_diag_hint:'Gerak tetikus di atas elemen untuk butiran · Panjang dilukis berskala',
+  s2_col_elem:'Elemen', s2_col_len:'Panjang (cm)',
+  s2_col_space:'Jarak dari Elemen Pemacu', s2_col_mat:'Bahan',
+  s2_ref:'Reflektor', s2_ref_space:'36.5 cm di belakang',
+  s2_drv:'Elemen Pemacu', s2_drv_space:'— (rujukan)',
+  s2_dir:'Direktor', s2_dir_space:'30.5 cm di hadapan',
+  s2_mat_tape:'Pita ukur keluli', s2_mat_feed:'Pita ukur + SO-239', s2_mat_tape2:'Pita ukur keluli',
+  s2_formula:'Separuh panjang gelombang (cm) = (14300 ÷ f_MHz) × faktor_halaju\nUntuk 144 MHz, fh ≈ 0.97 → λ/2 ≈ (14300 ÷ 144) × 0.97 ≈ 96.4 cm (elemen pemacu, kemudian laras halus)',
+  s2_tip_title:'Petua Bina:',
+  s2_tip_body:'Tandakan setiap segmen pita dengan pengilat kuku berwarna — merah untuk Reflektor, teal untuk Pemacu, biru untuk Direktor — supaya anda tidak mencampurkan mereka di padang.',
+
+  s3_title:'🔧 Langkah Pembinaan',
+  s3_intro:'Ikut 8 langkah ini untuk membina Yagi pita ukur. Bekerja secara berpasangan — seorang pegang, seorang ikat. Anggaran masa bina: 45–60 minit.',
+  s3_s1_title:'Potong Segmen Pita', s3_s1_desc:'Potong tiga jalur: 104.0 cm (Reflektor), 99.4 cm (Pemacu), 94.6 cm (Direktor). Tandakan setiap satu dengan pengilat kuku.',
+  s3_s2_title:'Tandakan & Gerudi Batang PVC', s3_s2_desc:'Pada 120 cm paip PVC ½″, tandakan kedudukan: Reflektor pada 0 cm, Pemacu pada 36.5 cm, Direktor pada 67.0 cm. Gerudi lubang 4 mm di setiap tanda.',
+  s3_s3_title:'Pasang Reflektor', s3_s3_desc:'Masukkan skru pengetap diri melalui tengah segmen pita 104 cm ke dalam batang pada 0 cm. Pastikan ia berserenjang dan di tengah.',
+  s3_s4_title:'Pasang Elemen Pemacu', s3_s4_desc:'Pasang penyambung casis SO-239 pada pelana PVC kecil pada 36.5 cm. Sambungkan setiap separuh elemen 99.4 cm ke terminal penyambung.',
+  s3_s5_title:'Pasang Direktor', s3_s5_desc:'Ikat segmen pita 94.6 cm pada 67.0 cm dari hujung reflektor. Pastikan ia selari dan rata dengan elemen lain.',
+  s3_s6_title:'Pateri Koaksial', s3_s6_desc:'Sediakan koaksial RG-58 50-ohm. Pateri konduktor tengah ke pin tengah SO-239 dan pelindung ke terminal bumi luar.',
+  s3_s7_title:'Semak SWR', s3_s7_desc:'Sambungkan meter SWR, hantar sebentar pada kuasa rendah (5 W maks). Sasaran SWR ≤ 1.5:1 pada 144 MHz. Laras elemen pemacu ±1 cm jika perlu.',
+  s3_s8_title:'Balut & Selamatkan', s3_s8_desc:'Balut sambungan koaksial dengan pita self-amalgamating. Selamatkan koaksial di sepanjang batang dengan pengikat kabel. Uji lipat/buka elemen pita.',
+  s3_safety_title:'⚠️ Keselamatan:',
+  s3_safety_body:'Pakai cermin mata keselamatan semasa memotong pita ukur — spring gelung boleh terpelanting dan mencederakan mata. Orang dewasa mesti menyelia langkah pematerian.',
+
+  s4_title:'🦊 Menggunakan Yagi untuk ARDF',
+  s4_intro:'Membina antena hanyalah separuh daripada kemahiran — menggunakannya dengan betul di padang adalah yang menentukan kejayaan.',
+  s4_h3_slow:'Teknik Putaran Perlahan',
+  s4_r1:'Pegang Yagi mendatar, pada paras pinggang, batang selari dengan tanah.',
+  s4_r2:'Putar <em>perlahan</em> sepenuh 360° sambil mendengar kekuatan isyarat.',
+  s4_r3:'Cari arah <strong>puncak isyarat</strong> (lobus hadapan menghala ke musang).',
+  s4_r4:'Catat bearing kompas pada peta anda.',
+  s4_r5:'Sahkan dengan memutarkan ke <strong>titik bisu sisi</strong> (~90° dari hadapan) untuk bearing yang lebih tepat.',
+  s4_h3_adv:'Teknik Lanjutan',
+  s4_adv1_title:'Pelindung badan:',
+  s4_adv1_body:'Apabila sangat hampir, pusing belakang kepada musang dan gunakan badan anda untuk lemahkan isyarat — gunakan titik bisu belakang Yagi untuk ketepatan.',
+  s4_adv2_title:'Teknik jarak dekat:',
+  s4_adv2_body:'Dalam ~50 m, tanggalkan koaksial dan guna sesungut getah — Yagi membebankan penerima pada jarak dekat.',
+  s4_adv3_title:'Antena sens:',
+  s4_adv3_body:'Elemen omnidirektional kecil menyelesaikan kekaburan hadapan/belakang dalam kawasan mencabar.',
+  s4_trap_title:'⚡ Perangkap Biasa:',
+  s4_trap_body:'Apabila isyarat kuat dalam SEMUA arah, anda sangat hampir dengan musang (dalam 50 m). Tukar ke sesungut getah atau dipol mudah untuk pendekatan akhir — gandaan Yagi menjadi liabiliti pada jarak dekat.',
+
+  s5_title:'🔄 Kekuatan Isyarat berbanding Arah',
+  s5_intro:'Corak kutub Yagi menunjukkan lobus hadapan yang kuat, lobus belakang yang lemah, dan titik bisu di sisi. Seret gelangsar untuk memutar Yagi dan lihat perubahan meter isyarat. Klik kanvas untuk meletakkan musang di mana-mana!',
+  s5_slider_label:'Sudut Yagi: ',
+  s5_meter_label:'Kekuatan isyarat yang diterima',
+  s5_rotate_hint:'Putar gelangsar untuk mengimbas →',
+  s5_canvas_hint:'Corak kutub: gelang luar = gandaan maksimum · Klik kanvas untuk letakkan 🦊 musang',
+
+  s6_title:'💻 Kod Rujukan',
+  s6_tab1:'Formula Panjang Elemen', s6_tab2:'Panduan Semak SWR', s6_tab3:'Nota Lapangan ARDF',
+
+  cta_title:'Sedia untuk Bina dan Uji?',
+  cta_sub:'Lengkapkan aktiviti berjenjang — dari pengiraan panjang elemen hingga amalan pencarian arah di padang dengan antena yang anda bina.',
+  cta_btn:'Mula Aktiviti Antena →',
+
+  gain_duck_name:'Sesungut Getah', gain_duck_gain:'+2 dBi',
+  gain_duck_info:'Sesungut getah (helical whip) adalah antena paling lemah dalam set ini: ~2 dBi, omnidirektional. Bagus untuk komunikasi umum, lemah untuk pencarian arah. Gunakannya untuk pendekatan akhir apabila musang dalam 50 m.',
+  gain_dipole_name:'Dipol', gain_dipole_gain:'+2.15 dBi',
+  gain_dipole_info:'Dipol separuh gelombang mempunyai gandaan yang sama dengan sesungut getah tetapi memancarkan dalam corak angka lapan berserenjang dengan wayar — berguna untuk pencarian arah kasar. Mudah dibina dari wayar untuk 144 MHz.',
+  gain_2el_name:'Yagi 2 el.', gain_2el_gain:'+7 dBi',
+  gain_2el_info:'Yagi 2 elemen (reflektor + elemen pemacu) memberikan diskriminasi hadapan-ke-belakang yang berguna dan gandaan ~7 dBi. Rasuk lebih sempit daripada 3 elemen, kurang gandaan, tetapi lebih pendek dan ringan.',
+  gain_3el_name:'Yagi 3 el.', gain_3el_gain:'+10 dBi',
+  gain_3el_info:'Yagi pita ukur 3 elemen adalah standard ARDF: gandaan ~10 dBi, nisbah depan-ke-belakang ~20 dB, lebar rasuk ~70°. Keseimbangan terbaik antara gandaan, keterarahan dan kerumitan bina untuk foxhunt.',
+  gain_5el_name:'Yagi 5 el.', gain_5el_gain:'+13 dBi',
+  gain_5el_info:'Yagi 5 elemen mencapai ~13 dBi dengan lebar rasuk yang lebih sempit 50°. Lebih baik untuk penetapan jarak jauh tetapi lebih sukar dibina dan terlalu sensitif untuk kerja jarak dekat.',
+
+  rae_badge:'RAE',
+  rae_toggle_label:'Kandungan Lanjutan \u2014 Persediaan Peperiksaan RAE',
+  rae_tab_theory:'Teori Antena',rae_tab_swr:'SWR & Penyuaian',rae_tab_calc:'Kiraan Elemen',rae_tab_quiz:'Soalan Latihan',
+  rae_t_h1:'📡 Corak Sinaran & Gandaan',
+  rae_t_p1:'Antena <strong>pelbagai hala</strong> (sesungut getah, dipol) memancarkan sama rata ke semua arah mendatar. Antena <strong>berarah</strong> (Yagi) menumpukan tenaga dalam satu arah seperti lampu sorot. Gandaan ialah nisbah kuasa tertumpu berbanding antena rujukan.',
+  rae_t_h2:'📊 dBd vs dBi',
+  rae_t_p2:'<strong>dBi</strong> = gandaan vs sumber titik isotropik teori. <strong>dBd</strong> = gandaan vs dipol separuh gelombang. Formula: <code style=\'background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px\'>dBi = dBd + 2.15</code>. Setiap 3\u202fdB menggandakan kuasa sinaran berkesan.',
+  rae_t_h3:'📐 Lebar Rasuk & Keterarahan',
+  rae_t_p3:'Lebar rasuk ialah sudut di antara dua titik \u22123\u202fdB pada corak sinaran. Yagi 3 elemen 144\u202fMHz mempunyai <strong>lebar rasuk mendatar ~70\u00b0</strong>. Rasuk lebih sempit = lebih gandaan = lebih sukar diarah \u2014 pertukaran utama foxhunting.',
+  rae_t_h4:'\u2195\ufe0f Pengutuban',
+  rae_t_p4:'Elemen mendatar \u2192 pengutuban mendatar. Pemancar musang mesti padankan! Pengutuban silang menyebabkan kehilangan <strong>~20\u202fdB</strong> \u2014 sentiasa pastikan musang memancar mendatar!',
+  rae_t_h5:'\u2194\ufe0f Nisbah Hadapan-ke-Belakang',
+  rae_t_p5:'Yagi 3 elemen \u2248 nisbah H/B <strong>20\u202fdB</strong> \u2014 isyarat hadapan 100\u00d7 lebih kuat daripada belakang. Putar 180\u00b0 untuk gunakan nol belakang dan sahkan bearing.',
+  rae_s_h1:'📶 Apakah SWR?',
+  rae_s_p1:'Nisbah Gelombang Pegun (SWR) mengukur padanan impedans antara antena dan talian suap. Ketidakpadanan menyebabkan kuasa dipantulkan balik ke pemancar. Kekalkan SWR di bawah 1.5:1 untuk operasi cekap.',
+  rae_swr_perfect:'Sempurna \u2713',rae_swr_good:'~4% hilang',rae_swr_fair:'~11% hilang',rae_swr_poor:'~25% hilang',
+  rae_s_h2:'\u26a1 Impedans',
+  rae_s_p2:'Koaksial piawai ialah <strong>50\u202f\u03a9</strong>. Apabila impedans antena berbeza, kuasa dipantulkan dan SWR meningkat.',
+  rae_imp_dipole:'Dipol separuh gelombang: 73\u202f\u03a9',rae_imp_folded:'Dipol terlipat: 288\u202f\u03a9',rae_imp_coax:'Koaks 50\u202f\u03a9 (piawai)',rae_imp_yagi3:'Pemacu Yagi 3 el: ~25\u201350\u202f\u03a9',
+  rae_s_h3:'🔧 Teknik Penyuaian',
+  rae_match1_name:'Padanan gamma',rae_match1_desc:'rod pemendek boleh laras di sepanjang elemen pemacu; gelongsor sehingga meter SWR membaca minimum.',
+  rae_match2_name:'Padanan beta / hairpin',rae_match2_desc:'wayar pendek dipendekkan merentasi titik suap; menukar impedans tanpa bahagian bergerak.',
+  rae_match3_name:'Balun (4:1)',rae_match3_desc:'menukar dipol terlipat 288\u202f\u03a9 kepada 72\u202f\u03a9; juga menukar antena seimbang kepada koaks tidak seimbang.',
+  rae_s_tip:'💡 <strong>Petua Yagi pita ukur:</strong> Elemen pemacu dipol mudah memberikan ~25\u201350\u202f\u03a9. Persingkatkan elemen pemacu sedikit sehingga SWR &lt; 1.5:1 pada meter atau NanoVNA \u2014 tiada rangkaian penyuaian diperlukan.',
+  rae_c_h1:'🔢 Formula Panjang Gelombang',
+  rae_c_freq:'144\u202fMHz \u2192 \u03bb = 300 \u00f7 144 = <strong>2.083\u202fm</strong>',
+  rae_c_h2:'📏 Yagi 3 Elemen pada 144\u202fMHz \u2014 Dimensi Elemen',
+  rae_tbl_el:'Elemen',rae_tbl_frac:'Pecahan \u03bb',rae_tbl_len:'Panjang Jumlah',rae_tbl_arm:'Setiap Lengan',
+  rae_el_ref:'Reflektor',rae_el_driven:'Pemacu (dipol)',rae_el_dir:'Pengarah',
+  rae_spacing1:'Reflektor \u2192 Pemacu: 0.20\u202f\u03bb = 417\u202fmm',rae_spacing2:'Pemacu \u2192 Pengarah: 0.15\u202f\u03bb = 312\u202fmm',
+  rae_c_p3:'\u2699\ufe0f <strong>Pembetulan faktor halaju:</strong> Elemen logam fizikal sedikit lebih pendek secara elektrik. Tambah \u22485\u202fmm bagi setiap 1\u202fmm diameter elemen. Untuk rod aluminium 12\u202fmm: darab \u00d7 1.025. Panjang Yagi pita ukur sudah termasuk pelarasan ini.',
+  rae_quiz_title:'🎯 Soalan Latihan \u2014 Antena RAE & Perambatan',
+  rae_quiz_hint:'Ketik mana-mana kad soalan untuk mendedahkan jawapan dan penjelasan.',
+  rae_q1:'S1. Apakah gandaan anggaran Yagi 3 elemen 144\u202fMHz?',
+  rae_q1_a:'a) 2\u202fdBi',rae_q1_b:'b) 6\u202fdBi',rae_q1_c:'c) 10\u202fdBi',rae_q1_d:'d) 20\u202fdBi',
+  rae_q1_ans:'\u2705 <strong>c) ~10\u202fdBi</strong> \u2014 Yagi 3 elemen memberikan ~10\u202fdBi. Setiap elemen parasit tambahan menambah kira-kira ~3\u202fdB.',
+  rae_q2:'S2. Hubungan antara dBd dan dBi ialah:',
+  rae_q2_a:'a) dBi = dBd \u2212 2.15',rae_q2_b:'b) dBi = dBd + 2.15',rae_q2_c:'c) Mereka sama',rae_q2_d:'d) dBi = 2 \u00d7 dBd',
+  rae_q2_ans:'\u2705 <strong>b) dBi = dBd + 2.15</strong> \u2014 Dipol separuh gelombang (0\u202fdBd) mempunyai gandaan 2.15\u202fdBi berbanding sinaran isotropik teori.',
+  rae_q3:'S3. Dipol separuh gelombang mempunyai impedans kira-kira:',
+  rae_q3_a:'a) 73\u202f\u03a9',rae_q3_b:'b) 50\u202f\u03a9',rae_q3_c:'c) 150\u202f\u03a9',rae_q3_d:'d) 288\u202f\u03a9',
+  rae_q3_ans:'\u2705 <strong>a) 73\u202f\u03a9</strong> \u2014 Dipol separuh gelombang teori dalam ruang bebas \u2248 73\u202f\u03a9. Dipol terlipat ialah 4\u00d7 = ~288\u202f\u03a9.',
+  rae_q4:'S4. Apakah maksud SWR 1:1?',
+  rae_q4_a:'a) Separuh kuasa dipantulkan',rae_q4_b:'b) Antena rosak',rae_q4_c:'c) Padanan impedans sempurna',rae_q4_d:'d) SWR maksimum dibenarkan',
+  rae_q4_ans:'\u2705 <strong>c) Padanan impedans sempurna</strong> \u2014 SWR 1:1 bermakna tiada kuasa dipantulkan; semua output pemancar sampai ke antena.',
+  rae_q5:'S5. Apakah panjang gelombang pada 144\u202fMHz?',
+  rae_q5_a:'a) 0.144\u202fm',rae_q5_b:'b) 1.44\u202fm',rae_q5_c:'c) 2.08\u202fm',rae_q5_d:'d) 14.4\u202fm',
+  rae_q5_ans:'\u2705 <strong>c) 2.08\u202fm</strong> \u2014 \u03bb = 300/144 = 2.083\u202fm. Setiap lengan pemacu dipol ialah \u03bb/4 \u2248 521\u202fmm.',
+  rae_q6:'S6. Elemen Yagi mana yang LEBIH PANJANG daripada separuh panjang gelombang?',
+  rae_q6_a:'a) Pengarah',rae_q6_b:'b) Elemen pemacu',rae_q6_c:'c) Reflektor',rae_q6_d:'d) Semua sama',
+  rae_q6_ans:'\u2705 <strong>c) Reflektor</strong> \u2014 Reflektor adalah ~5% lebih panjang daripada \u03bb/2; pengarah ~5% lebih pendek. Kedua-duanya menyebabkan anjakan fasa yang menumpukan tenaga ke hadapan.',
+  rae_q7:'S7. Yagi 3 elemen mempunyai nisbah hadapan-ke-belakang kira-kira:',
+  rae_q7_a:'a) 6\u202fdB',rae_q7_b:'b) 20\u202fdB',rae_q7_c:'c) 40\u202fdB',rae_q7_d:'d) 60\u202fdB',
+  rae_q7_ans:'\u2705 <strong>b) 20\u202fdB</strong> \u2014 20\u202fdB bermakna isyarat hadapan 100\u00d7 isyarat belakang. Putar 180\u00b0 \u2014 isyarat sepatutnya hampir hilang.',
+  rae_q8:'S8. Pengutuban silang antara pemancar dan penerima menyebabkan kira-kira:',
+  rae_q8_a:'a) Kehilangan 3\u202fdB',rae_q8_b:'b) Kehilangan 6\u202fdB',rae_q8_c:'c) Kehilangan 20\u202fdB',rae_q8_d:'d) Tiada kesan',
+  rae_q8_ans:'\u2705 <strong>c) ~20\u202fdB kehilangan</strong> \u2014 Musang menegak + Yagi mendatar (atau sebaliknya) = kehilangan ~20\u202fdB (isyarat 100\u00d7 lebih lemah). Sentiasa padankan pengutuban!',
+}
+};
+
+function setLang(l){ console.log("[FoxLMS-v3] setLang:", l);
+  curLang=l;
+  document.getElementById('btnEN').classList.toggle('active',l==='en');
+  document.getElementById('btnBM').classList.toggle('active',l==='bm');
+  var t=TR[l];
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k=el.getAttribute('data-i18n');
+    if(t[k]!==undefined) el.innerHTML=t[k];
+  });
+  // update gain chart detail if visible
+  if(gainDetailKey) showGainDetail(gainDetailKey);
+  // update antenna type detail panel
+  var det=document.getElementById('antennaTypeDetail');
+  if(det && window._antKey){
+    var ta=TR[l]||TR['en'];
+    var bc=window._antBadge||'#02ADA5';
+    det.innerHTML='<strong style="color:var(--teal)">'+(ta[window._antKey+'_name']||'')+'</strong>'
+      +' <span style="font-size:.72rem;background:'+bc+'22;color:'+bc+';border:1px solid '+bc+'55;border-radius:8px;padding:1px 5px;font-weight:700;">'+(ta[window._antKey+'_type']||'')+'</span>'
+      +' — '+(ta[window._antKey+'_info']||'');
+  }
+}
+
+/* ── Triple-click SEE → teacher notes ── */
+(function(){
+  var box=document.getElementById('chev-see');
+  if(!box) return;
+  var clicks=0, timer;
+  box.addEventListener('click',function(){
+    clicks++;
+    clearTimeout(timer);
+    timer=setTimeout(function(){clicks=0;},800);
+    if(clicks>=3){clicks=0;window.location.href='teacher-3.html';}
+  });
+})();
+
+/* ── Modules dropdown ── */
+(function(){
+  var btn=document.getElementById('stepsToggle');
+  var menu=document.getElementById('stepsMenu');
+  if(!btn||!menu) return;
+  btn.addEventListener('click',function(e){
+    e.stopPropagation();
+    var open=menu.style.display==='block';
+    menu.style.display=open?'none':'block';
+  });
+  document.addEventListener('click',function(){menu.style.display='none';});
+})();
+
+/* ── Tab switching ── */
+function switchTab(btn, paneId){
+  var card=btn.closest('.section-card')||btn.closest('.tab-group');
+  if(card){
+    card.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    card.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});
+  }
+  btn.classList.add('active');
+  var pane=document.getElementById(paneId);
+  if(pane) pane.classList.add('active');
+}
+
+/* ══════════════════════════════════════════════════════════
+   GAIN CHART (bar chart in div)
+   ══════════════════════════════════════════════════════════ */
+var gainDetailKey = null;
+(function(){
+  var antennas=[
+    {key:'duck',  dBi:2,    maxH:20},
+    {key:'dipole',dBi:2.15, maxH:21},
+    {key:'2el',   dBi:7,    maxH:70},
+    {key:'3el',   dBi:10,   maxH:100},
+    {key:'5el',   dBi:13,   maxH:130}
+  ];
+  var colors=['#3a8a86','#4a9a94','#02ADA5','#02d0c7','#7ee8e4'];
+  var container=document.getElementById('gainChart');
+  if(!container) return;
+  container.style.cssText='display:flex;gap:10px;align-items:flex-end;height:140px;padding:0 8px 0';
+
+  antennas.forEach(function(ant,i){
+    var wrap=document.createElement('div');
+    wrap.style.cssText='flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer';
+
+    var val=document.createElement('div');
+    val.style.cssText='font-size:.75rem;font-weight:700;color:var(--teal)';
+    val.setAttribute('data-i18n','gain_'+ant.key+'_gain');
+    val.textContent='+'+ant.dBi+' dBi';
+
+    var bar=document.createElement('div');
+    bar.style.cssText='width:100%;border-radius:5px 5px 0 0;background:'+colors[i]+';transition:filter .2s';
+    bar.style.height=ant.maxH+'px';
+
+    var lbl=document.createElement('div');
+    lbl.style.cssText='font-size:.72rem;color:var(--text-muted);text-align:center;line-height:1.2';
+    lbl.setAttribute('data-i18n','gain_'+ant.key+'_name');
+    lbl.textContent=ant.key;
+
+    wrap.appendChild(val);
+    wrap.appendChild(bar);
+    wrap.appendChild(lbl);
+    container.appendChild(wrap);
+
+    wrap.addEventListener('click',function(){showGainDetail('gain_'+ant.key);});
+    wrap.addEventListener('mouseenter',function(){bar.style.filter='brightness(1.3)';});
+    wrap.addEventListener('mouseleave',function(){bar.style.filter='';});
+  });
+
+  function showGainDetail(k){
+    gainDetailKey=k;
+    var t=TR[curLang];
+    var infoKey=k+'_info';
+    var detail=document.getElementById('gainDetail');
+    if(detail && t[infoKey]) detail.innerHTML='<strong style="color:var(--teal)">'+t[k+'_name']+'</strong> ('+t[k+'_gain']+'): '+t[infoKey];
+  }
+  window.showGainDetail=showGainDetail;
+  // show default
+  showGainDetail('gain_3el');
+})();
+
+/* ══════════════════════════════════════════════════════════
+   YAGI ELEMENT DIAGRAM CANVAS
+   ══════════════════════════════════════════════════════════ */
+(function(){
+  var canvas=document.getElementById('yagiDiagram');
+  if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var W=560, H=200;
+  var elements=[
+    {label_key:'s2_ref', len:104, x:90,  color:'#7bbfba'},
+    {label_key:'s2_drv', len:99.4,x:90+91,color:'#02ADA5'},
+    {label_key:'s2_dir', len:94.6,x:90+91+76,color:'#48dbfb'}
+  ];
+  var hovered=-1;
+
+  function getLabel(el){
+    var t=TR[curLang];
+    return t[el.label_key]||el.label_key;
+  }
+
+  function pxPerCm(){ return (H*0.45)/110; }
+
+  function drawDiagram(){
+    ctx.clearRect(0,0,W,H);
+    var ppc=pxPerCm();
+    var boomY=H/2;
+
+    // Boom
+    ctx.beginPath(); ctx.moveTo(60,boomY); ctx.lineTo(W-50,boomY);
+    ctx.strokeStyle='#1a5f5a'; ctx.lineWidth=5; ctx.stroke();
+    ctx.font='11px sans-serif'; ctx.fillStyle='#1a5f5a'; ctx.textAlign='center';
+    var t=TR[curLang];
+    ctx.fillText('PVC Boom (120 cm)', W/2, boomY+22);
+
+    // Spacing labels
+    var spacings=[{from:0,to:1,label:'36.5 cm'},{from:1,to:2,label:'30.5 cm'}];
+    spacings.forEach(function(s){
+      var x1=elements[s.from].x, x2=elements[s.to].x;
+      ctx.beginPath(); ctx.moveTo(x1,boomY-60); ctx.lineTo(x2,boomY-60);
+      ctx.strokeStyle='rgba(2,173,165,0.45)'; ctx.lineWidth=1; ctx.setLineDash([4,3]); ctx.stroke();
+      ctx.setLineDash([]);
+      var midX=(x1+x2)/2;
+      // arrows
+      ctx.beginPath(); ctx.moveTo(x1+3,boomY-60); ctx.lineTo(x1+8,boomY-64); ctx.lineTo(x1+8,boomY-56); ctx.closePath();
+      ctx.fillStyle='rgba(2,173,165,0.5)'; ctx.fill();
+      ctx.beginPath(); ctx.moveTo(x2-3,boomY-60); ctx.lineTo(x2-8,boomY-64); ctx.lineTo(x2-8,boomY-56); ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle='rgba(2,173,165,0.8)'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(s.label, midX, boomY-68);
+    });
+
+    // Elements
+    elements.forEach(function(el,i){
+      var halfPx=(el.len/2)*ppc;
+      var x=el.x;
+      var isHov=(hovered===i);
+      ctx.beginPath(); ctx.moveTo(x,boomY-halfPx); ctx.lineTo(x,boomY+halfPx);
+      ctx.strokeStyle=isHov?'#fff':el.color; ctx.lineWidth=isHov?6:4; ctx.stroke();
+      // end caps
+      [-1,1].forEach(function(s){
+        ctx.beginPath(); ctx.arc(x,boomY+s*halfPx,isHov?6:4,0,Math.PI*2);
+        ctx.fillStyle=isHov?'#fff':el.color; ctx.fill();
+      });
+      // label
+      ctx.font=(isHov?'bold ':'')+' 11px sans-serif';
+      ctx.fillStyle=el.color; ctx.textAlign='center';
+      ctx.fillText(getLabel(el), x, boomY+halfPx+16);
+      ctx.fillText(el.len+' cm', x, boomY+halfPx+28);
+    });
+
+    // Coax indicator
+    var de=elements[1];
+    ctx.beginPath(); ctx.moveTo(de.x,boomY); ctx.lineTo(de.x+28,boomY+38);
+    ctx.strokeStyle='#f39c12'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#f39c12'; ctx.font='10px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('coax (50 Ω)', de.x+31, boomY+40);
+
+    // Signal direction arrow
+    ctx.beginPath(); ctx.moveTo(elements[2].x+18,boomY);
+    ctx.lineTo(elements[2].x+50,boomY);
+    ctx.strokeStyle='rgba(2,173,165,0.5)'; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(elements[2].x+50,boomY);
+    ctx.lineTo(elements[2].x+45,boomY-5); ctx.lineTo(elements[2].x+45,boomY+5); ctx.closePath();
+    ctx.fillStyle='rgba(2,173,165,0.6)'; ctx.fill();
+    ctx.fillStyle='rgba(2,173,165,0.6)'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(curLang==='bm'?'→ Arah Isyarat':'→ Signal Direction', elements[2].x+38, boomY-10);
+  }
+
+  canvas.addEventListener('mousemove',function(e){
+    var rect=canvas.getBoundingClientRect();
+    var mx=(e.clientX-rect.left)*(W/rect.width);
+    var found=-1;
+    elements.forEach(function(el,i){ if(Math.abs(mx-el.x)<16) found=i; });
+    if(found!==hovered){ hovered=found; drawDiagram(); }
+  });
+  canvas.addEventListener('mouseleave',function(){ hovered=-1; drawDiagram(); });
+
+  window.addEventListener('load', function(){ drawDiagram(); });
+  drawDiagram();
+})();
+
+/* ══════════════════════════════════════════════════════════
+   PATTERN CANVAS (Polar radiation pattern + signal meter)
+   ══════════════════════════════════════════════════════════ */
+(function(){
+  var canvas=document.getElementById('patternCanvas');
+  if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var W=500, H=300;
+  var cx=W/2, cy=H/2;
+  var foxX=cx+100, foxY=cy-70;
+
+  function toRad(d){ return d*Math.PI/180; }
+
+  function yagiGain(angleDeg){
+    var r=toRad(angleDeg);
+    var front=Math.pow(Math.cos(r/2),4);
+    var back=0.01*Math.pow(Math.cos((angleDeg-180)*Math.PI/180/2),4);
+    return Math.max(front, back);
+  }
+
+  function drawPattern(yagiAngleDeg){
+    ctx.clearRect(0,0,W,H);
+    var poleR=Math.min(cx,cy)-24;
+
+    // Grid rings
+    [0.25,0.5,0.75,1.0].forEach(function(f){
+      ctx.beginPath(); ctx.arc(cx,cy,poleR*f,0,Math.PI*2);
+      ctx.strokeStyle='rgba(2,173,165,0.10)'; ctx.lineWidth=1; ctx.stroke();
+    });
+
+    // Radial lines
+    for(var a=0;a<360;a+=30){
+      var rad=toRad(a-90);
+      ctx.beginPath(); ctx.moveTo(cx,cy);
+      ctx.lineTo(cx+Math.cos(rad)*poleR, cy+Math.sin(rad)*poleR);
+      ctx.strokeStyle='rgba(2,173,165,0.07)'; ctx.lineWidth=1; ctx.stroke();
+    }
+
+    // Cardinal labels
+    var cards=[['N',0],['E',90],['S',180],['W',270]];
+    ctx.font='bold 11px sans-serif'; ctx.fillStyle='rgba(2,173,165,0.4)';
+    cards.forEach(function(c){
+      var rad=toRad(c[1]-90);
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(c[0], cx+Math.cos(rad)*(poleR+14), cy+Math.sin(rad)*(poleR+14));
+    });
+
+    // Beam pattern
+    ctx.beginPath();
+    for(var pa=0;pa<=360;pa+=2){
+      var relAngle=(pa-yagiAngleDeg+360)%360;
+      var g=yagiGain(relAngle);
+      var screenAngle=toRad(pa-90);
+      var rx=cx+Math.cos(screenAngle)*g*poleR;
+      var ry=cy+Math.sin(screenAngle)*g*poleR;
+      pa===0?ctx.moveTo(rx,ry):ctx.lineTo(rx,ry);
+    }
+    ctx.closePath();
+    ctx.fillStyle='rgba(2,173,165,0.18)'; ctx.fill();
+    ctx.strokeStyle='#02ADA5'; ctx.lineWidth=2.5; ctx.stroke();
+
+    // Yagi direction arrow
+    var yrad=toRad(yagiAngleDeg-90);
+    var ax=cx+Math.cos(yrad)*poleR*0.88, ay=cy+Math.sin(yrad)*poleR*0.88;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(ax,ay);
+    ctx.strokeStyle='#ff9f43'; ctx.lineWidth=3; ctx.stroke();
+    ctx.beginPath(); ctx.arc(ax,ay,5,0,Math.PI*2); ctx.fillStyle='#ff9f43'; ctx.fill();
+
+    // Yagi label
+    var lx=cx+(ax-cx)*1.14, ly=cy+(ay-cy)*1.14;
+    ctx.font='bold 10px sans-serif'; ctx.fillStyle='#ff9f43';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('→ Yagi', lx, ly);
+
+    // Fox 🦊
+    ctx.beginPath(); ctx.arc(foxX,foxY,8,0,Math.PI*2);
+    ctx.fillStyle='#ff6b6b'; ctx.fill();
+    ctx.font='16px sans-serif'; ctx.fillStyle='#ff6b6b';
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText('🦊', foxX, foxY-8);
+
+    // dB labels on rings
+    var dbLabels=['-12 dB','-6 dB','-3 dB','0 dB'];
+    ctx.font='9px sans-serif'; ctx.fillStyle='rgba(2,173,165,0.5)'; ctx.textAlign='left';
+    [0.25,0.5,0.75,1.0].forEach(function(f,i){
+      ctx.fillText(dbLabels[i], cx+poleR*f+3, cy-3);
+    });
+
+    // Legend
+    ctx.font='10px sans-serif'; ctx.fillStyle='rgba(2,173,165,0.6)';
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('3-element Yagi · 144 MHz · click to move 🦊', 6, 6);
+  }
+
+  function updateMeter(gain){
+    var bars=document.querySelectorAll('#signalMeter .signal-bar');
+    var maxH=46;
+    bars.forEach(function(b,i){
+      var threshold=(i+1)/bars.length;
+      var active=gain>=threshold-0.08;
+      var h=active?Math.round(maxH*(i+1)/bars.length):4;
+      b.style.height=h+'px';
+      b.style.background=active?(gain>0.7?'#02ADA5':gain>0.3?'#f39c12':'#e74c3c'):'var(--bg3)';
+    });
+    var pct=Math.round(gain*100);
+    var t=TR[curLang];
+    var txt;
+    if(pct>80) txt=(curLang==='bm'?'Isyarat kuat — lobus hadapan!':'Strong signal — front lobe!');
+    else if(pct>40) txt=(curLang==='bm'?'Isyarat sederhana':'Moderate signal');
+    else if(pct>10) txt=(curLang==='bm'?'Isyarat lemah — kawasan titik bisu sisi':'Weak signal — side null area');
+    else txt=(curLang==='bm'?'Sangat lemah — titik bisu belakang':'Very weak — back null');
+    var el=document.getElementById('signalText');
+    if(el) el.textContent=txt+' ('+pct+'%)';
+  }
+
+  function update(){
+    var ang=parseInt(document.getElementById('yagiAngle').value)||0;
+    document.getElementById('angleLabel').textContent=ang+'°';
+    var foxScreenAngle=Math.atan2(foxY-cy,foxX-cx)*180/Math.PI+90;
+    if(foxScreenAngle<0) foxScreenAngle+=360;
+    var rel=(foxScreenAngle-ang+360)%360;
+    var gain=yagiGain(rel);
+    drawPattern(ang);
+    updateMeter(gain);
+  }
+
+  var slider=document.getElementById('yagiAngle');
+  if(slider) slider.addEventListener('input', update);
+
+  canvas.addEventListener('click',function(e){
+    var rect=canvas.getBoundingClientRect();
+    foxX=(e.clientX-rect.left)*(W/rect.width);
+    foxY=(e.clientY-rect.top)*(H/rect.height);
+    update();
+  });
+
+  window.addEventListener('load', update);
+  update();
+})();
+
+/* ─── RADIO WAVE CANVAS ─── */
+(function(){
+  var cv=document.getElementById('radioWaveCanvas');
+  if(!cv) return;
+  var cx=cv.getContext('2d');
+  var W=cv.width, H=cv.height;
+  var t=0, raf=null;
+  function rr(c,x,y,w,h,r){c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r);}
+  function draw(){
+    cx.clearRect(0,0,W,H);
+    var mid=H/2;
+    // TX box
+    cx.fillStyle='rgba(2,173,165,0.18)'; cx.strokeStyle='#02ADA5'; cx.lineWidth=1.5;
+    cx.beginPath(); rr(cx,18,mid-26,58,52,6); cx.fill(); cx.stroke();
+    cx.fillStyle='#02ADA5'; cx.font='bold 10px sans-serif'; cx.textAlign='center';
+    cx.fillText('TX',47,mid-8);
+    cx.fillStyle='#7bbfba'; cx.font='9px sans-serif';
+    cx.fillText(curLang==='bm'?'Pemancar':'Transmitter',47,mid+4);
+    cx.fillText(curLang==='bm'?'(TX)':'(TX)',47,mid+16);
+    // RX box
+    cx.fillStyle='rgba(217,154,16,0.15)'; cx.strokeStyle='#D99A10'; cx.lineWidth=1.5;
+    cx.beginPath(); rr(cx,W-76,mid-26,58,52,6); cx.fill(); cx.stroke();
+    cx.fillStyle='#D99A10'; cx.font='bold 10px sans-serif'; cx.textAlign='center';
+    cx.fillText('RX',W-47,mid-8);
+    cx.fillStyle='#7bbfba'; cx.font='9px sans-serif';
+    cx.fillText(curLang==='bm'?'Penerima':'Receiver',W-47,mid+4);
+    cx.fillText(curLang==='bm'?'(RX)':'(RX)',W-47,mid+16);
+    // TX antenna stick
+    cx.strokeStyle='#02ADA5'; cx.lineWidth=2;
+    cx.beginPath(); cx.moveTo(76,mid); cx.lineTo(90,mid); cx.stroke();
+    cx.beginPath(); cx.moveTo(90,mid-16); cx.lineTo(90,mid+16); cx.stroke();
+    // RX antenna stick
+    cx.strokeStyle='#D99A10';
+    cx.beginPath(); cx.moveTo(W-76,mid); cx.lineTo(W-90,mid); cx.stroke();
+    cx.beginPath(); cx.moveTo(W-90,mid-16); cx.lineTo(W-90,mid+16); cx.stroke();
+    // sine waves
+    var ws=94, we=W-94;
+    var numW=4, lam=(we-ws)/numW, amp=20, phase=t*0.04;
+    for(var copy=0;copy<3;copy++){
+      var alpha=1-copy*0.28, pOff=copy*(lam/3);
+      var g=cx.createLinearGradient(ws,0,we,0);
+      g.addColorStop(0,'rgba(2,173,165,'+alpha+')');
+      g.addColorStop(0.5,'rgba(2,200,190,'+alpha+')');
+      g.addColorStop(1,'rgba(2,173,165,'+(alpha*0.25)+')');
+      cx.strokeStyle=g; cx.lineWidth=2-copy*0.4;
+      cx.beginPath();
+      for(var x=ws;x<=we;x+=2){
+        var prog=(x-ws)/(we-ws);
+        var fade=Math.sin(prog*Math.PI);
+        var y=mid+Math.sin((x-ws)/lam*2*Math.PI-phase-pOff)*amp*fade;
+        if(x===ws) cx.moveTo(x,y); else cx.lineTo(x,y);
+      }
+      cx.stroke();
+    }
+    // label
+    cx.fillStyle='rgba(123,191,186,0.7)'; cx.font='8px sans-serif'; cx.textAlign='center';
+    cx.fillText(curLang==='bm'?'300,000 km/s →':'300,000 km/s →',(ws+we)/2,mid-32);
+    t++; raf=requestAnimationFrame(draw);
+  }
+  var obs=new IntersectionObserver(function(e){
+    e.forEach(function(en){ if(!en.isIntersecting&&raf){cancelAnimationFrame(raf);raf=null;} else if(en.isIntersecting&&!raf){draw();} });
+  },{threshold:0.1});
+  obs.observe(cv);
+  draw();
+})();
+
+/* ─── ANTENNA TYPE GALLERY ─── */
+(function(){
+  var container=document.getElementById('antennaTypeGallery');
+  var detail=document.getElementById('antennaTypeDetail');
+  if(!container||!detail) return;
+
+  function rr2(c,x,y,w,h,r){c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r);}
+  function drawWhip(c,W,H){
+    var mx=W/2,my=H*0.76;
+    c.fillStyle='rgba(2,173,165,0.25)'; c.strokeStyle='#02ADA5'; c.lineWidth=1;
+    c.beginPath(); rr2(c,mx-12,my-3,24,12,3); c.fill(); c.stroke();
+    c.fillStyle='#041f1e'; c.font='6px sans-serif'; c.textAlign='center'; c.fillText('TX',mx,my+6);
+    c.strokeStyle='#d4f0ee'; c.lineWidth=2.5; c.lineCap='round';
+    c.beginPath(); c.moveTo(mx,my-3); c.lineTo(mx,my-46); c.stroke();
+    for(var r=14;r<=38;r+=12){c.beginPath();c.arc(mx,my-25,r,0,Math.PI*2);c.strokeStyle='rgba(2,173,165,'+(0.55-r/80)+')';c.lineWidth=0.8;c.stroke();}
+    c.fillStyle='rgba(2,173,165,0.08)'; c.beginPath(); c.arc(mx,my-25,38,0,Math.PI*2); c.fill();
+  }
+  function drawDuck(c,W,H){
+    var mx=W/2,my=H*0.76;
+    c.fillStyle='rgba(2,173,165,0.25)'; c.strokeStyle='#02ADA5'; c.lineWidth=1;
+    c.beginPath(); rr2(c,mx-12,my-3,24,12,3); c.fill(); c.stroke();
+    c.fillStyle='#041f1e'; c.font='6px sans-serif'; c.textAlign='center'; c.fillText('HT',mx,my+6);
+    c.strokeStyle='#d4f0ee'; c.lineWidth=2; c.lineCap='round';
+    c.beginPath();
+    for(var i=0;i<7;i++){var y1=my-3-i*6,xA=mx+(i%2===0?-5:5);if(i===0)c.moveTo(mx,y1);c.quadraticCurveTo(xA,y1,mx+(i%2===0?5:-5),y1-6);}
+    c.stroke();
+    for(var r=12;r<=30;r+=10){c.beginPath();c.arc(mx,my-24,r,0,Math.PI*2);c.strokeStyle='rgba(2,173,165,'+(0.5-r/65)+')';c.lineWidth=0.8;c.stroke();}
+  }
+  function drawDipole(c,W,H){
+    var mx=W/2,my=H*0.48;
+    c.strokeStyle='#7bbfba'; c.lineWidth=1;
+    c.beginPath(); c.moveTo(mx,my+30); c.lineTo(mx,my); c.stroke();
+    c.strokeStyle='#d4f0ee'; c.lineWidth=2.5; c.lineCap='round';
+    c.beginPath(); c.moveTo(mx,my); c.lineTo(mx,my-36); c.stroke();
+    c.beginPath(); c.moveTo(mx,my); c.lineTo(mx,my+36); c.stroke();
+    c.fillStyle='#02ADA5'; c.beginPath(); c.arc(mx,my,3,0,Math.PI*2); c.fill();
+    c.strokeStyle='rgba(2,173,165,0.45)'; c.lineWidth=0.8;
+    c.beginPath(); c.ellipse(mx-22,my,18,36,0,0,Math.PI*2); c.stroke();
+    c.beginPath(); c.ellipse(mx+22,my,18,36,0,0,Math.PI*2); c.stroke();
+    c.fillStyle='rgba(2,173,165,0.06)';
+    c.beginPath(); c.ellipse(mx-22,my,18,36,0,0,Math.PI*2); c.fill();
+    c.beginPath(); c.ellipse(mx+22,my,18,36,0,0,Math.PI*2); c.fill();
+  }
+  function drawLoop(c,W,H){
+    var mx=W/2,my=H*0.44;
+    c.strokeStyle='#d4f0ee'; c.lineWidth=2.5;
+    c.beginPath(); c.arc(mx,my,28,0,Math.PI*2); c.stroke();
+    c.strokeStyle='#D99A10'; c.lineWidth=2;
+    c.beginPath(); c.moveTo(mx-7,my-28); c.lineTo(mx+7,my-28); c.stroke();
+    c.beginPath(); c.moveTo(mx-7,my-34); c.lineTo(mx+7,my-34); c.stroke();
+    c.strokeStyle='#7bbfba'; c.lineWidth=1;
+    c.beginPath(); c.moveTo(mx,my+28); c.lineTo(mx,my+42); c.stroke();
+    c.strokeStyle='rgba(255,80,80,0.6)'; c.lineWidth=1.2;
+    for(var s=-1;s<=1;s+=2){
+      c.beginPath(); c.moveTo(mx+s*38,my); c.lineTo(mx+s*50,my); c.stroke();
+      c.beginPath(); c.moveTo(mx+s*46,my-4); c.lineTo(mx+s*50,my); c.lineTo(mx+s*46,my+4); c.stroke();
+    }
+    c.fillStyle='rgba(255,80,80,0.55)'; c.font='6px sans-serif'; c.textAlign='center';
+    c.fillText('NULL',mx-58,my+2); c.fillText('NULL',mx+58,my+2);
+  }
+  function drawYagi(c,W,H,n){
+    var bx=10,bw=W-20,by=H*0.82;
+    c.strokeStyle='#7bbfba'; c.lineWidth=1.5;
+    c.beginPath(); c.moveTo(bx,by-20); c.lineTo(bx+bw,by-20); c.stroke();
+    var sp=bw/(n+1);
+    var lf=[0.50,0.46].concat(Array(Math.max(0,n-2)).fill(0).map(function(_,i){return 0.41-i*0.01;}));
+    for(var i=0;i<n;i++){
+      var ex=bx+sp*(i+0.5), eh=(H*0.60)*lf[i];
+      c.strokeStyle=i===1?'#D99A10':(i===0?'#7bbfba':'#02ADA5');
+      c.lineWidth=i===1?2.5:1.8; c.lineCap='round';
+      c.beginPath(); c.moveTo(ex,by-20-eh/2); c.lineTo(ex,by-20+eh/2); c.stroke();
+      c.fillStyle=c.strokeStyle; c.font='6px sans-serif'; c.textAlign='center';
+      var lbs=['R','D'].concat(Array(n-2).fill(0).map(function(_,j){return 'D'+(j+1);}));
+      c.fillText(lbs[i],ex,by-8);
+    }
+    c.fillStyle='rgba(2,173,165,0.85)';
+    var ax=bx+bw+2;
+    c.beginPath(); c.moveTo(ax,by-20); c.lineTo(ax+10,by-24); c.lineTo(ax+10,by-16); c.closePath(); c.fill();
+    c.strokeStyle='rgba(2,173,165,0.28)'; c.lineWidth=0.8;
+    c.beginPath(); c.ellipse(ax+20,by-20,18,8+n*2,0,0,Math.PI*2); c.stroke();
+    c.fillStyle='rgba(2,173,165,0.06)';
+    c.beginPath(); c.ellipse(ax+20,by-20,18,8+n*2,0,0,Math.PI*2); c.fill();
+  }
+
+  var types=[
+    {key:'whip',  draw:drawWhip,  badgeC:'#3a8a86'},
+    {key:'duck',  draw:drawDuck,  badgeC:'#3a8a86'},
+    {key:'dipole',draw:drawDipole,badgeC:'#3a8a86'},
+    {key:'loop',  draw:drawLoop,  badgeC:'#D99A10'},
+    {key:'yagi2', draw:function(c,W,H){drawYagi(c,W,H,2);}, badgeC:'#D99A10'},
+    {key:'yagi3', draw:function(c,W,H){drawYagi(c,W,H,3);}, badgeC:'#D99A10', star:true},
+    {key:'yagi5', draw:function(c,W,H){drawYagi(c,W,H,5);}, badgeC:'#D99A10'},
+  ];
+
+  function buildCard(tp){
+    var wrap=document.createElement('div');
+    wrap.style.cssText='background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;cursor:pointer;transition:border-color .2s;';
+    var cv2=document.createElement('canvas');
+    cv2.width=120; cv2.height=100;
+    cv2.style.cssText='border-radius:4px;background:#041f1e;display:block;margin:0 auto 6px;width:100%;max-width:120px;';
+    wrap.appendChild(cv2);
+    tp.draw(cv2.getContext('2d'),120,100);
+    var t2=TR[curLang]||TR['en'];
+    var nm=document.createElement('div');
+    nm.setAttribute('data-i18n','s0b_'+tp.key+'_name');
+    nm.style.cssText='font-size:.75rem;color:var(--text);font-weight:600;margin-bottom:3px;';
+    nm.textContent=t2['s0b_'+tp.key+'_name']||tp.key;
+    wrap.appendChild(nm);
+    var bd=document.createElement('div');
+    bd.setAttribute('data-i18n','s0b_'+tp.key+'_type');
+    bd.style.cssText='font-size:.62rem;font-weight:700;padding:1px 5px;border-radius:10px;display:inline-block;background:'+tp.badgeC+'22;color:'+tp.badgeC+';border:1px solid '+tp.badgeC+'55;';
+    bd.textContent=t2['s0b_'+tp.key+'_type']||'';
+    wrap.appendChild(bd);
+    if(tp.star){var st=document.createElement('div');st.style.cssText='font-size:.62rem;color:#D99A10;margin-top:2px;';st.setAttribute('data-i18n','star_today');st.textContent=curLang==='bm'?'★ HARI INI':'★ TODAY';wrap.appendChild(st);}
+    wrap.addEventListener('mouseenter',function(){wrap.style.borderColor='var(--teal)';});
+    wrap.addEventListener('mouseleave',function(){wrap.style.borderColor='var(--border)';});
+    wrap.addEventListener('click',function(){
+      window._antKey='s0b_'+tp.key;
+      window._antBadge=tp.badgeC;
+      var t3=TR[curLang]||TR['en'];
+      detail.innerHTML='<strong style="color:var(--teal)">'+t3['s0b_'+tp.key+'_name']+'</strong>'
+        +' <span style="font-size:.72rem;background:'+tp.badgeC+'22;color:'+tp.badgeC+';border:1px solid '+tp.badgeC+'55;border-radius:8px;padding:1px 5px;font-weight:700;">'+t3['s0b_'+tp.key+'_type']+'</span>'
+        +' — '+t3['s0b_'+tp.key+'_info'];
+    });
+    return wrap;
+  }
+  types.forEach(function(tp){container.appendChild(buildCard(tp));});
+  // set default active antenna and show its detail on load
+  window._antKey='s0b_yagi3';
+  window._antBadge='#D99A10';
+  window.addEventListener('load',function(){
+    var t2=TR[curLang]||TR['en'];
+    detail.innerHTML='<strong style="color:var(--teal)">'+t2['s0b_yagi3_name']+'</strong>'
+      +' <span style="font-size:.72rem;background:#D99A1022;color:#D99A10;border:1px solid #D99A1055;border-radius:8px;padding:1px 5px;font-weight:700;">'+t2['s0b_yagi3_type']+'</span>'
+      +' — '+t2['s0b_yagi3_info'];
+  });
+})();
+
+/* ─── GAIN ANT GALLERY (mini sketches under bar chart) ─── */
+(function(){
+  var container=document.getElementById('gainAntGallery');
+  if(!container) return;
+  function miniWhip(c,W,H){var mx=W/2,my=H*0.72;c.fillStyle='rgba(2,173,165,0.2)';c.fillRect(mx-8,my-2,16,10);c.strokeStyle='#d4f0ee';c.lineWidth=2;c.lineCap='round';c.beginPath();c.moveTo(mx,my-2);c.lineTo(mx,my-28);c.stroke();for(var r=8;r<=22;r+=7){c.beginPath();c.arc(mx,my-15,r,0,Math.PI*2);c.strokeStyle='rgba(2,173,165,'+(0.5-r/48)+')';c.lineWidth=0.7;c.stroke();}}
+  function miniDipole(c,W,H){var mx=W/2,my=H*0.5;c.strokeStyle='#d4f0ee';c.lineWidth=2;c.lineCap='round';c.beginPath();c.moveTo(mx,my-20);c.lineTo(mx,my+20);c.stroke();c.fillStyle='#02ADA5';c.beginPath();c.arc(mx,my,2.5,0,Math.PI*2);c.fill();c.strokeStyle='rgba(2,173,165,0.4)';c.lineWidth=0.7;c.beginPath();c.ellipse(mx-13,my,10,20,0,0,Math.PI*2);c.stroke();c.beginPath();c.ellipse(mx+13,my,10,20,0,0,Math.PI*2);c.stroke();}
+  function miniYagi(c,W,H,n){var bx=6,bw=W-12,by=H*0.55,sp=bw/(n+1);c.strokeStyle='#7bbfba';c.lineWidth=1.2;c.beginPath();c.moveTo(bx,by);c.lineTo(bx+bw,by);c.stroke();var lf=[0.50,0.45].concat(Array(Math.max(0,n-2)).fill(0).map(function(_,i){return 0.40-i*0.01;}));for(var i=0;i<n;i++){var ex=bx+sp*(i+0.5),eh=(H*0.55)*lf[i];c.strokeStyle=i===1?'#D99A10':(i===0?'#7bbfba':'#02ADA5');c.lineWidth=i===1?2:1.4;c.lineCap='round';c.beginPath();c.moveTo(ex,by-eh/2);c.lineTo(ex,by+eh/2);c.stroke();}c.fillStyle='rgba(2,173,165,0.8)';var ax=bx+bw+1;c.beginPath();c.moveTo(ax,by);c.lineTo(ax+7,by-3);c.lineTo(ax+7,by+3);c.closePath();c.fill();}
+  var minis=[
+    {key:'duck',  draw:miniWhip},
+    {key:'dipole',draw:miniDipole},
+    {key:'2el',   draw:function(c,W,H){miniYagi(c,W,H,2);}},
+    {key:'3el',   draw:function(c,W,H){miniYagi(c,W,H,3);}},
+    {key:'5el',   draw:function(c,W,H){miniYagi(c,W,H,5);}},
+  ];
+  minis.forEach(function(mt){
+    var wrap=document.createElement('div');
+    wrap.style.cssText='cursor:pointer;text-align:center;transition:transform .15s;';
+    var cv3=document.createElement('canvas');
+    cv3.width=66; cv3.height=50;
+    cv3.style.cssText='border:1px solid var(--border);border-radius:4px;background:#041f1e;display:block;';
+    mt.draw(cv3.getContext('2d'),66,50);
+    wrap.appendChild(cv3);
+    wrap.addEventListener('mouseenter',function(){wrap.style.transform='scale(1.1)';});
+    wrap.addEventListener('mouseleave',function(){wrap.style.transform='scale(1)';});
+    wrap.addEventListener('click',function(){if(window.showGainDetail)window.showGainDetail('gain_'+mt.key);});
+    container.appendChild(wrap);
+  });
+})();
+
+/* ══ RAE ADVANCED SECTION JS ══════════════════════════════════════════════════ */
+function toggleRAE(){
+  var c=document.getElementById('raeContent');
+  var ch=document.getElementById('raeChevron');
+  var open=c.style.display==='none';
+  c.style.display=open?'block':'none';
+  ch.style.transform=open?'rotate(180deg)':'rotate(0deg)';
+}
+
+function switchRaeTab(key){
+  ['theory','swr','calc','quiz'].forEach(function(k){
+    var pane=document.getElementById('rae-pane-'+k);
+    var btn=document.getElementById('rae-btn-'+k);
+    if(pane) pane.style.display=(k===key)?'block':'none';
+    if(btn){ btn.classList.toggle('active',k===key); }
+  });
+  if(key==='quiz'){ buildRaeQuiz(curLang); }
+}
+
+function buildRaeQuiz(lang){
+  var t=TR[lang]||TR['en'];
+  var list=document.getElementById('raeQuizList');
+  if(!list) return;
+  list.innerHTML='';
+  var qs=['q1','q2','q3','q4','q5','q6','q7','q8'];
+  var correct=['c','b','a','c','c','c','b','c'];
+  qs.forEach(function(q,i){
+    var card=document.createElement('div');
+    card.style.cssText='background:var(--bg3);border-radius:8px;padding:12px 14px;cursor:pointer;border:1px solid var(--border);transition:border-color .2s;';
+    card.onmouseenter=function(){card.style.borderColor='var(--teal)';};
+    card.onmouseleave=function(){card.style.borderColor='var(--border)';};
+    var qtext=document.createElement('div');
+    qtext.style.cssText='font-weight:700;font-size:.88rem;margin-bottom:8px;color:var(--text)';
+    qtext.textContent=t['rae_'+q]||'';
+    card.appendChild(qtext);
+    var choices=document.createElement('div');
+    choices.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px';
+    ['a','b','c','d'].forEach(function(opt){
+      var ch=document.createElement('div');
+      if(opt===correct[i]){
+        ch.style.cssText='font-size:.78rem;padding:4px 8px;border-radius:5px;background:rgba(2,173,165,.12);color:var(--teal);font-weight:600;';
+      } else {
+        ch.style.cssText='font-size:.78rem;padding:4px 8px;border-radius:5px;background:rgba(255,255,255,.04);color:var(--text-muted)';
+      }
+      ch.textContent=t['rae_'+q+'_'+opt]||'';
+      choices.appendChild(ch);
+    });
+    card.appendChild(choices);
+    var ans=document.createElement('div');
+    ans.style.cssText='display:none;margin-top:6px;padding:8px 10px;background:rgba(2,173,165,.1);border-radius:6px;font-size:.82rem;line-height:1.6;border-left:3px solid var(--teal)';
+    ans.innerHTML=t['rae_'+q+'_ans']||'';
+    card.appendChild(ans);
+    card.addEventListener('click',function(){
+      ans.style.display=ans.style.display==='none'?'block':'none';
+    });
+    list.appendChild(card);
+  });
+}
+
+// Patch setLang so quiz rebuilds in the new language
+(function(){
+  var _orig=setLang;
+  setLang=function(l){
+    _orig(l);
+    var list=document.getElementById('raeQuizList');
+    if(list && list.children.length>0) buildRaeQuiz(l);
+  };
+})();
+
+</script>
+<script src="tracker.js"></script>
+</body>
+</html>

@@ -1,0 +1,2498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Field Strategy – Radio Foxhunting</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+:root{
+  --teal:#02ADA5;--teal-dim:#017a74;--teal-glow:rgba(2,173,165,.16);
+  --bg:#08312F;--surface:#0d3f3c;--surface2:#112f2d;
+  --text:#e8f5f4;--text-dim:#7ab8b5;
+  --accent:#f0c040;--danger:#e05050;--ok:#50c850;
+  --radius:10px;--font:system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Lang toggle (style.css provides .sitenav, .hero, .brand, .steps-*) */
+.lang-toggle{display:flex;gap:0;border:2px solid rgba(2,173,165,.18);border-radius:20px;overflow:hidden;flex-shrink:0}
+.lang-btn{padding:4px 14px;background:transparent;border:none;color:#7AADA8;font-weight:700;font-size:.78rem;cursor:pointer;transition:all .18s;letter-spacing:.04em}
+.lang-btn.active{background:var(--teal);color:#fff}
+
+/* WRAP */
+.wrap{max-width:860px;margin:0 auto;padding:1.5rem 1rem}
+
+/* SECTION */
+.section{background:var(--surface);border-radius:var(--radius);margin-bottom:1.5rem;overflow:hidden;border:1px solid rgba(2,173,165,.15)}
+.section-header{background:var(--surface2);padding:1rem 1.2rem;display:flex;align-items:center;gap:.8rem;cursor:pointer}
+.section-header h2{font-size:1.1rem;color:var(--teal)}
+.section-num{background:var(--teal);color:#011f1e;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0}
+.section-body{padding:1.2rem}
+
+/* PHASE CARDS */
+.phase-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1rem}
+.phase-card{background:var(--surface2);border-radius:8px;padding:1rem;border-top:3px solid var(--teal)}
+.phase-card h3{color:var(--accent);font-size:.9rem;margin-bottom:.4rem}
+.phase-card p{color:var(--text-dim);font-size:.9rem}
+.phase-num{font-size:1.4rem;font-weight:700;color:var(--teal)}
+
+/* HUNT CANVAS */
+.canvas-wrap{display:flex;flex-direction:column;align-items:center;gap:1rem}
+canvas{background:#0a2622;border-radius:8px;border:1px solid var(--teal-dim);max-width:100%;display:block}
+.hunt-controls{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
+.btn{background:var(--teal);color:#011f1e;border:none;padding:.5rem 1.2rem;border-radius:6px;cursor:pointer;font-weight:600;font-size:.9rem}
+.btn:hover{background:var(--teal-dim)}
+.btn-danger{background:var(--danger)}
+.btn-danger:hover{background:#c04040}
+.btn-secondary{background:var(--surface2);color:var(--teal);border:1px solid var(--teal)}
+.btn-secondary:hover{background:var(--teal-glow)}
+.phase-indicator{background:var(--surface2);border-radius:6px;padding:.4rem .8rem;font-size:.85rem;color:var(--text-dim)}
+#phase-label{color:var(--accent);font-weight:700}
+
+/* SMETER */
+.smeter-bar-wrap{background:#011f1e;border-radius:6px;height:18px;overflow:hidden;margin:.5rem 0}
+#smeter-fill{height:100%;background:linear-gradient(90deg,var(--ok),var(--accent),var(--danger));width:50%;transition:width .3s}
+.smeter-label{font-size:.8rem;color:var(--text-dim)}
+
+/* BODY SHIELD */
+.shield-wrap{display:flex;flex-direction:column;align-items:center;gap:1rem}
+.angle-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:center}
+.angle-row label{color:var(--text-dim);font-size:.9rem}
+#body-angle-val{color:var(--teal);font-weight:700;min-width:40px;display:inline-block}
+
+/* ATTEN TABLE */
+.atten-table{width:100%;border-collapse:collapse;margin-top:.8rem}
+.atten-table th{background:var(--teal-dim);color:#011f1e;padding:.5rem .8rem;text-align:left;font-size:.85rem}
+.atten-table td{padding:.5rem .8rem;border-bottom:1px solid rgba(2,173,165,.15);font-size:.85rem;color:var(--text-dim)}
+.atten-table tr:last-child td{border-bottom:none}
+.atten-table tr:hover td{background:var(--teal-glow)}
+
+/* FOX LOG */
+.log-form{background:var(--surface2);border-radius:8px;padding:1rem;display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1rem}
+.log-form label{color:var(--text-dim);font-size:.85rem;display:block;margin-bottom:.2rem}
+.log-form input,.log-form textarea{width:100%;background:#011f1e;color:var(--text);border:1px solid var(--teal-dim);border-radius:5px;padding:.4rem .6rem;font-size:.9rem}
+.log-form textarea{resize:vertical;height:56px}
+.log-form .full-width{grid-column:1/-1}
+.log-form .btn-row{grid-column:1/-1;display:flex;gap:.6rem}
+.log-table{width:100%;border-collapse:collapse}
+.log-table th{background:var(--teal-dim);color:#011f1e;padding:.5rem .6rem;font-size:.82rem;text-align:left}
+.log-table td{padding:.45rem .6rem;border-bottom:1px solid rgba(2,173,165,.1);font-size:.82rem;color:var(--text-dim)}
+.log-table tr:hover td{background:var(--teal-glow)}
+.score-total{text-align:right;color:var(--accent);font-weight:700;margin-top:.5rem;font-size:1rem}
+.remove-btn{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.9rem;padding:.1rem .3rem}
+.remove-btn:hover{color:#ff6060}
+
+/* TRIANGULATION */
+.tri-wrap{display:flex;flex-direction:column;align-items:center;gap:1rem}
+.tri-controls{width:100%;max-width:500px}
+.bearing-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem}
+.bearing-row label{color:var(--text-dim);font-size:.9rem;min-width:90px}
+.bearing-row input[type=range]{flex:1}
+.bearing-val{color:var(--teal);font-weight:700;min-width:42px}
+.tri-result{font-size:.95rem;font-weight:600;padding:.4rem .8rem;border-radius:6px;display:inline-block}
+.tri-hit{background:rgba(80,200,80,.15);color:var(--ok);border:1px solid var(--ok)}
+.tri-miss{background:rgba(224,80,80,.15);color:var(--danger);border:1px solid var(--danger)}
+
+/* TABS */
+.tabs{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:1rem}
+.tab{background:var(--surface2);color:var(--text-dim);border:1px solid rgba(2,173,165,.2);padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.88rem;transition:background .2s}
+.tab.active,.tab:hover{background:var(--teal-glow);color:var(--teal);border-color:var(--teal)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* RAE SECTION */
+.rae-toggle{width:100%;background:none;border:2px dashed var(--teal-dim);border-radius:8px;color:var(--text-dim);padding:.8rem 1.2rem;cursor:pointer;font-size:.95rem;text-align:left;margin-bottom:1rem;transition:border-color .2s}
+.rae-toggle:hover{border-color:var(--teal);color:var(--teal)}
+.rae-toggle.open{border-color:var(--teal);color:var(--teal)}
+.rae-body{display:none;background:var(--surface);border-radius:8px;border:1px solid rgba(2,173,165,.2);padding:1.2rem;margin-bottom:1rem}
+.rae-body.open{display:block}
+
+/* QUIZ */
+.quiz-q{background:var(--surface2);border-radius:8px;padding:1rem;margin-bottom:.8rem}
+.quiz-q p{font-weight:600;margin-bottom:.6rem;color:var(--text)}
+.quiz-q label{display:block;padding:.3rem .5rem;border-radius:4px;cursor:pointer;font-size:.9rem;color:var(--text-dim)}
+.quiz-q label:hover{background:var(--teal-glow);color:var(--teal)}
+.quiz-q label input{margin-right:.5rem}
+.quiz-feedback{font-size:.85rem;margin-top:.5rem;font-weight:600}
+.quiz-correct{color:var(--ok)}
+.quiz-wrong{color:var(--danger)}
+
+/* TIPS */
+.tip-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+.tip-card{background:var(--surface2);border-radius:8px;padding:1rem;border-left:3px solid var(--accent)}
+.tip-card h4{color:var(--accent);margin-bottom:.4rem;font-size:.95rem}
+.tip-card p{color:var(--text-dim);font-size:.88rem}
+
+/* PUNCH CARD */
+.punch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.6rem;margin-top:1rem}
+.punch-slot{background:var(--surface2);border:2px dashed rgba(2,173,165,.3);border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.punch-slot:hover{border-color:var(--teal)}
+.punch-slot.punched{background:var(--teal-glow);border:2px solid var(--teal)}
+.punch-slot span{font-size:1.1rem;color:var(--text-dim)}
+.punch-slot.punched span{color:var(--teal);font-weight:700}
+
+/* TIP TAB BAR (section 7 — renamed from .chev to avoid clash with style.css top nav) */
+.tip-tab-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.tip-tab{background:var(--surface2);border:1px solid rgba(2,173,165,.2);border-radius:6px;padding:.5rem .9rem;cursor:pointer;font-size:.88rem;color:var(--text-dim);transition:all .2s}
+.tip-tab:hover,.tip-tab.active{background:var(--teal-glow);color:var(--teal);border-color:var(--teal)}
+.tip-panel{display:none}
+.tip-panel.active{display:block}
+
+/* STEPNAV */
+.stepnav{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;flex-wrap:wrap;gap:.5rem}
+.stepnav a{background:var(--surface);color:var(--teal);border:1px solid var(--teal);padding:.5rem 1.1rem;border-radius:6px;font-size:.9rem}
+.stepnav a:hover{background:var(--teal-glow);text-decoration:none}
+
+/* FOOTER */
+
+.foot-tagline{color:var(--teal);font-weight:700;font-size:1rem;margin-bottom:.4rem}
+.foot-lab{color:var(--text-dim);font-size:.88rem;margin-bottom:.4rem}
+.foot-nav{display:flex;justify-content:center;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem}
+.foot-nav a{color:var(--text-dim);font-size:.82rem}
+.foot-nav a:hover{color:var(--teal)}
+.foot-copy{color:#4a7a78;font-size:.78rem}
+
+/* UTIL */
+.info-box{background:var(--teal-glow);border:1px solid var(--teal);border-radius:8px;padding:.8rem 1rem;margin:.8rem 0;font-size:.9rem;color:var(--text-dim)}
+.info-box strong{color:var(--teal)}
+ul.styled{padding-left:1.2rem;color:var(--text-dim)}
+ul.styled li{margin-bottom:.3rem;font-size:.9rem}
+/* ── Shield section animations ── */
+@keyframes shieldCardIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes stepSlideIn{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:translateX(0)}}
+.shield-card{opacity:0}
+.shield-card.sc-visible{animation:shieldCardIn .55s cubic-bezier(.22,.68,0,1.2) both}
+.shield-step{opacity:0}
+.shield-step.ss-visible{animation:stepSlideIn .4s ease both}
+@keyframes pulseAmber{0%,100%{text-shadow:none}50%{text-shadow:0 0 8px rgba(240,192,64,.7)}}
+@media(max-width:480px){.log-form{grid-template-columns:1fr}.log-form .full-width{grid-column:1}}
+
+/* ═══════════════════════════════════════════
+   INTRO SECTION — HOW IT WORKS
+═══════════════════════════════════════════ */
+.intro-band{
+  background:linear-gradient(160deg,#051c1a 0%,#0c3532 55%,#051c1a 100%);
+  border-bottom:2px solid rgba(2,173,165,.25);
+  padding:1.6rem 1rem 1.8rem;
+  text-align:center
+}
+.intro-band h2{
+  font-size:1rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--teal);margin:0 0 1.1rem;opacity:.9
+}
+/* step row */
+.how-steps{
+  display:flex;align-items:flex-start;justify-content:center;
+  gap:0;max-width:700px;margin:0 auto 1.4rem;flex-wrap:wrap
+}
+.how-step{
+  flex:1;min-width:120px;max-width:160px;
+  padding:.7rem .5rem;
+  background:rgba(2,173,165,.05);
+  border:1px solid rgba(2,173,165,.14);
+  border-radius:10px;margin:0 .2rem .4rem
+}
+.how-step-num{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--teal);color:#011f1e;
+  font-weight:900;font-size:1rem;
+  display:inline-flex;align-items:center;justify-content:center;
+  margin:0 auto .45rem;
+  box-shadow:0 0 12px rgba(2,173,165,.4)
+}
+.how-step-icon{font-size:1.7rem;line-height:1;display:block;margin-bottom:.3rem}
+.how-step-title{
+  font-size:.75rem;font-weight:800;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--teal);
+  margin-bottom:.25rem;display:block
+}
+.how-step-body{font-size:.74rem;color:var(--text-dim);line-height:1.45}
+.how-arrow{
+  display:flex;align-items:flex-start;padding-top:1.6rem;
+  color:rgba(2,173,165,.5);font-size:1.3rem;flex-shrink:0;margin:0 .1rem
+}
+@media(max-width:520px){.how-arrow{display:none}.how-step{min-width:44%}}
+/* scene canvas */
+.how-scene{
+  max-width:640px;margin:0 auto .6rem;border-radius:12px;overflow:hidden;
+  border:1px solid rgba(2,173,165,.2)
+}
+/* scene dots */
+.scene-dots{display:flex;justify-content:center;gap:.55rem;margin-top:.5rem}
+.scene-dot{width:10px;height:10px;border-radius:50%;background:rgba(2,173,165,.25);
+  cursor:pointer;transition:all .2s;border:none;padding:0}
+.scene-dot.active{background:var(--teal);box-shadow:0 0 8px rgba(2,173,165,.6);transform:scale(1.2)}
+/* glow pulse for step numbers */
+@keyframes numPulse{0%,100%{box-shadow:0 0 8px rgba(2,173,165,.35)}
+  50%{box-shadow:0 0 18px rgba(2,173,165,.7)}}
+.how-step:nth-child(1) .how-step-num{animation:numPulse 2.4s ease-in-out infinite}
+.how-step:nth-child(3) .how-step-num{animation:numPulse 2.4s ease-in-out .6s infinite}
+.how-step:nth-child(5) .how-step-num{animation:numPulse 2.4s ease-in-out 1.2s infinite}
+.how-step:nth-child(7) .how-step-num{animation:numPulse 2.4s ease-in-out 1.8s infinite}
+
+/* ═══════════════════════════════════════════
+   FOX CYCLE TIMELINE/* ═══════════════════════════════════════════
+   FOX CYCLE TIMELINE
+═══════════════════════════════════════════ */
+.fox-cycle-wrap{background:var(--surface2);border-radius:10px;padding:1rem 1.1rem;margin-bottom:.9rem;border:1px solid rgba(2,173,165,.18)}
+.anim-section-title{font-size:.75rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem}
+.fox-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.38rem}
+.fox-lbl{width:62px;font-size:.78rem;font-weight:700;color:var(--text-dim);flex-shrink:0;transition:color .2s}
+.fox-row.fox-on .fox-lbl{color:#f0c040}
+.fox-tl{flex:1;height:20px;background:#011f1e;border-radius:4px;position:relative;overflow:hidden;border:1px solid rgba(2,173,165,.12)}
+.fox-seg-silent{position:absolute;top:0;height:100%;background:rgba(2,173,165,.05)}
+.fox-seg-tx{position:absolute;top:0;height:100%;background:rgba(2,173,165,.35);border-radius:3px;transition:background .25s,box-shadow .25s}
+.fox-row.fox-on .fox-seg-tx{background:var(--teal);box-shadow:0 0 10px rgba(2,173,165,.6)}
+.fox-cur{position:absolute;top:0;width:2px;height:100%;background:#f0c040;opacity:.85;transition:left .08s linear;z-index:3}
+.fox-dot{width:9px;height:9px;border-radius:50%;background:rgba(2,173,165,.18);flex-shrink:0;transition:all .25s}
+.fox-row.fox-on .fox-dot{background:#f0c040;box-shadow:0 0 7px #f0c040}
+.cycle-ctrl{display:flex;align-items:center;gap:.8rem;margin-top:.6rem;flex-wrap:wrap}
+.cycle-time{font-size:.88rem;color:var(--teal);font-weight:700;min-width:72px}
+.btn-sm{background:var(--teal);color:#011f1e;border:none;padding:.28rem .75rem;border-radius:5px;cursor:pointer;font-weight:700;font-size:.78rem}
+.btn-sm:hover{opacity:.85}
+.btn-sm.secondary{background:var(--surface2);color:var(--teal);border:1px solid var(--teal)}
+
+/* ═══════════════════════════════════════════
+   PROPAGATION CANVAS
+═══════════════════════════════════════════ */
+.prop-wrap{background:var(--surface2);border-radius:10px;padding:1rem 1.1rem;margin-bottom:.9rem;border:1px solid rgba(2,173,165,.18)}
+.scenario-btns{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.7rem}
+.scen-btn{padding:.3rem .85rem;background:rgba(2,173,165,.07);border:1px solid rgba(2,173,165,.22);color:var(--text-dim);border-radius:20px;font-size:.78rem;cursor:pointer;transition:all .18s;font-weight:600}
+.scen-btn.active{background:var(--teal);color:#011f1e;border-color:var(--teal)}
+.prop-desc-box{font-size:.8rem;color:var(--text-dim);margin-top:.55rem;min-height:2.2em;line-height:1.5;padding:.4rem .6rem;background:rgba(2,173,165,.05);border-radius:6px;border-left:3px solid var(--teal)}
+
+/* ═══════════════════════════════════════════
+   ANTENNA PATTERN CANVAS (IMPROVED)
+═══════════════════════════════════════════ */
+.pattern-wrap{background:var(--surface2);border-radius:10px;padding:1rem 1.1rem;margin-bottom:.9rem;border:1px solid rgba(2,173,165,.18);display:flex;flex-direction:column;align-items:center}
+.pattern-btns{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.7rem;justify-content:center}
+.pat-btn{padding:.3rem .85rem;background:rgba(2,173,165,.07);border:1px solid rgba(2,173,165,.22);color:var(--text-dim);border-radius:20px;font-size:.78rem;cursor:pointer;transition:all .18s;font-weight:600}
+.pat-btn.active{background:var(--teal);color:#011f1e;border-color:var(--teal)}
+.pat-btn[data-pat="loop"].active{background:#f0a030;border-color:#f0a030;color:#011f1e}
+.pat-btn[data-pat="yagi"].active{background:#4090e0;border-color:#4090e0;color:#fff}
+.pattern-legend{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center;margin-top:.55rem}
+.legend-item{display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:var(--text-dim)}
+.legend-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.pattern-desc-box{font-size:.8rem;color:var(--text-dim);margin-top:.55rem;min-height:2.5em;line-height:1.5;text-align:center;max-width:380px;padding:.4rem .6rem;background:rgba(2,173,165,.05);border-radius:6px}
+
+/* ═══════════════════════════════════════════
+   QUIZ FADE-IN
+═══════════════════════════════════════════ */
+@keyframes quizSlideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.quiz-item-anim{animation:quizSlideIn .35s ease both}
+</style>
+</head>
+<body>
+
+<!-- CHEV BAR -->
+<div class="chev">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+
+<!-- NAV -->
+<nav class="sitenav">
+  <a href="index.html" class="brand">Radio Foxhunting</a>
+  <div class="steps-dropdown">
+    <button class="steps-btn" id="stepsToggle" onclick="toggleSteps()">Modules &#9662;</button>
+    <div class="steps-menu" id="stepsMenu">
+      <a href="module-0.html">0 &middot; Orientation</a>
+      <a href="module-1.html">1 &middot; Morse Code</a>
+      <a href="module-2.html">2 &middot; Map Reading</a>
+      <a href="module-3.html">3 &middot; Antennas</a>
+      <a href="module-4.html" class="current">4 &middot; Field Guide</a>
+    </div>
+  </div>
+  <div class="lang-toggle" style="margin-left:auto">
+    <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" id="btnBM" onclick="setLang('bm')">BM</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="eyebrow">UMPSA STEM LAB &middot; <span data-i18n="hero_eyebrow">Module 4 of 5</span></p>
+  <h1 data-i18n="hero_h1">Field Strategy</h1>
+  <p class="subtitle" data-i18n="hero_sub">Master the three phases, read signals, and find the fox efficiently.</p>
+  <div class="pills">
+    <span class="pill" data-i18n="pill_phases">&#127919; 3 Hunt Phases</span>
+    <span class="pill" data-i18n="pill_triangulation">&#128205; Triangulation</span>
+    <span class="pill" data-i18n="pill_foxlog">&#128221; Fox Log</span>
+    <span class="pill" data-i18n="pill_rae">&#127891; RAE Prep</span>
+  </div>
+</section>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span data-i18n="prog_label">Workshop Progress</span>
+    <span data-i18n="prog_detail">Module 4 of 5 &middot; Field Strategy</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" style="width:80%"></div></div>
+</div>
+
+
+<!-- INTRO SECTION -->
+<div class="intro-band">
+  <h2 data-i18n="intro_heading">&#128247; How Radio Foxhunting Works</h2>
+
+  <!-- 4-step cards -->
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="how-step-num">1</div>
+      <span class="how-step-icon">&#x1F98A;</span>
+      <span class="how-step-title" data-i18n="intro_s1_title">Fox Hides</span>
+      <div class="how-step-body" data-i18n="intro_s1_body">A small radio transmitter is hidden somewhere in the forest. It broadcasts a signal every 5 minutes.</div>
+    </div>
+    <div class="how-arrow">&#8250;</div>
+    <div class="how-step">
+      <div class="how-step-num">2</div>
+      <span class="how-step-icon">&#128225;</span>
+      <span class="how-step-title" data-i18n="intro_s2_title">Signal Travels</span>
+      <div class="how-step-body" data-i18n="intro_s2_body">Radio waves spread out like ripples on water &mdash; invisible, through the air, in all directions.</div>
+    </div>
+    <div class="how-arrow">&#8250;</div>
+    <div class="how-step">
+      <div class="how-step-num">3</div>
+      <span class="how-step-icon">&#127912;</span>
+      <span class="how-step-title" data-i18n="intro_s3_title">Rotate &amp; Listen</span>
+      <div class="how-step-body" data-i18n="intro_s3_body">Rotate your antenna until the signal disappears &mdash; the &ldquo;null&rdquo; points straight toward the fox.</div>
+    </div>
+    <div class="how-arrow">&#8250;</div>
+    <div class="how-step">
+      <div class="how-step-num">4</div>
+      <span class="how-step-icon">&#127942;</span>
+      <span class="how-step-title" data-i18n="intro_s4_title">Find &amp; Score</span>
+      <div class="how-step-body" data-i18n="intro_s4_body">Find all 5 foxes fastest. Score = points per fox minus elapsed minutes.</div>
+    </div>
+  </div>
+
+  <!-- Animated scene canvas -->
+  <div class="how-scene">
+    <canvas id="introCanvas" width="640" height="200" style="width:100%;display:block;background:#050d0c"></canvas>
+  </div>
+  <div class="scene-dots">
+    <button class="scene-dot active" onclick="setIntroScene(0)" id="sdot-0" aria-label="Scene 1"></button>
+    <button class="scene-dot" onclick="setIntroScene(1)" id="sdot-1" aria-label="Scene 2"></button>
+    <button class="scene-dot" onclick="setIntroScene(2)" id="sdot-2" aria-label="Scene 3"></button>
+    <button class="scene-dot" onclick="setIntroScene(3)" id="sdot-3" aria-label="Scene 4"></button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- SECTION 1: THREE PHASES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2 data-i18n="s1_title">Three Phases of a Hunt</h2>
+    </div>
+    <div class="section-body">
+      <div class="info-box">
+        <strong data-i18n="s1_info_head">Strategy Overview: </strong>
+        <span data-i18n="s1_info_body">Every successful foxhunt follows three phases based on your distance from the fox. Recognising which phase you are in determines your technique.</span>
+      </div>
+      <div class="phase-grid">
+        <div class="phase-card">
+          <div class="phase-num" data-i18n="phase1_num">Phase 1 · Long Range</div>
+          <h3 data-i18n="phase1_head">Long Yagi Antenna</h3>
+          <p data-i18n="phase1_body">Use full gain. Pan slowly to find the strongest signal direction. Walk decisively toward the bearing.</p>
+        </div>
+        <div class="phase-card">
+          <div class="phase-num" data-i18n="phase2_num">Phase 2 · Mid Range</div>
+          <h3 data-i18n="phase2_head">Attenuator + Loop</h3>
+          <p data-i18n="phase2_body">Signal is strong — add attenuation. Switch to a directional loop to refine the bearing.</p>
+        </div>
+        <div class="phase-card">
+          <div class="phase-num" data-i18n="phase3_num">Phase 3 · Close Range</div>
+          <h3 data-i18n="phase3_head">Body Shielding</h3>
+          <p data-i18n="phase3_body">Use your body as a shield. The null zone points toward the fox. Switch to a rubber duck antenna.</p>
+        </div>
+      </div>
+      <canvas id="huntCanvas" width="560" height="180" style="margin-top:1rem;width:100%"></canvas>
+      <div class="hunt-controls" style="margin-top:.8rem">
+        <div class="phase-indicator"><span data-i18n="phase_label_prefix">Phase: </span><span id="phase-label">–</span></div>
+        <button class="btn" onclick="startHunt()" data-i18n="btn_start_hunt">Start Hunt</button>
+        <button class="btn btn-secondary" onclick="resetHunt()" data-i18n="btn_reset">Reset</button>
+      </div>
+      <div style="margin-top:.6rem">
+        <div class="smeter-label"><span data-i18n="smeter_label">Signal Strength:</span> <span id="smeter-val">–</span></div>
+        <div class="smeter-bar-wrap"><div id="smeter-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: TRIANGULATION -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2 data-i18n="s2_title">Triangulation — Finding the Fox</h2>
+    </div>
+    <div class="section-body">
+      <div class="info-box">
+        <strong data-i18n="s2_info_head">Triangulation: </strong>
+        <span data-i18n="s2_info_body">Take bearings from two different locations. The fox is where the two bearing lines cross. Adjust the sliders until the lines intersect at the X.</span>
+      </div>
+      <div class="tri-wrap">
+        <canvas id="triCanvas" width="500" height="320" style="width:100%;max-width:500px"></canvas>
+        <div class="tri-controls">
+          <div class="bearing-row">
+            <label data-i18n="tri_bearing_a">Bearing from A:</label>
+            <input type="range" id="bearA" min="0" max="359" value="90" oninput="drawTri()">
+            <span class="bearing-val" id="bearA-val">90°</span>
+          </div>
+          <div class="bearing-row">
+            <label data-i18n="tri_bearing_b">Bearing from B:</label>
+            <input type="range" id="bearB" min="0" max="359" value="270" oninput="drawTri()">
+            <span class="bearing-val" id="bearB-val">270°</span>
+          </div>
+          <div style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:center">
+            <button class="btn" onclick="checkTri()" data-i18n="btn_check_answer">Check My Answer</button>
+            <button class="btn btn-secondary" onclick="resetTri()" data-i18n="btn_reset_tri">Reset</button>
+            <span id="tri-result"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: BODY SHIELDING -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2 data-i18n="s3_title">Body Shielding Technique</h2>
+    </div>
+    <div class="section-body">
+      <div class="info-box">
+        <strong data-i18n="s3_info_head">How it works: </strong>
+        <span data-i18n="s3_info_body">Your body absorbs 20–30 dB of signal. When signal is weakest (null), the fox is behind you. Rotate slowly to find the null.</span>
+      </div>
+      <!-- WHY PHASE 3 callout -->
+      <div style="background:rgba(240,192,64,.06);border-left:3px solid #f0c040;border-radius:0 8px 8px 0;padding:.8rem 1rem;margin:.9rem 0">
+        <div style="font-size:.78rem;font-weight:700;color:#f0c040;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem" data-i18n="s3_why3phase_head">⚡ Why is Body Shielding Phase 3?</div>
+        <div style="font-size:.84rem;color:var(--text);line-height:1.6" data-i18n="s3_why3phase_body">Each phase solves the specific problem of that distance. Far away you need <strong>more sensitivity</strong> — a Yagi at full gain. Getting closer you need <strong>more precision</strong> — a loop with an attenuator. Right next to the fox the signal is so strong it <strong>saturates your receiver</strong> — the S-meter reads full scale in every direction and a Yagi becomes useless. Body shielding is the only technique that handles signal overload while still giving you a direction.</div>
+      </div>
+
+      <!-- DISTANCE / PROBLEM / SOLUTION table -->
+      <div style="margin:.9rem 0;overflow-x:auto">
+        <div style="font-size:.78rem;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem" data-i18n="s3_table_head">📶 Signal Overload — Full Progression</div>
+        <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+          <thead>
+            <tr style="background:rgba(2,173,165,.12)">
+              <th style="padding:.45rem .7rem;text-align:left;color:var(--teal);border-bottom:1px solid rgba(2,173,165,.25)" data-i18n="s3_col_dist">Distance</th>
+              <th style="padding:.45rem .7rem;text-align:left;color:var(--teal);border-bottom:1px solid rgba(2,173,165,.25)" data-i18n="s3_col_prob">Problem</th>
+              <th style="padding:.45rem .7rem;text-align:left;color:var(--teal);border-bottom:1px solid rgba(2,173,165,.25)" data-i18n="s3_col_sol">Solution</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+              <td style="padding:.45rem .7rem;color:#7AADA8" data-i18n="s3_r1_dist">&gt; 300 m</td>
+              <td style="padding:.45rem .7rem;color:var(--text)" data-i18n="s3_r1_prob">Signal too weak to detect</td>
+              <td style="padding:.45rem .7rem"><span style="color:#66AAFF;font-weight:600" data-i18n="s3_r1_sol">Yagi — full gain</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)">
+              <td style="padding:.45rem .7rem;color:#7AADA8" data-i18n="s3_r2_dist">100 – 300 m</td>
+              <td style="padding:.45rem .7rem;color:var(--text)" data-i18n="s3_r2_prob">Signal getting strong</td>
+              <td style="padding:.45rem .7rem"><span style="color:#00E8D0;font-weight:600" data-i18n="s3_r2_sol">Attenuator — reduce receiver gain</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+              <td style="padding:.45rem .7rem;color:#7AADA8" data-i18n="s3_r3_dist">30 – 100 m</td>
+              <td style="padding:.45rem .7rem;color:var(--text)" data-i18n="s3_r3_prob">Signal very strong</td>
+              <td style="padding:.45rem .7rem"><span style="color:#FFD700;font-weight:600" data-i18n="s3_r3_sol">Attenuator + Body shield</span></td>
+            </tr>
+            <tr style="background:rgba(240,192,64,.06)">
+              <td style="padding:.45rem .7rem;color:#f0c040;font-weight:600" data-i18n="s3_r4_dist">&lt; 30 m</td>
+              <td style="padding:.45rem .7rem;color:var(--text)" data-i18n="s3_r4_prob">Receiver saturated — S-meter maxed everywhere</td>
+              <td style="padding:.45rem .7rem"><span style="color:#f0c040;font-weight:600" data-i18n="s3_r4_sol">Body shield only (attenuator maxed out)</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:.4rem;font-style:italic" data-i18n="s3_table_note">💡 Think of it as a volume dial: Yagi turns it up → Attenuator turns it down → Body shield covers your ears.</div>
+      </div>
+
+      <!-- WHY IT WORKS — 3 cards -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin:.9rem 0">
+
+        <div class="shield-card" data-sc-delay="0" style="background:rgba(2,173,165,.07);border:1px solid rgba(2,173,165,.2);border-radius:10px;padding:.85rem 1rem">
+          <div style="font-size:1.6rem;margin-bottom:.35rem">💧</div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem" data-i18n="s3_why1_head">Your Body = RF Absorber</div>
+          <div style="font-size:.82rem;line-height:1.5;color:var(--text)" data-i18n="s3_why1_body">The human body is ~60% water. Water absorbs VHF radio waves (144 MHz) very well, blocking <strong>20–30 dB</strong> — that means the signal behind you is <strong>100× to 1000× weaker</strong>.</div>
+        </div>
+
+        <div class="shield-card" data-sc-delay="150" style="background:rgba(2,173,165,.07);border:1px solid rgba(2,173,165,.2);border-radius:10px;padding:.85rem 1rem">
+          <div style="font-size:1.6rem;margin-bottom:.35rem">🔄</div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem" data-i18n="s3_why2_head">Why Rotate Your Whole Body</div>
+          <div style="font-size:.82rem;line-height:1.5;color:var(--text)" data-i18n="s3_why2_body">If you only rotate the antenna, the shield (your body) does not move. The fox must end up <strong>directly behind your back</strong> — your torso is the "wall" blocking the signal.</div>
+        </div>
+
+        <div class="shield-card" data-sc-delay="300" style="background:rgba(2,173,165,.07);border:1px solid rgba(2,173,165,.2);border-radius:10px;padding:.85rem 1rem">
+          <div style="font-size:1.6rem;margin-bottom:.35rem">🎯</div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem" data-i18n="s3_why3_head">Reading the Null</div>
+          <div style="font-size:.82rem;line-height:1.5;color:var(--text)" data-i18n="s3_why3_body">Turn until the S-meter reads <strong>minimum</strong> (null). The fox is now directly at your back. Add 180° to your facing direction → that is your <strong>fox bearing</strong>. Works best within 100 m.</div>
+        </div>
+
+      </div>
+
+      <!-- ANTENNA COMPARISON ILLUSTRATION -->
+      <div style="margin:.9rem 0">
+        <div style="font-size:.78rem;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem" data-i18n="s3_ant_head">🔁 Why Switch Antenna? Yagi vs Rubber Duck</div>
+        <canvas id="antennaCompareCanvas" width="760" height="240" style="width:100%;display:block;background:#050d0c;border-radius:10px;border:1px solid rgba(2,173,165,.15)"></canvas>
+      </div>
+
+      <!-- HOW TO USE — step strip -->
+      <div style="background:rgba(240,192,64,.05);border:1px solid rgba(240,192,64,.18);border-radius:10px;padding:.8rem 1rem;margin-bottom:.9rem">
+        <div style="font-size:.78rem;font-weight:700;color:#f0c040;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.55rem" data-i18n="s3_howto_head">▶ Step-by-Step</div>
+        <ol style="margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.4rem">
+          <li class="shield-step" data-ss-delay="0"   style="font-size:.83rem;color:var(--text)" data-i18n="s3_step1">Switch to a <strong>short rubber-duck antenna</strong> (long Yagi reduces body-shield effect).</li>
+          <li class="shield-step" data-ss-delay="100" style="font-size:.83rem;color:var(--text)" data-i18n="s3_step2">Hold the antenna <strong>vertically in front of your chest</strong> at waist height.</li>
+          <li class="shield-step" data-ss-delay="200" style="font-size:.83rem;color:var(--text)" data-i18n="s3_step3"><strong>Rotate your whole body</strong> slowly in a full circle. Watch the S-meter drop.</li>
+          <li class="shield-step" data-ss-delay="300" style="font-size:.83rem;color:var(--text)" data-i18n="s3_step4">Stop at the <strong>deepest null</strong> (lowest reading). The fox is directly <em>behind</em> you.</li>
+          <li class="shield-step" data-ss-delay="400" style="font-size:.83rem;color:var(--text)" data-i18n="s3_step5">Note your facing compass heading, then <strong>add 180°</strong> — that is the fox bearing. Walk toward it.</li>
+        </ol>
+      </div>
+
+      <!-- Interactive canvas -->
+      <div style="font-size:.78rem;color:var(--muted);text-align:center;margin-bottom:.3rem" data-i18n="s3_canvas_hint">↓ Drag the slider to see how your body blocks the signal</div>
+      <div class="shield-wrap">
+        <canvas id="bodyCanvas" width="220" height="220"></canvas>
+        <div class="angle-row">
+          <label data-i18n="body_angle_lbl">Body angle:</label>
+          <input type="range" id="body-angle" min="0" max="359" value="0" oninput="updateBodyShield(this.value)">
+          <span id="body-angle-val">0°</span>
+        </div>
+      </div>
+      <ul class="styled" style="margin-top:.8rem">
+        <li data-i18n="s3_tip1">Hold the antenna vertically at waist height.</li>
+        <li data-i18n="s3_tip2">Rotate your whole body, not just the antenna.</li>
+        <li data-i18n="s3_tip3">The null (weakest signal) points toward the fox — that is behind you.</li>
+        <li data-i18n="s3_tip4">Use a rubber duck antenna for maximum body-shielding effect.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 4: ATTENUATION -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2 data-i18n="s4_title">Signal Attenuation</h2>
+    </div>
+    <div class="section-body">
+      <div class="info-box">
+        <strong data-i18n="s4_info_head">Why attenuate? </strong>
+        <span data-i18n="s4_info_body">Close to the fox the signal overwhelms the receiver. An attenuator reduces sensitivity so you can still read a bearing without S-meter saturation.</span>
+      </div>
+      <table class="atten-table">
+        <tr><th data-i18n="atten_col1">Distance</th><th data-i18n="atten_col2">Signal Level</th><th data-i18n="atten_col3">Recommended Setting</th></tr>
+        <tr><td data-i18n="atten_r1c1">&gt; 300 m</td><td data-i18n="atten_r1c2">Weak</td><td data-i18n="atten_r1c3">No attenuator, full gain</td></tr>
+        <tr><td data-i18n="atten_r2c1">100 – 300 m</td><td data-i18n="atten_r2c2">Medium</td><td data-i18n="atten_r2c3">3 dB attenuator</td></tr>
+        <tr><td data-i18n="atten_r3c1">30 – 100 m</td><td data-i18n="atten_r3c2">Strong</td><td data-i18n="atten_r3c3">10 dB attenuator</td></tr>
+        <tr><td data-i18n="atten_r4c1">&lt; 30 m</td><td data-i18n="atten_r4c2">Very Strong</td><td data-i18n="atten_r4c3">Body shielding only</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 5: FOX LOG -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <h2 data-i18n="s5_title">Fox Log Widget</h2>
+    </div>
+    <div class="section-body">
+      <div class="info-box">
+        <strong data-i18n="s5_info_head">Scoring: </strong>
+        <span data-i18n="s5_info_body">Score = 80 − elapsed minutes. Find foxes fast to score higher! Maximum 80 points per fox found in under 1 minute.</span>
+      </div>
+      <div class="log-form">
+        <div class="full-width">
+          <label for="log-start" data-i18n="log_start_lbl">Hunt Start Time</label>
+          <input type="time" id="log-start">
+        </div>
+        <div>
+          <label for="log-beacon" data-i18n="log_beacon_lbl">Beacon</label>
+          <input type="text" id="log-beacon" placeholder="Fox 1">
+        </div>
+        <div>
+          <label for="log-time" data-i18n="log_time_lbl">Time Found</label>
+          <input type="time" id="log-time">
+        </div>
+        <div class="full-width">
+          <label for="log-notes" data-i18n="log_notes_lbl">Notes</label>
+          <textarea id="log-notes" placeholder="Location, technique used…"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn" onclick="logFox()" data-i18n="btn_log_fox">Log Fox</button>
+          <button class="btn btn-danger" onclick="clearLog()" data-i18n="btn_clear_log">Clear All</button>
+        </div>
+      </div>
+      <div id="log-area"></div>
+      <div class="score-total" id="score-total"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: FINISHING -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <h2 data-i18n="s6_title">Finishing &amp; Punch Card</h2>
+    </div>
+    <div class="section-body">
+      <div class="info-box">
+        <strong data-i18n="s6_info_head">Punch Card: </strong>
+        <span data-i18n="s6_info_body">Each fox has a punch at its hiding spot. Collect all punches on your card before returning to the finish line.</span>
+      </div>
+      <p style="color:var(--text-dim);font-size:.9rem" data-i18n="s6_body">Click each slot when you find and punch that fox. Your progress is saved locally.</p>
+      <div class="punch-grid" id="punch-grid"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: TIPS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <h2 data-i18n="s7_title">Competition Tips</h2>
+    </div>
+    <div class="section-body">
+
+      <!-- TIP TAB BAR -->
+      <div class="tip-tab-bar">
+        <div class="tip-tab active" onclick="switchChev('see')" id="chev-see" data-i18n="chev_see">See</div>
+        <div class="tip-tab" onclick="switchChev('think')" id="chev-think" data-i18n="chev_think">Think</div>
+        <div class="tip-tab" onclick="switchChev('explore')" id="chev-explore" data-i18n="chev_explore">Explore</div>
+        <div class="tip-tab" onclick="switchChev('marvel')" id="chev-marvel" data-i18n="chev_marvel">Marvel</div>
+      </div>
+
+      <div class="tip-panel active" id="panel-see">
+        <div class="tip-grid">
+          <div class="tip-card"><h4 data-i18n="tip_s1_h">Plan Your Route</h4><p data-i18n="tip_s1_b">Study the map before the start. Note terrain features that could block signals.</p></div>
+          <div class="tip-card"><h4 data-i18n="tip_s2_h">Mark Bearings</h4><p data-i18n="tip_s2_b">Plot each bearing on your map with a pencil. The intersection narrows the search area.</p></div>
+        </div>
+      </div>
+      <div class="tip-panel" id="panel-think">
+        <div class="tip-grid">
+          <div class="tip-card"><h4 data-i18n="tip_t1_h">When Signals Conflict</h4><p data-i18n="tip_t1_b">Reflections off buildings can mislead. Take multiple bearings from different spots before committing.</p></div>
+          <div class="tip-card"><h4 data-i18n="tip_t2_h">Manage Your Time</h4><p data-i18n="tip_t2_b">Spend no more than 20 minutes on one fox. Move on and come back — other foxes may be nearby.</p></div>
+        </div>
+      </div>
+      <div class="tip-panel" id="panel-explore">
+        <div class="tip-grid">
+          <div class="tip-card"><h4 data-i18n="tip_e1_h">Try Both Polarities</h4><p data-i18n="tip_e1_b">Rotate antenna between vertical and horizontal — some foxes transmit in a different polarisation.</p></div>
+          <div class="tip-card"><h4 data-i18n="tip_e2_h">Use Terrain</h4><p data-i18n="tip_e2_b">Hills and ridgelines can block signal and create false nulls. Walk around obstacles.</p></div>
+        </div>
+      </div>
+      <div class="tip-panel" id="panel-marvel">
+        <div class="tip-grid">
+          <div class="tip-card"><h4 data-i18n="tip_m1_h">Record Your Hunt</h4><p data-i18n="tip_m1_b">After each event, review what worked. Champions keep notes and improve every hunt.</p></div>
+          <div class="tip-card"><h4 data-i18n="tip_m2_h">Team Sport</h4><p data-i18n="tip_m2_b">Even solo events benefit from post-hunt debriefs. Compare routes with other hunters.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RAE ADVANCED -->
+  <button class="rae-toggle" id="rae-toggle-btn" onclick="toggleRAE()">
+    ▶ <span data-i18n="rae_toggle_label">Advanced Content — RAE Exam Preparation</span>
+  </button>
+  <div class="rae-body" id="rae-body">
+    <div class="tabs">
+      <div class="tab active" onclick="switchRaeTab('rules')" id="rtab-rules" data-i18n="rae_tab_rules">ARDF Rules</div>
+      <div class="tab" onclick="switchRaeTab('prop')" id="rtab-prop" data-i18n="rae_tab_prop">Propagation</div>
+      <div class="tab" onclick="switchRaeTab('tech')" id="rtab-tech" data-i18n="rae_tab_tech">Techniques</div>
+      <div class="tab" onclick="switchRaeTab('quiz')" id="rtab-quiz" data-i18n="rae_tab_quiz">Practice Q&amp;A</div>
+    </div>
+    <div class="tab-panel active" id="rpanel-rules">
+      <h3 style="color:var(--teal);margin-bottom:.7rem" data-i18n="rae_rules_h">IARU ARDF Competition Rules</h3>
+      <!-- FOX CYCLE ANIMATOR -->
+      <div class="fox-cycle-wrap">
+        <div class="anim-section-title">&#128249; Fox Transmission Cycle &mdash; 5-Minute Rotation</div>
+        <div id="fox-cycle-rows"></div>
+        <div style="font-size:.73rem;color:var(--text-dim);margin:.3rem 0 .55rem;opacity:.8">
+          Gold bar = transmitting &bull; Each fox waits 4 minutes between its 1-minute broadcast
+        </div>
+        <div class="cycle-ctrl">
+          <button class="btn-sm" id="cycle-play-btn" onclick="toggleCycleAnim()">&#9654; Play</button>
+          <span class="cycle-time" id="cycle-time-disp">0:00 / 5:00</span>
+          <span style="font-size:.75rem;color:var(--text-dim)">simulated cycle</span>
+        </div>
+      </div>
+      <ul class="styled">
+        <li data-i18n="rae_rules_1">Standard ARDF events use 5 foxes on the 2-metre band (144 MHz).</li>
+        <li data-i18n="rae_rules_2">Each fox transmits in sequence: 1 minute on, 4 minutes silent (rotation period: 5 minutes).</li>
+        <li data-i18n="rae_rules_3">Competitors must find as many foxes as possible within the time limit (typically 80–120 minutes).</li>
+        <li data-i18n="rae_rules_4">Each fox has a physical punch; competitors record the punch on their card.</li>
+        <li data-i18n="rae_rules_5">Score = points for foxes found (value depends on order found) minus time penalty.</li>
+        <li data-i18n="rae_rules_6">School ARDF events often use simplified scoring: points per fox minus elapsed minutes.</li>
+      </ul>
+    </div>
+    <div class="tab-panel" id="rpanel-prop">
+      <h3 style="color:var(--teal);margin-bottom:.7rem" data-i18n="rae_prop_h">Propagation Effects in ARDF</h3>
+      <!-- PROPAGATION CANVAS -->
+      <div class="prop-wrap">
+        <div class="anim-section-title">&#128249; Signal Propagation Scenarios &mdash; tap to explore</div>
+        <div class="scenario-btns">
+          <button class="scen-btn active" onclick="setPropScenario(0)">1 &middot; Line of Sight</button>
+          <button class="scen-btn" onclick="setPropScenario(1)">2 &middot; Shadow Zone</button>
+          <button class="scen-btn" onclick="setPropScenario(2)">3 &middot; Reflection</button>
+        </div>
+        <canvas id="propCanvas" width="560" height="230" style="width:100%;border-radius:7px;display:block"></canvas>
+        <div class="prop-desc-box" id="prop-desc">Line of sight: VHF signals travel in straight lines. Your receiver gets a clear, accurate bearing toward the fox.</div>
+      </div>
+      <ul class="styled">
+        <li data-i18n="rae_prop_1">VHF signals (144 MHz) travel mostly in straight lines — obstructions cause shadows.</li>
+        <li data-i18n="rae_prop_2">Reflections from buildings, hills and metallic structures can produce false bearings.</li>
+        <li data-i18n="rae_prop_3">Ground-wave propagation dominates at short range; sky-wave is negligible at 144 MHz over short distances.</li>
+        <li data-i18n="rae_prop_4">Dense vegetation attenuates signals — 10–20 dB extra loss in heavy forest.</li>
+        <li data-i18n="rae_prop_5">Signal fading occurs when you move between reflection zones — look for the moving null.</li>
+      </ul>
+    </div>
+    <div class="tab-panel" id="rpanel-tech">
+      <h3 style="color:var(--teal);margin-bottom:.7rem" data-i18n="rae_tech_h">Advanced Direction-Finding Techniques</h3>
+      <!-- ANTENNA PATTERN (IMPROVED) -->
+      <div class="pattern-wrap">
+        <div class="anim-section-title">&#128249; Antenna Radiation Pattern &mdash; select type</div>
+        <div class="pattern-btns">
+          <button class="pat-btn active" data-pat="loop" onclick="setTechPattern('loop')">&#9678; Loop (Figure-8)</button>
+          <button class="pat-btn" data-pat="cardioid" onclick="setTechPattern('cardioid')">&#10084; Cardioid</button>
+          <button class="pat-btn" data-pat="yagi" onclick="setTechPattern('yagi')">&#9658; Yagi Beam</button>
+        </div>
+        <canvas id="techCanvas" width="380" height="380" style="border-radius:8px;display:block;max-width:380px;background:#050d0c"></canvas>
+        <div class="pattern-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#f0a030"></div>Loop antenna</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#02ADA5"></div>Cardioid</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#4090e0"></div>Yagi beam</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#e05050"></div>Null direction</div>
+        </div>
+        <div class="pattern-desc-box" id="pattern-desc">Loop antenna: produces a figure-8 pattern with two sharp nulls (minimum signal). Rotate until the signal disappears — the null points toward the fox.</div>
+      </div>
+      <ul class="styled">
+        <li data-i18n="rae_tech_1"><strong>Sense antenna:</strong> A small sense element eliminates the 180° ambiguity of a loop antenna.</li>
+        <li data-i18n="rae_tech_2"><strong>Cardioid pattern:</strong> Combining a loop and sense element produces a heart-shaped pattern with one null.</li>
+        <li data-i18n="rae_tech_3"><strong>5-element Yagi:</strong> Provides 9–10 dBd gain and sharp front-to-back ratio for long-range phases.</li>
+        <li data-i18n="rae_tech_4"><strong>Stepped attenuator:</strong> 10 dB steps; use minimum attenuation needed to prevent S-meter saturation.</li>
+        <li data-i18n="rae_tech_5"><strong>Auditory null:</strong> At very close range, use headphones for a sharper null than the S-meter can provide.</li>
+      </ul>
+    </div>
+    <div class="tab-panel" id="rpanel-quiz">
+      <h3 style="color:var(--teal);margin-bottom:.7rem" data-i18n="rae_quiz_h">Practice Questions</h3>
+      <div id="rae-quiz-area"></div>
+      <button class="btn" onclick="checkRaeQuiz()" style="margin-top:.8rem" data-i18n="btn_check_quiz">Check Answers</button>
+      <div id="rae-quiz-score" style="margin-top:.6rem;font-weight:700;color:var(--accent)"></div>
+    </div>
+  </div>
+
+  <!-- STEPNAV -->
+  <nav class="stepnav">
+    <a href="module-3.html" data-i18n="nav_prev">← Module 3</a>
+    <a href="module-activity-4.html" style="background:rgba(2,173,165,.15);border-color:var(--teal)">&#127919; Go to Activity &rarr;</a>
+    <a href="index.html" data-i18n="nav_next">🏠 Back to Home →</a>
+  </nav>
+
+</div><!-- /wrap -->
+
+<footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html" data-i18n="foot_home">Home</a> &middot;
+      <a href="module-0.html">Module 0</a> &middot;
+      <a href="module-1.html">Module 1</a> &middot;
+      <a href="module-2.html">Module 2</a> &middot;
+      <a href="module-3.html">Module 3</a> &middot;
+      <a href="module-4.html">Module 4</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab <span data-i18n="foot_edu">Engineering Education Initiative</span></div>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════
+   TRANSLATIONS
+═══════════════════════════════════════════ */
+var TR = {
+en:{
+  nav_home:'Home',
+  hero_h1:'Field Strategy',
+  hero_sub:'Master the three phases, read signals, and find the fox efficiently.',
+  hero_badge:'Module 4 · Field Guide',
+  hero_eyebrow:'Module 4 of 5',
+  pill_phases:'🎯 3 Hunt Phases',
+  pill_triangulation:'📍 Triangulation',
+  pill_foxlog:'📝 Fox Log',
+  pill_rae:'🎓 RAE Prep',
+  s1_title:'Three Phases of a Hunt',
+  s1_info_head:'Strategy Overview: ',
+  s1_info_body:'Every successful foxhunt follows three phases based on your distance from the fox. Recognising which phase you are in determines your technique.',
+  phase1_num:'Phase 1 · Long Range',
+  phase1_head:'Long Yagi Antenna',
+  phase1_body:'Use full gain. Pan slowly to find the strongest signal direction. Walk decisively toward the bearing.',
+  phase2_num:'Phase 2 · Mid Range',
+  phase2_head:'Attenuator + Loop',
+  phase2_body:'Signal is strong — add attenuation. Switch to a directional loop to refine the bearing.',
+  phase3_num:'Phase 3 · Close Range',
+  phase3_head:'Body Shielding',
+  phase3_body:'Use your body as a shield. The null zone points toward the fox. Switch to a rubber duck antenna.',
+  phase_label_prefix:'Phase: ',
+  btn_start_hunt:'Start Hunt',
+  btn_reset:'Reset',
+  smeter_label:'Signal Strength:',
+  s2_title:'Triangulation — Finding the Fox',
+  s2_info_head:'Triangulation: ',
+  s2_info_body:'Take bearings from two different locations. The fox is where the two bearing lines cross. Adjust the sliders until the lines intersect at the X.',
+  tri_bearing_a:'Bearing from A:',
+  tri_bearing_b:'Bearing from B:',
+  btn_check_answer:'Check My Answer',
+  btn_reset_tri:'Reset',
+  s3_title:'Body Shielding Technique',
+  s3_info_head:'How it works: ',
+  s3_info_body:'Your body absorbs 20–30 dB of signal. When signal is weakest (null), the fox is behind you. Rotate slowly to find the null.',
+  body_angle_lbl:'Body angle:',
+  s3_why3phase_head:'⚡ Why is Body Shielding Phase 3?',
+  s3_why3phase_body:'Each phase solves the specific problem of that distance. Far away you need <strong>more sensitivity</strong> — a Yagi at full gain. Getting closer you need <strong>more precision</strong> — a loop with an attenuator. Right next to the fox the signal is so strong it <strong>saturates your receiver</strong> — the S-meter reads full scale in every direction and a Yagi becomes useless. Body shielding is the only technique that handles signal overload while still giving you a direction.',
+  s3_table_head:'📶 Signal Overload — Full Progression',
+  s3_col_dist:'Distance', s3_col_prob:'Problem', s3_col_sol:'Solution',
+  s3_r1_dist:'&gt; 300 m', s3_r1_prob:'Signal too weak to detect', s3_r1_sol:'Yagi — full gain',
+  s3_r2_dist:'100 – 300 m', s3_r2_prob:'Signal getting strong', s3_r2_sol:'Attenuator — reduce receiver gain',
+  s3_r3_dist:'30 – 100 m', s3_r3_prob:'Signal very strong', s3_r3_sol:'Attenuator + Body shield',
+  s3_r4_dist:'&lt; 30 m', s3_r4_prob:'Receiver saturated — S-meter maxed everywhere', s3_r4_sol:'Body shield only (attenuator maxed out)',
+  s3_table_note:'💡 Think of it as a volume dial: Yagi turns it up → Attenuator turns it down → Body shield covers your ears.',
+  s3_why1_head:'Your Body = RF Absorber',
+  s3_why1_body:'The human body is ~60% water. Water absorbs VHF radio waves (144 MHz) very well, blocking <strong>20–30 dB</strong> — that means the signal behind you is <strong>100× to 1000× weaker</strong>.',
+  s3_why2_head:'Why Rotate Your Whole Body',
+  s3_why2_body:'If you only rotate the antenna, the shield (your body) does not move. The fox must end up <strong>directly behind your back</strong> — your torso is the "wall" blocking the signal.',
+  s3_why3_head:'Reading the Null',
+  s3_why3_body:'Turn until the S-meter reads <strong>minimum</strong> (null). The fox is now directly at your back. Add 180° to your facing direction → that is your <strong>fox bearing</strong>. Works best within 100 m.',
+  s3_howto_head:'▶ Step-by-Step',
+  s3_step1:'Switch to a <strong>short rubber-duck antenna</strong> (long Yagi reduces body-shield effect).',
+  s3_step2:'Hold the antenna <strong>vertically in front of your chest</strong> at waist height.',
+  s3_step3:'<strong>Rotate your whole body</strong> slowly in a full circle. Watch the S-meter drop.',
+  s3_step4:'Stop at the <strong>deepest null</strong> (lowest reading). The fox is directly <em>behind</em> you.',
+  s3_step5:'Note your facing compass heading, then <strong>add 180°</strong> — that is the fox bearing. Walk toward it.',
+  s3_ant_head:'🔁 Why Switch Antenna? Yagi vs Rubber Duck',
+  s3_canvas_hint:'↓ Drag the slider to see how your body blocks the signal',
+  s3_tip1:'Hold the antenna vertically at waist height.',
+  s3_tip2:'Rotate your whole body, not just the antenna.',
+  s3_tip3:'The null (weakest signal) points toward the fox — that is behind you.',
+  s3_tip4:'Use a rubber duck antenna for maximum body-shielding effect.',
+  s4_title:'Signal Attenuation',
+  s4_info_head:'Why attenuate? ',
+  s4_info_body:'Close to the fox the signal overwhelms the receiver. An attenuator reduces sensitivity so you can still read a bearing without S-meter saturation.',
+  atten_col1:'Distance',atten_col2:'Signal Level',atten_col3:'Recommended Setting',
+  atten_r1c1:'> 300 m',atten_r1c2:'Weak',atten_r1c3:'No attenuator, full gain',
+  atten_r2c1:'100 – 300 m',atten_r2c2:'Medium',atten_r2c3:'3 dB attenuator',
+  atten_r3c1:'30 – 100 m',atten_r3c2:'Strong',atten_r3c3:'10 dB attenuator',
+  atten_r4c1:'< 30 m',atten_r4c2:'Very Strong',atten_r4c3:'Body shielding only',
+  s5_title:'Fox Log Widget',
+  s5_info_head:'Scoring: ',
+  s5_info_body:'Score = 80 − elapsed minutes. Find foxes fast to score higher! Maximum 80 points per fox found in under 1 minute.',
+  log_start_lbl:'Hunt Start Time',
+  log_beacon_lbl:'Beacon',
+  log_time_lbl:'Time Found',
+  log_notes_lbl:'Notes',
+  btn_log_fox:'Log Fox',
+  btn_clear_log:'Clear All',
+  log_tbl_num:'#',log_tbl_beacon:'Beacon',log_tbl_time:'Time Found',log_tbl_elapsed:'Elapsed',log_tbl_notes:'Notes',log_tbl_score:'Score',
+  s6_title:'Finishing &amp; Punch Card',
+  s6_info_head:'Punch Card: ',
+  s6_info_body:'Each fox has a punch at its hiding spot. Collect all punches on your card before returning to the finish line.',
+  s6_body:'Click each slot when you find and punch that fox. Your progress is saved locally.',
+  s7_title:'Competition Tips',
+  chev_see:'See',chev_think:'Think',chev_explore:'Explore',chev_marvel:'Marvel',
+  tip_s1_h:'Plan Your Route',tip_s1_b:'Study the map before the start. Note terrain features that could block signals.',
+  tip_s2_h:'Mark Bearings',tip_s2_b:'Plot each bearing on your map with a pencil. The intersection narrows the search area.',
+  tip_t1_h:'When Signals Conflict',tip_t1_b:'Reflections off buildings can mislead. Take multiple bearings from different spots before committing.',
+  tip_t2_h:'Manage Your Time',tip_t2_b:'Spend no more than 20 minutes on one fox. Move on and come back — other foxes may be nearby.',
+  tip_e1_h:'Try Both Polarities',tip_e1_b:'Rotate antenna between vertical and horizontal — some foxes transmit in a different polarisation.',
+  tip_e2_h:'Use Terrain',tip_e2_b:'Hills and ridgelines can block signal and create false nulls. Walk around obstacles.',
+  tip_m1_h:'Record Your Hunt',tip_m1_b:'After each event, review what worked. Champions keep notes and improve every hunt.',
+  tip_m2_h:'Team Sport',tip_m2_b:'Even solo events benefit from post-hunt debriefs. Compare routes with other hunters.',
+  rae_toggle_label:'Advanced Content — RAE Exam Preparation',
+  rae_tab_rules:'ARDF Rules',rae_tab_prop:'Propagation',rae_tab_tech:'Techniques',rae_tab_quiz:'Practice Q&A',
+  rae_rules_h:'IARU ARDF Competition Rules',
+  rae_rules_1:'Standard ARDF events use 5 foxes on the 2-metre band (144 MHz).',
+  rae_rules_2:'Each fox transmits in sequence: 1 minute on, 4 minutes silent (rotation period: 5 minutes).',
+  rae_rules_3:'Competitors must find as many foxes as possible within the time limit (typically 80–120 minutes).',
+  rae_rules_4:'Each fox has a physical punch; competitors record the punch on their card.',
+  rae_rules_5:'Score = points for foxes found (value depends on order found) minus time penalty.',
+  rae_rules_6:'School ARDF events often use simplified scoring: points per fox minus elapsed minutes.',
+  rae_prop_h:'Propagation Effects in ARDF',
+  rae_prop_1:'VHF signals (144 MHz) travel mostly in straight lines — obstructions cause shadows.',
+  rae_prop_2:'Reflections from buildings, hills and metallic structures can produce false bearings.',
+  rae_prop_3:'Ground-wave propagation dominates at short range; sky-wave is negligible at 144 MHz over short distances.',
+  rae_prop_4:'Dense vegetation attenuates signals — 10–20 dB extra loss in heavy forest.',
+  rae_prop_5:'Signal fading occurs when you move between reflection zones — look for the moving null.',
+  rae_tech_h:'Advanced Direction-Finding Techniques',
+  rae_tech_1:'<strong>Sense antenna:</strong> A small sense element eliminates the 180° ambiguity of a loop antenna.',
+  rae_tech_2:'<strong>Cardioid pattern:</strong> Combining a loop and sense element produces a heart-shaped pattern with one null.',
+  rae_tech_3:'<strong>5-element Yagi:</strong> Provides 9–10 dBd gain and sharp front-to-back ratio for long-range phases.',
+  rae_tech_4:'<strong>Stepped attenuator:</strong> 10 dB steps; use minimum attenuation needed to prevent S-meter saturation.',
+  rae_tech_5:'<strong>Auditory null:</strong> At very close range, use headphones for a sharper null than the S-meter can provide.',
+  rae_quiz_h:'Practice Questions',
+  btn_check_quiz:'Check Answers',
+  nav_prev:'← Module 3',
+  nav_next:'🏠 Back to Home →',
+  intro_heading:'How Radio Foxhunting Works',
+  intro_s1_title:'Fox Hides',
+  intro_s1_body:'A small radio transmitter is hidden somewhere in the forest. It broadcasts a short signal every 5 minutes.',
+  intro_s2_title:'Signal Travels',
+  intro_s2_body:'Radio waves spread out in all directions invisibly, like ripples on water &mdash; but through the air.',
+  intro_s3_title:'Rotate &amp; Listen',
+  intro_s3_body:'You rotate your directional antenna until the signal disappears &mdash; the &ldquo;null&rdquo; points straight toward the fox!',
+  intro_s4_title:'Find &amp; Score',
+  intro_s4_body:'Find all 5 foxes as fast as possible. Score = points per fox minus elapsed minutes. Fastest hunter wins!',
+  prog_label:'Workshop Progress',
+  prog_detail:'Module 4 of 5 · Field Strategy',
+  foot_home:'Home',
+  foot_edu:'Engineering Education Initiative',
+  foot_tagline:'See · Think · Explore · Marvel',
+  tri_hit:'🎯 Fox found! Great triangulation!',
+  tri_miss:'Not quite — adjust both bearings and try again.',
+  confirm_clear:'Clear all fox log entries?'
+},
+bm:{
+  nav_home:'Utama',
+  hero_h1:'Strategi Padang Foxhunting',
+  hero_sub:'Kuasai tiga fasa, baca isyarat, dan cari fox dengan cekap.',
+  hero_badge:'Modul 4 · Panduan Padang',
+  hero_eyebrow:'Modul 4 daripada 5',
+  pill_phases:'🎯 3 Fasa Pemburuan',
+  pill_triangulation:'📍 Triangulasi',
+  pill_foxlog:'📝 Log Fox',
+  pill_rae:'🎓 Persediaan RAE',
+  s1_title:'Tiga Fasa Pemburuan Fox',
+  s1_info_head:'Gambaran Keseluruhan Strategi: ',
+  s1_info_body:'Setiap pemburuan fox yang berjaya mengikuti tiga fasa berdasarkan jarak anda dari fox. Mengenali fasa semasa menentukan teknik yang perlu digunakan.',
+  phase1_num:'Fasa 1 · Jarak Jauh',
+  phase1_head:'Antena Yagi Panjang',
+  phase1_body:'Gunakan gandaan penuh. Putar perlahan untuk mencari arah isyarat terkuat. Berjalan tegas ke arah bearing.',
+  phase2_num:'Fasa 2 · Jarak Sederhana',
+  phase2_head:'Pelemah + Gelung',
+  phase2_body:'Isyarat kuat — tambah pelemahan. Tukar ke gelung berarah untuk menentukan bearing dengan tepat.',
+  phase3_num:'Fasa 3 · Jarak Dekat',
+  phase3_head:'Perisai Badan',
+  phase3_body:'Gunakan badan anda sebagai perisai. Zon nol menunjuk ke arah fox. Tukar ke antena rubber duck.',
+  phase_label_prefix:'Fasa: ',
+  btn_start_hunt:'Mula Pemburuan',
+  btn_reset:'Set Semula',
+  smeter_label:'Kekuatan Isyarat:',
+  s2_title:'Triangulasi — Mencari Fox',
+  s2_info_head:'Triangulasi: ',
+  s2_info_body:'Ambil bearing dari dua lokasi berbeza. Fox berada di mana kedua-dua garis bearing bersilang. Laraskan gelangsar sehingga garis bersilang di X.',
+  tri_bearing_a:'Bearing dari A:',
+  tri_bearing_b:'Bearing dari B:',
+  btn_check_answer:'Semak Jawapan Saya',
+  btn_reset_tri:'Set Semula',
+  s3_title:'Teknik Perisai Badan',
+  s3_info_head:'Cara ia berfungsi: ',
+  s3_info_body:'Badan anda menyerap 20–30 dB isyarat. Apabila isyarat paling lemah (nol), fox berada di belakang anda. Putar perlahan untuk mencari nol.',
+  body_angle_lbl:'Sudut badan:',
+  s3_why3phase_head:'⚡ Mengapa Perisai Badan Fasa 3?',
+  s3_why3phase_body:'Setiap fasa menyelesaikan masalah khusus pada jarak tersebut. Jauh — anda perlukan <strong>lebih kepekaan</strong> — Yagi pada gandaan penuh. Semakin dekat — anda perlukan <strong>lebih ketepatan</strong> — gelung dengan pelemah. Tepat di sebelah fox, isyarat begitu kuat sehingga <strong>menepukan penerima</strong> — meter-S menunjukkan skala penuh ke semua arah dan Yagi menjadi tidak berguna. Perisai badan adalah satu-satunya teknik yang menangani lebihan isyarat sambil masih memberi arah.',
+  s3_table_head:'📶 Lebihan Isyarat — Perkembangan Penuh',
+  s3_col_dist:'Jarak', s3_col_prob:'Masalah', s3_col_sol:'Penyelesaian',
+  s3_r1_dist:'&gt; 300 m', s3_r1_prob:'Isyarat terlalu lemah untuk dikesan', s3_r1_sol:'Yagi — gandaan penuh',
+  s3_r2_dist:'100 – 300 m', s3_r2_prob:'Isyarat semakin kuat', s3_r2_sol:'Pelemah — kurangkan gandaan penerima',
+  s3_r3_dist:'30 – 100 m', s3_r3_prob:'Isyarat sangat kuat', s3_r3_sol:'Pelemah + Perisai badan',
+  s3_r4_dist:'&lt; 30 m', s3_r4_prob:'Penerima tepu — meter-S maksimum ke semua arah', s3_r4_sol:'Perisai badan sahaja (pelemah sudah maksimum)',
+  s3_table_note:'💡 Bayangkan seperti knob kelantangan: Yagi naikkan → Pelemah turunkan → Perisai badan tutup telinga.',
+  s3_why1_head:'Badan Anda = Penyerap RF',
+  s3_why1_body:'Badan manusia mengandungi ~60% air. Air menyerap gelombang radio VHF (144 MHz) dengan baik, menyekat <strong>20–30 dB</strong> — bermakna isyarat di belakang anda <strong>100× hingga 1000× lebih lemah</strong>.',
+  s3_why2_head:'Mengapa Putar Seluruh Badan',
+  s3_why2_body:'Jika hanya antena yang diputar, perisai (badan anda) tidak bergerak. Fox mesti berada <strong>terus di belakang anda</strong> — torso anda adalah "dinding" yang menyekat isyarat.',
+  s3_why3_head:'Membaca Titik Nol',
+  s3_why3_body:'Putar sehingga meter-S menunjukkan <strong>bacaan minimum</strong> (nol). Fox kini berada terus di belakang anda. Tambah 180° kepada arah hadapan anda → itulah <strong>bearing fox</strong> anda. Berkesan dalam 100 m.',
+  s3_howto_head:'▶ Langkah demi Langkah',
+  s3_step1:'Tukar kepada <strong>antena rubber-duck pendek</strong> (Yagi panjang mengurangkan kesan perisai badan).',
+  s3_step2:'Pegang antena <strong>tegak di hadapan dada</strong> anda pada paras pinggang.',
+  s3_step3:'<strong>Putar seluruh badan</strong> anda perlahan dalam bulatan penuh. Perhatikan meter-S turun.',
+  s3_step4:'Berhenti pada <strong>nol paling dalam</strong> (bacaan terendah). Fox berada terus <em>di belakang</em> anda.',
+  s3_step5:'Catat arah kompas hadapan anda, kemudian <strong>tambah 180°</strong> — itulah bearing fox. Jalan ke arahnya.',
+  s3_ant_head:'🔁 Mengapa Tukar Antena? Yagi vs Getah Pendek',
+  s3_canvas_hint:'↓ Seret gelangsar untuk lihat bagaimana badan anda menyekat isyarat',
+  s3_tip1:'Pegang antena tegak pada paras pinggang.',
+  s3_tip2:'Putar seluruh badan anda, bukan hanya antena.',
+  s3_tip3:'Nol (isyarat paling lemah) menunjuk ke arah fox — iaitu di belakang anda.',
+  s3_tip4:'Gunakan antena rubber duck untuk kesan perisai badan maksimum.',
+  s4_title:'Pelemahan Isyarat',
+  s4_info_head:'Mengapa pelemahan? ',
+  s4_info_body:'Berhampiran fox, isyarat mengatasi penerima. Pelemah mengurangkan kepekaan supaya anda masih boleh membaca bearing tanpa ketepuan meter-S.',
+  atten_col1:'Jarak',atten_col2:'Tahap Isyarat',atten_col3:'Tetapan Disyorkan',
+  atten_r1c1:'> 300 m',atten_r1c2:'Lemah',atten_r1c3:'Tiada pelemah, gandaan penuh',
+  atten_r2c1:'100 – 300 m',atten_r2c2:'Sederhana',atten_r2c3:'Pelemah 3 dB',
+  atten_r3c1:'30 – 100 m',atten_r3c2:'Kuat',atten_r3c3:'Pelemah 10 dB',
+  atten_r4c1:'< 30 m',atten_r4c2:'Sangat Kuat',atten_r4c3:'Perisai badan sahaja',
+  s5_title:'Widget Log Fox',
+  s5_info_head:'Pemarkahan: ',
+  s5_info_body:'Markah = 80 − minit berlalu. Cari fox dengan cepat untuk markah lebih tinggi! Maksimum 80 mata per fox yang ditemui dalam masa kurang 1 minit.',
+  log_start_lbl:'Masa Mula Pemburuan',
+  log_beacon_lbl:'Suar',
+  log_time_lbl:'Masa Ditemui',
+  log_notes_lbl:'Nota',
+  btn_log_fox:'Log Fox',
+  btn_clear_log:'Padam Semua',
+  log_tbl_num:'#',log_tbl_beacon:'Suar',log_tbl_time:'Masa Ditemui',log_tbl_elapsed:'Masa Berlalu',log_tbl_notes:'Nota',log_tbl_score:'Markah',
+  s6_title:'Penamat &amp; Kad Tebuk',
+  s6_info_head:'Kad Tebuk: ',
+  s6_info_body:'Setiap fox mempunyai tebukan di tempat persembunyiannya. Kumpul semua tebukan pada kad anda sebelum kembali ke garisan penamat.',
+  s6_body:'Klik setiap slot apabila anda menemui dan menebuk fox tersebut. Kemajuan anda disimpan secara tempatan.',
+  s7_title:'Petua Pertandingan',
+  chev_see:'Lihat',chev_think:'Fikir',chev_explore:'Terokai',chev_marvel:'Kagumi',
+  tip_s1_h:'Rancang Laluan Anda',tip_s1_b:'Kaji peta sebelum permulaan. Perhatikan ciri-ciri terrain yang boleh menyekat isyarat.',
+  tip_s2_h:'Tandakan Bearing',tip_s2_b:'Plot setiap bearing pada peta dengan pensel. Persimpangan mempersempit kawasan carian.',
+  tip_t1_h:'Apabila Isyarat Bercanggah',tip_t1_b:'Pantulan dari bangunan boleh mengelirukan. Ambil pelbagai bearing dari titik berbeza sebelum bergerak.',
+  tip_t2_h:'Urus Masa Anda',tip_t2_b:'Jangan habiskan lebih 20 minit pada satu fox. Teruskan dan kembali kemudian — fox lain mungkin berdekatan.',
+  tip_e1_h:'Cuba Kedua-dua Kekutuban',tip_e1_b:'Putar antena antara tegak dan mendatar — sesetengah fox menghantar dalam polarisasi berbeza.',
+  tip_e2_h:'Gunakan Terrain',tip_e2_b:'Bukit dan rabung boleh menyekat isyarat dan mencipta nol palsu. Berjalan mengeliling halangan.',
+  tip_m1_h:'Rekod Pemburuan Anda',tip_m1_b:'Selepas setiap acara, semak apa yang berkesan. Juara menyimpan nota dan bertambah baik setiap pemburuan.',
+  tip_m2_h:'Sukan Berpasukan',tip_m2_b:'Walaupun acara solo mendapat manfaat daripada perbincangan selepas pemburuan. Bandingkan laluan dengan pemburu lain.',
+  rae_toggle_label:'Kandungan Lanjutan — Persediaan Peperiksaan RAE',
+  rae_tab_rules:'Peraturan ARDF',rae_tab_prop:'Propagasi',rae_tab_tech:'Teknik',rae_tab_quiz:'Soalan Latihan',
+  rae_rules_h:'Peraturan Pertandingan ARDF IARU',
+  rae_rules_1:'Acara ARDF standard menggunakan 5 fox pada jalur 2-meter (144 MHz).',
+  rae_rules_2:'Setiap fox menghantar secara berurutan: 1 minit aktif, 4 minit senyap (tempoh putaran: 5 minit).',
+  rae_rules_3:'Peserta mesti menemui seberapa banyak fox dalam had masa (biasanya 80–120 minit).',
+  rae_rules_4:'Setiap fox mempunyai tebukan fizikal; peserta merekod tebukan pada kad mereka.',
+  rae_rules_5:'Markah = mata untuk fox yang ditemui (nilai bergantung pada urutan) tolak penalti masa.',
+  rae_rules_6:'Acara ARDF sekolah sering menggunakan pemarkahan ringkas: mata per fox tolak minit berlalu.',
+  rae_prop_h:'Kesan Propagasi dalam ARDF',
+  rae_prop_1:'Isyarat VHF (144 MHz) bergerak kebanyakannya dalam garis lurus — halangan menyebabkan bayang.',
+  rae_prop_2:'Pantulan dari bangunan, bukit dan struktur logam boleh menghasilkan bearing palsu.',
+  rae_prop_3:'Propagasi gelombang tanah mendominasi pada jarak dekat; gelombang langit diabaikan pada 144 MHz jarak pendek.',
+  rae_prop_4:'Tumbuhan lebat melemahkan isyarat — kerugian tambahan 10–20 dB dalam hutan tebal.',
+  rae_prop_5:'Pemudaran isyarat berlaku apabila anda bergerak antara zon pantulan — cari nol bergerak.',
+  rae_tech_h:'Teknik Pencarian Arah Lanjutan',
+  rae_tech_1:'<strong>Antena deria:</strong> Elemen deria kecil menghapuskan kekaburan 180° antena gelung.',
+  rae_tech_2:'<strong>Corak kardioid:</strong> Menggabungkan gelung dan elemen deria menghasilkan corak berbentuk jantung dengan satu nol.',
+  rae_tech_3:'<strong>Yagi 5-elemen:</strong> Memberikan gandaan 9–10 dBd dan nisbah depan-ke-belakang yang tajam untuk fasa jarak jauh.',
+  rae_tech_4:'<strong>Pelemah berperingkat:</strong> Langkah 10 dB; gunakan pelemahan minimum yang diperlukan untuk mencegah ketepuan meter-S.',
+  rae_tech_5:'<strong>Nol auditori:</strong> Pada jarak sangat dekat, gunakan fon kepala untuk nol yang lebih tajam daripada yang meter-S boleh berikan.',
+  rae_quiz_h:'Soalan Latihan',
+  btn_check_quiz:'Semak Jawapan',
+  nav_prev:'← Modul 3',
+  nav_next:'🏠 Kembali ke Laman Utama →',
+  intro_heading:'Cara Radio Foxhunting Berfungsi',
+  intro_s1_title:'Fox Bersembunyi',
+  intro_s1_body:'Pemancar radio kecil disembunyikan di suatu tempat dalam hutan. Ia menyiar isyarat pendek setiap 5 minit.',
+  intro_s2_title:'Isyarat Merambat',
+  intro_s2_body:'Gelombang radio tersebar ke semua arah secara tidak kelihatan, seperti riak di air &mdash; tetapi melalui udara.',
+  intro_s3_title:'Putar &amp; Dengar',
+  intro_s3_body:'Anda memutar antena berarah sehingga isyarat hilang &mdash; &ldquo;null&rdquo; menunjuk tepat ke arah fox!',
+  intro_s4_title:'Cari &amp; Markah',
+  intro_s4_body:'Cari semua 5 fox secepat mungkin. Markah = mata per fox tolak minit yang berlalu. Pemburu terpantas menang!',
+  prog_label:'Kemajuan Bengkel',
+  prog_detail:'Modul 4 daripada 5 · Strategi Padang',
+  foot_home:'Utama',
+  foot_edu:'Inisiatif Pendidikan Kejuruteraan',
+  foot_tagline:'Lihat &middot; Fikir &middot; Terokai &middot; Kagumi',
+  tri_hit:'🎯 Fox ditemui! Triangulasi yang hebat!',
+  tri_miss:'Belum tepat — laraskan kedua-dua bearing dan cuba lagi.',
+  confirm_clear:'Padamkan semua entri log fox?'
+}
+};
+
+var currentLang = 'en';
+
+function setLang(l){
+  currentLang = l;
+  var t = TR[l];
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k = el.getAttribute('data-i18n');
+    if(t[k] !== undefined) el.innerHTML = t[k];
+  });
+  document.getElementById('btnEN').classList.toggle('active', l==='en');
+  document.getElementById('btnBM').classList.toggle('active', l==='bm');
+  renderLog();
+}
+
+
+/* ═══════════════════════════════════════════
+   NAV DROPDOWN
+═══════════════════════════════════════════ */
+function toggleSteps(){
+  var m = document.getElementById('stepsMenu');
+  m.classList.toggle('open');
+}
+document.addEventListener('click', function(e){
+  var dd = document.getElementById('stepsMenu');
+  if(dd && !e.target.closest('.steps-dropdown')) dd.classList.remove('open');
+});
+
+/* ═══════════════════════════════════════════
+   HUNT CANVAS (Section 1)
+═══════════════════════════════════════════ */
+var huntAnim = null;
+var hunterX = 30;
+var foxX;
+var huntW, huntH;
+var huntRunning = false;
+
+function initHuntCanvas(){
+  var c = document.getElementById('huntCanvas');
+  huntW = c.width; huntH = c.height;
+  foxX = huntW * 0.85;
+  drawHuntStatic();
+}
+
+function drawHuntStatic(){
+  var c = document.getElementById('huntCanvas');
+  var ctx = c.getContext('2d');
+  ctx.clearRect(0,0,huntW,huntH);
+  ctx.fillStyle = '#0a2622';
+  ctx.fillRect(0,0,huntW,huntH);
+  // ground
+  ctx.fillStyle = '#0d3028';
+  ctx.fillRect(0, huntH-30, huntW, 30);
+  // fox marker (hidden until close)
+  ctx.fillStyle = '#f0c04044';
+  ctx.font = '20px sans-serif';
+  ctx.fillText('📡', foxX-12, huntH-34);
+  // hunter
+  ctx.fillStyle = '#02ADA5';
+  ctx.font = '22px sans-serif';
+  ctx.fillText('🏃', hunterX, huntH-34);
+  // label
+  var dist = Math.round((foxX - hunterX) / huntW * 400);
+  updateSmeter(dist);
+  var phase = dist > huntW*.35 ? 1 : dist > huntW*.18 ? 2 : 3;
+  document.getElementById('phase-label').textContent = currentLang==='en'?('Phase '+phase):('Fasa '+phase);
+}
+
+function startHunt(){
+  if(huntRunning) return;
+  huntRunning = true;
+  hunterX = 30;
+  runHuntCanvas();
+}
+
+function resetHunt(){
+  huntRunning = false;
+  if(huntAnim) cancelAnimationFrame(huntAnim);
+  hunterX = 30;
+  drawHuntStatic();
+  document.getElementById('phase-label').textContent = '–';
+  document.getElementById('smeter-val').textContent = '–';
+  document.getElementById('smeter-fill').style.width = '0%';
+}
+
+function runHuntCanvas(){
+  if(!huntRunning){return;}
+  hunterX += 0.7;
+  drawHuntStatic();
+  var dist = foxX - hunterX;
+  if(dist < 20){
+    huntRunning = false;
+    var c = document.getElementById('huntCanvas');
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#f0c040';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.fillText(currentLang==='en'?'Fox Found!':'Fox Dijumpai!', huntW/2-40, huntH/2);
+    document.getElementById('phase-label').textContent = currentLang==='en'?'Found!':'Dijumpai!';
+    return;
+  }
+  huntAnim = requestAnimationFrame(runHuntCanvas);
+}
+
+function updateSmeter(dist){
+  var signal = Math.max(0, Math.min(100, 100 - Math.log10(Math.max(dist,1)/10)*25));
+  var pct = Math.round(signal);
+  document.getElementById('smeter-fill').style.width = pct+'%';
+  document.getElementById('smeter-val').textContent = pct+'%';
+}
+
+/* ═══════════════════════════════════════════
+   TRIANGULATION CANVAS (Section 2)
+═══════════════════════════════════════════ */
+// Fox hidden at relative (0.65, 0.40) from canvas
+// Point A at (0.12, 0.65), Point B at (0.85, 0.62)
+// Correct bearing from A: atan2(fox.x-A.x, A.y-fox.y) in degrees ~59°
+// Correct bearing from B: atan2(fox.x-B.x, B.y-fox.y) in degrees ~305°
+var TRI = {
+  foxRx: 0.65, foxRy: 0.40,
+  aRx: 0.12,   aRy: 0.65,
+  bRx: 0.85,   bRy: 0.62
+};
+
+function getTriCorrect(pRx, pRy){
+  var dx = TRI.foxRx - pRx;
+  var dy = pRy - TRI.foxRy;  // screen y inverted
+  var ang = Math.atan2(dx, dy) * 180/Math.PI;
+  return ((ang % 360) + 360) % 360;
+}
+
+function drawTri(){
+  var bA = parseInt(document.getElementById('bearA').value);
+  var bB = parseInt(document.getElementById('bearB').value);
+  document.getElementById('bearA-val').textContent = bA + '°';
+  document.getElementById('bearB-val').textContent = bB + '°';
+
+  var c = document.getElementById('triCanvas');
+  var ctx = c.getContext('2d');
+  var W = c.width, H = c.height;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Background grid
+  ctx.fillStyle = '#091d1b';
+  ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = 'rgba(2,173,165,0.12)';
+  ctx.lineWidth = 1;
+  for(var gx=0;gx<W;gx+=40){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();}
+  for(var gy=0;gy<H;gy+=40){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();}
+
+  var Ax = TRI.aRx*W, Ay = TRI.aRy*H;
+  var Bx = TRI.bRx*W, By = TRI.bRy*H;
+  var Fx = TRI.foxRx*W, Fy = TRI.foxRy*H;
+
+  // Draw bearing lines
+  function drawBearing(ox, oy, deg, color){
+    var rad = (deg - 90) * Math.PI/180;
+    var len = Math.max(W,H)*2;
+    var ex = ox + Math.cos(rad)*len;
+    var ey = oy + Math.sin(rad)*len;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([8,4]);
+    ctx.beginPath();
+    ctx.moveTo(ox,oy);
+    ctx.lineTo(ex,ey);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  drawBearing(Ax, Ay, bA, '#02ADA5');
+  drawBearing(Bx, By, bB, '#f0c040');
+
+  // Points A and B
+  ctx.fillStyle = '#02ADA5';
+  ctx.beginPath();ctx.arc(Ax,Ay,7,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle = '#e8f5f4';
+  ctx.font = 'bold 13px sans-serif';
+  ctx.fillText('A', Ax+9, Ay+4);
+
+  ctx.fillStyle = '#f0c040';
+  ctx.beginPath();ctx.arc(Bx,By,7,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle = '#e8f5f4';
+  ctx.fillText('B', Bx+9, By+4);
+
+  // Fox hidden (X mark)
+  ctx.strokeStyle = 'rgba(224,80,80,0.4)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();ctx.moveTo(Fx-8,Fy-8);ctx.lineTo(Fx+8,Fy+8);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(Fx+8,Fy-8);ctx.lineTo(Fx-8,Fy+8);ctx.stroke();
+}
+
+function checkTri(){
+  var bA = parseInt(document.getElementById('bearA').value);
+  var bB = parseInt(document.getElementById('bearB').value);
+  var corA = getTriCorrect(TRI.aRx, TRI.aRy);
+  var corB = getTriCorrect(TRI.bRx, TRI.bRy);
+  var diffA = Math.abs(((bA - corA + 180 + 360) % 360) - 180);
+  var diffB = Math.abs(((bB - corB + 180 + 360) % 360) - 180);
+  var t = TR[currentLang];
+  var res = document.getElementById('tri-result');
+  if(diffA <= 10 && diffB <= 10){
+    res.className = 'tri-result tri-hit';
+    res.textContent = t.tri_hit;
+    // Reveal fox
+    var c = document.getElementById('triCanvas');
+    var ctx = c.getContext('2d');
+    var W = c.width, H = c.height;
+    var Fx = TRI.foxRx*W, Fy = TRI.foxRy*H;
+    ctx.font = '22px sans-serif';
+    ctx.fillText('🦊', Fx-12, Fy+8);
+  } else {
+    res.className = 'tri-result tri-miss';
+    res.textContent = t.tri_miss;
+  }
+}
+
+function resetTri(){
+  document.getElementById('bearA').value = 90;
+  document.getElementById('bearB').value = 270;
+  document.getElementById('tri-result').className = '';
+  document.getElementById('tri-result').textContent = '';
+  drawTri();
+}
+
+/* ═══════════════════════════════════════════
+   BODY SHIELD CANVAS (Section 3)
+═══════════════════════════════════════════ */
+function updateBodyShield(angle){
+  angle = parseInt(angle);
+  document.getElementById('body-angle-val').textContent = angle + '°';
+  var c = document.getElementById('bodyCanvas');
+  c.width = 220; c.height = 220;
+  var ctx = c.getContext('2d');
+  var cx = 110, cy = 110, r = 85;
+
+  ctx.clearRect(0,0,220,220);
+
+  // Signal heat sectors
+  for(var a=0;a<360;a+=2){
+    var diff = Math.abs(((a - angle - 180 + 360) % 360) - 180);
+    var signal = (1 - diff/180)*0.8 + 0.05;
+    var red = Math.round(224*signal);
+    var green = Math.round(80 + 120*signal);
+    ctx.fillStyle = 'rgba('+red+','+green+',80,0.55)';
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    var a1 = (a-1-90)*Math.PI/180;
+    var a2 = (a+1-90)*Math.PI/180;
+    ctx.arc(cx,cy,r,a1,a2);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Compass rose
+  ctx.strokeStyle = 'rgba(2,173,165,0.35)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+  var dirs = ['N','E','S','W'];
+  dirs.forEach(function(d,i){
+    var rad = (i*90-90)*Math.PI/180;
+    ctx.fillStyle = '#7ab8b5';
+    ctx.font = '11px sans-serif';
+    ctx.fillText(d, cx+Math.cos(rad)*(r+14)-4, cy+Math.sin(rad)*(r+14)+4);
+  });
+
+  // Body silhouette
+  ctx.fillStyle = '#011f1e';
+  ctx.beginPath();
+  var bRad = (angle-90)*Math.PI/180;
+  ctx.arc(cx+Math.cos(bRad)*0, cy+Math.sin(bRad)*0, 20, bRad+Math.PI/2, bRad-Math.PI/2, false);
+  ctx.arc(cx, cy, 20, bRad-Math.PI/2, bRad+Math.PI/2, false);
+  ctx.fill();
+
+  // Hunter arrow
+  ctx.strokeStyle = '#02ADA5';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(cx,cy);
+  ctx.lineTo(cx+Math.cos(bRad)*28, cy+Math.sin(bRad)*28);
+  ctx.stroke();
+
+  // Fox at 180°
+  ctx.font = '16px sans-serif';
+  var foxRad = (180+angle-90)*Math.PI/180;
+  ctx.fillText('🦊', cx+Math.cos(foxRad)*(r-18)-8, cy+Math.sin(foxRad)*(r-18)+6);
+}
+
+/* ═══════════════════════════════════════════
+   FOX LOG (Section 5) — time-based scoring
+═══════════════════════════════════════════ */
+var foxFinds = [];
+try{ foxFinds = JSON.parse(localStorage.getItem('fox_finds')||'[]'); }catch(e){}
+
+function timeToMin(t){
+  if(!t) return null;
+  var parts = t.split(':');
+  if(parts.length<2) return null;
+  return parseInt(parts[0])*60 + parseInt(parts[1]);
+}
+
+function elapsedStr(min){
+  if(min===null) return '–';
+  var h = Math.floor(min/60), m = min%60;
+  if(h>0) return h+'h '+m+'m';
+  return m+' min';
+}
+
+function logFox(){
+  var beacon = document.getElementById('log-beacon').value.trim();
+  var timeVal = document.getElementById('log-time').value;
+  var startVal = document.getElementById('log-start').value;
+  var notes = document.getElementById('log-notes').value.trim();
+  if(!beacon || !timeVal){ alert(currentLang==='en'?'Enter beacon name and time found.':'Masukkan nama suar dan masa ditemui.'); return; }
+  var findMin = timeToMin(timeVal);
+  var startMin = timeToMin(startVal);
+  var elapsed = null;
+  if(findMin!==null && startMin!==null){
+    elapsed = ((findMin - startMin) + 1440) % 1440;
+  }
+  var score = elapsed!==null ? Math.max(0, 80 - elapsed) : 1;
+  foxFinds.push({beacon:beacon, time:timeVal, elapsed:elapsed, notes:notes, score:score});
+  try{ localStorage.setItem('fox_finds', JSON.stringify(foxFinds)); }catch(e){}
+  document.getElementById('log-beacon').value = '';
+  document.getElementById('log-notes').value = '';
+  renderLog();
+}
+
+function renderLog(){
+  var t = TR[currentLang];
+  var area = document.getElementById('log-area');
+  if(!foxFinds.length){ area.innerHTML = ''; document.getElementById('score-total').textContent=''; return; }
+  var total = foxFinds.reduce(function(s,f){return s+f.score;},0);
+  var html = '<table class="log-table"><thead><tr>'
+    +'<th>'+t.log_tbl_num+'</th>'
+    +'<th>'+t.log_tbl_beacon+'</th>'
+    +'<th>'+t.log_tbl_time+'</th>'
+    +'<th>'+t.log_tbl_elapsed+'</th>'
+    +'<th>'+t.log_tbl_notes+'</th>'
+    +'<th>'+t.log_tbl_score+'</th>'
+    +'<th></th>'
+    +'</tr></thead><tbody>';
+  foxFinds.forEach(function(f,i){
+    html += '<tr>'
+      +'<td>'+(i+1)+'</td>'
+      +'<td>'+f.beacon+'</td>'
+      +'<td>'+f.time+'</td>'
+      +'<td>'+elapsedStr(f.elapsed)+'</td>'
+      +'<td>'+(f.notes||'–')+'</td>'
+      +'<td style="color:var(--accent);font-weight:700">'+f.score+'</td>'
+      +'<td><button class="remove-btn" onclick="removeLog('+i+')">✕</button></td>'
+      +'</tr>';
+  });
+  html += '</tbody></table>';
+  area.innerHTML = html;
+  document.getElementById('score-total').textContent = (currentLang==='en'?'Total Score: ':'Jumlah Markah: ') + total;
+}
+
+function removeLog(idx){
+  foxFinds.splice(idx,1);
+  try{ localStorage.setItem('fox_finds', JSON.stringify(foxFinds)); }catch(e){}
+  renderLog();
+}
+
+function clearLog(){
+  var t = TR[currentLang];
+  if(!confirm(t.confirm_clear)) return;
+  foxFinds = [];
+  try{ localStorage.removeItem('fox_finds'); }catch(e){}
+  renderLog();
+}
+
+/* ═══════════════════════════════════════════
+   PUNCH CARD (Section 6)
+═══════════════════════════════════════════ */
+var punched = [];
+try{ punched = JSON.parse(localStorage.getItem('punch_card')||'[]'); }catch(e){}
+
+function buildPunchCard(){
+  var grid = document.getElementById('punch-grid');
+  grid.innerHTML = '';
+  for(var i=1;i<=5;i++){
+    var slot = document.createElement('div');
+    slot.className = 'punch-slot' + (punched.indexOf(i)>-1?' punched':'');
+    slot.innerHTML = '<span>Fox '+(i<=5?i:'?')+'</span>';
+    (function(idx){
+      slot.onclick = function(){
+        var p = punched.indexOf(idx);
+        if(p>-1) punched.splice(p,1); else punched.push(idx);
+        try{ localStorage.setItem('punch_card', JSON.stringify(punched)); }catch(e){}
+        buildPunchCard();
+      };
+    })(i);
+    grid.appendChild(slot);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   CHEV BAR (Section 7)
+═══════════════════════════════════════════ */
+function switchChev(name){
+  document.querySelectorAll('.tip-tab').forEach(function(c){c.classList.remove('active');});
+  document.querySelectorAll('.tip-panel').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('chev-'+name).classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+}
+
+/* ═══════════════════════════════════════════
+   RAE ADVANCED SECTION
+═══════════════════════════════════════════ */
+var raeQuizOpen = false;
+
+function toggleRAE(){
+  var btn = document.getElementById('rae-toggle-btn');
+  var body = document.getElementById('rae-body');
+  raeQuizOpen = !raeQuizOpen;
+  if(raeQuizOpen){
+    body.classList.add('open');
+    btn.classList.add('open');
+    btn.innerHTML = '&#9660; <span data-i18n="rae_toggle_label">'+TR[currentLang].rae_toggle_label+'</span>';
+    buildRaeQuiz(currentLang);
+  } else {
+    body.classList.remove('open');
+    btn.classList.remove('open');
+    btn.innerHTML = '&#9658; <span data-i18n="rae_toggle_label">'+TR[currentLang].rae_toggle_label+'</span>';
+  }
+}
+
+function switchRaeTab(name){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('rtab-'+name).classList.add('active');
+  document.getElementById('rpanel-'+name).classList.add('active');
+}
+
+var RAE_QUESTIONS = {
+  en:[
+    {q:'What does ARDF stand for?', opts:['Antenna Radio Direction Finder','Aerial Radio Distance Finding','Amateur Radio Direction Finding','Advanced Radio Detection Framework'], ans:2},
+    {q:'How many foxes are used in a standard 2m ARDF event?', opts:['3','4','5','6'], ans:2},
+    {q:'With 5 foxes transmitting 1 minute each, what is the rotation cycle?', opts:['3 minutes','5 minutes','10 minutes','15 minutes'], ans:1},
+    {q:'Which technique is best at Phase 3 (very close range)?', opts:['Full-gain Yagi','Attenuator + loop','Body shielding with rubber duck','Triangulation from two points'], ans:2},
+    {q:'When body shielding, the "null" direction means the fox is:', opts:['Directly in front of you','To your left','Directly behind you','Above you'], ans:2},
+    {q:'A hunter finds a fox 50 minutes after the hunt starts. Score = 80 − 50 = ?', opts:['50 points','80 points','30 points','20 points'], ans:2},
+    {q:'What is the main purpose of an attenuator in Phase 2?', opts:['Increase antenna gain','Reduce receiver sensitivity to avoid overloading','Boost signal range','Change antenna polarisation'], ans:1},
+    {q:'What is the typical maximum time for a school ARDF hunt?', opts:['40 minutes','60 minutes','80 minutes','100 minutes'], ans:2}
+  ],
+  bm:[
+    {q:'Apakah maksud ARDF?', opts:['Antenna Radio Direction Finder','Aerial Radio Distance Finding','Amateur Radio Direction Finding','Advanced Radio Detection Framework'], ans:2},
+    {q:'Berapa banyak fox digunakan dalam acara ARDF 2m standard?', opts:['3','4','5','6'], ans:2},
+    {q:'Dengan 5 fox menghantar 1 minit setiap satu, apakah tempoh putaran?', opts:['3 minit','5 minit','10 minit','15 minit'], ans:1},
+    {q:'Teknik mana yang terbaik pada Fasa 3 (jarak sangat dekat)?', opts:['Yagi gandaan penuh','Pelemah + gelung','Perisai badan dengan rubber duck','Triangulasi dari dua titik'], ans:2},
+    {q:'Semasa perisai badan, arah "nol" bermakna fox berada:', opts:['Terus di hadapan anda','Di sebelah kiri anda','Terus di belakang anda','Di atas anda'], ans:2},
+    {q:'Seorang pemburu menemui fox 50 minit selepas pemburuan bermula. Markah = 80 − 50 = ?', opts:['50 mata','80 mata','30 mata','20 mata'], ans:2},
+    {q:'Apakah tujuan utama pelemah dalam Fasa 2?', opts:['Meningkatkan gandaan antena','Mengurangkan kepekaan penerima untuk mengelak ketepuan','Meningkatkan julat isyarat','Menukar polarisasi antena'], ans:1},
+    {q:'Apakah masa maksimum tipikal untuk pemburuan ARDF sekolah?', opts:['40 minit','60 minit','80 minit','100 minit'], ans:2}
+  ]
+};
+
+function buildRaeQuiz(l){
+  var qs = RAE_QUESTIONS[l] || RAE_QUESTIONS.en;
+  var html = '';
+  qs.forEach(function(q,qi){
+    html += '<div class="quiz-q"><p>'+(qi+1)+'. '+q.q+'</p>';
+    q.opts.forEach(function(opt,oi){
+      var letter = String.fromCharCode(97+oi);
+      html += '<label><input type="radio" name="raeq'+qi+'" value="'+oi+'"> '+letter+') '+opt+'</label>';
+    });
+    html += '<div class="quiz-feedback" id="rfb-'+qi+'"></div></div>';
+  });
+  document.getElementById('rae-quiz-area').innerHTML = html;
+  document.getElementById('rae-quiz-score').textContent = '';
+}
+
+function checkRaeQuiz(){
+  var l = currentLang;
+  var qs = RAE_QUESTIONS[l] || RAE_QUESTIONS.en;
+  var correct = 0;
+  qs.forEach(function(q,qi){
+    var sel = document.querySelector('input[name="raeq'+qi+'"]:checked');
+    var fb = document.getElementById('rfb-'+qi);
+    if(!sel){ fb.textContent=''; return; }
+    if(parseInt(sel.value)===q.ans){
+      correct++;
+      fb.textContent = l==='en'?'✓ Correct!':'✓ Betul!';
+      fb.className = 'quiz-feedback quiz-correct';
+    } else {
+      var correctLetter = String.fromCharCode(97+q.ans);
+      fb.textContent = (l==='en'?'✗ Correct answer: ':'✗ Jawapan betul: ')+correctLetter+') '+q.opts[q.ans];
+      fb.className = 'quiz-feedback quiz-wrong';
+    }
+  });
+  document.getElementById('rae-quiz-score').textContent =
+    (l==='en'?'Score: ':'Markah: ')+correct+' / '+qs.length;
+}
+
+// setLang patch to rebuild quiz on language switch
+(function(){
+  var _orig = setLang;
+  setLang = function(l){
+    _orig(l);
+    if(raeQuizOpen) buildRaeQuiz(l);
+  };
+})();
+
+/* ═══════════════════════════════════════════
+   ANTENNA COMPARISON ILLUSTRATION
+═══════════════════════════════════════════ */
+function drawAntennaCompare(){
+  var cv=document.getElementById('antennaCompareCanvas');
+  if(!cv) return;
+  var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+  var lx=W*0.27, rx=W*0.73, my=H*0.5;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#050d0c'; ctx.fillRect(0,0,W,H);
+
+  // Divider
+  ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=1; ctx.setLineDash([4,5]);
+  ctx.beginPath(); ctx.moveTo(W/2,12); ctx.lineTo(W/2,H-12); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // ── LEFT: YAGI ────────────────────────────────────────
+  // Boom
+  ctx.strokeStyle='#66AAFF'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(lx-62,my); ctx.lineTo(lx+28,my); ctx.stroke();
+  // Reflector (long, behind)
+  ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(lx-56,my-18); ctx.lineTo(lx-56,my+18); ctx.stroke();
+  // Directors (shorter, in front)
+  [[lx-30,15],[lx-14,12],[lx+2,10],[lx+16,8]].forEach(function(d){
+    ctx.beginPath(); ctx.moveTo(d[0],my-d[1]); ctx.lineTo(d[0],my+d[1]); ctx.stroke();
+  });
+
+  // Narrow forward beam
+  ctx.beginPath();
+  ctx.moveTo(lx+20,my);
+  for(var a=-35;a<=35;a+=2){
+    var r=65+15*Math.cos(a*Math.PI/35);
+    ctx.lineTo(lx+20+r*Math.cos(a*Math.PI/180), my+r*Math.sin(a*Math.PI/180));
+  }
+  ctx.closePath();
+  var gL=ctx.createRadialGradient(lx+30,my,0,lx+30,my,90);
+  gL.addColorStop(0,'rgba(102,170,255,.45)'); gL.addColorStop(1,'rgba(102,170,255,0)');
+  ctx.fillStyle=gL; ctx.fill();
+
+  // Small back lobe
+  ctx.beginPath(); ctx.ellipse(lx-72,my,12,7,0,0,Math.PI*2);
+  ctx.fillStyle='rgba(102,170,255,.12)'; ctx.fill();
+
+  // "Fox →" label on beam
+  ctx.fillStyle='rgba(102,170,255,.7)'; ctx.font='bold 9px system-ui'; ctx.textAlign='left';
+  ctx.fillText('FOX →', lx+80, my-4);
+
+  // Operator
+  ctx.font='22px system-ui'; ctx.textAlign='center'; ctx.fillText('🧑',lx,my+10);
+
+  // Panel title + subtitle
+  ctx.fillStyle='#66AAFF'; ctx.font='bold 12px system-ui'; ctx.textAlign='center';
+  ctx.fillText('YAGI', lx, 18);
+  ctx.fillStyle='rgba(255,255,255,.45)'; ctx.font='9px system-ui';
+  ctx.fillText('narrow beam · high gain', lx, 30);
+
+  // ✗ problem note at bottom
+  ctx.fillStyle='rgba(255,100,100,.9)'; ctx.font='bold 8.5px system-ui';
+  ctx.fillText('✗ Close range: beam picks up signal', lx, H-20);
+  ctx.fillText('from ALL directions — body shadow lost', lx, H-9);
+
+  // ── RIGHT: RUBBER DUCK ────────────────────────────────
+  // Omnidirectional rings (signal all around)
+  [38,52,66].forEach(function(r,i){
+    ctx.beginPath(); ctx.arc(rx,my,r,0,Math.PI*2);
+    ctx.strokeStyle='rgba(240,192,64,'+(0.25-i*0.06)+')'; ctx.lineWidth=1.2;
+    ctx.stroke();
+  });
+
+  // Body shadow — dark wedge behind (left) of operator
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(rx,my);
+  ctx.arc(rx,my,75, Math.PI*0.62, Math.PI*1.38);
+  ctx.closePath();
+  ctx.fillStyle='rgba(5,13,12,.9)'; ctx.fill();
+  // subtle red null zone tint
+  ctx.beginPath();
+  ctx.moveTo(rx,my);
+  ctx.arc(rx,my,72, Math.PI*0.7, Math.PI*1.3);
+  ctx.closePath();
+  ctx.fillStyle='rgba(255,60,60,.08)'; ctx.fill();
+  ctx.restore();
+
+  // NULL label in shadow zone
+  ctx.fillStyle='rgba(255,80,80,.8)'; ctx.font='bold 9px system-ui'; ctx.textAlign='center';
+  ctx.fillText('NULL ZONE', rx-52, my+2);
+  ctx.font='8px system-ui';
+  ctx.fillText('FOX HERE', rx-52, my+13);
+  ctx.fillText('🦊', rx-52, my+26);
+
+  // Short rubber-duck stub antenna
+  ctx.strokeStyle='#f0c040'; ctx.lineWidth=3.5;
+  ctx.beginPath(); ctx.moveTo(rx,my-14); ctx.lineTo(rx,my-36); ctx.stroke();
+  // helical coil marks
+  ctx.strokeStyle='rgba(240,192,64,.5)'; ctx.lineWidth=1.5;
+  [-30,-25,-20].forEach(function(y){
+    ctx.beginPath(); ctx.moveTo(rx-4,my+y); ctx.lineTo(rx+4,my+y); ctx.stroke();
+  });
+
+  // Operator
+  ctx.font='22px system-ui'; ctx.textAlign='center'; ctx.fillText('🧑',rx,my+10);
+
+  // Body block arrow
+  ctx.strokeStyle='rgba(255,80,80,.7)'; ctx.lineWidth=1.8;
+  ctx.beginPath(); ctx.moveTo(rx-13,my); ctx.lineTo(rx-35,my); ctx.stroke();
+  ctx.fillStyle='rgba(255,80,80,.7)';
+  ctx.beginPath(); ctx.moveTo(rx-35,my-4); ctx.lineTo(rx-35,my+4); ctx.lineTo(rx-42,my); ctx.closePath(); ctx.fill();
+
+  // Body = wall label
+  ctx.fillStyle='rgba(255,150,150,.7)'; ctx.font='italic 8px system-ui'; ctx.textAlign='center';
+  ctx.fillText('← body = wall', rx, my+30);
+
+  // Panel title + subtitle
+  ctx.fillStyle='#f0c040'; ctx.font='bold 12px system-ui';
+  ctx.fillText('RUBBER DUCK', rx, 18);
+  ctx.fillStyle='rgba(255,255,255,.45)'; ctx.font='9px system-ui';
+  ctx.fillText('omnidirectional · body = shield', rx, 30);
+
+  // ✓ result at bottom
+  ctx.fillStyle='rgba(80,255,140,.9)'; ctx.font='bold 8.5px system-ui';
+  ctx.fillText('✓ Body blocks signal cleanly —', rx, H-20);
+  ctx.fillText('null zone points straight to fox', rx, H-9);
+}
+
+/* ═══════════════════════════════════════════
+   SHIELD SECTION SCROLL ANIMATIONS
+═══════════════════════════════════════════ */
+function initShieldAnimations(){
+  if(!window.IntersectionObserver) return;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      var el = e.target;
+      var delay = (parseInt(el.dataset.scDelay||el.dataset.ssDelay||0))+'ms';
+      el.style.animationDelay = delay;
+      el.classList.add(el.classList.contains('shield-card')?'sc-visible':'ss-visible');
+      obs.unobserve(el);
+    });
+  },{threshold:0.18});
+  document.querySelectorAll('.shield-card,.shield-step').forEach(function(el){obs.observe(el);});
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+(function(){
+  // Hunt canvas
+  initHuntCanvas();
+
+  // Triangulation canvas
+  drawTri();
+
+  // Body shield
+  var bc = document.getElementById('bodyCanvas');
+  bc.width = 220; bc.height = 220;
+  updateBodyShield(0);
+
+  // Fox log time defaults
+  var now = new Date();
+  var hh = String(now.getHours()).padStart(2,'0');
+  var mm = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('log-time').value = hh+':'+mm;
+  document.getElementById('log-start').value = hh+':'+mm;
+  renderLog();
+
+  // Punch card
+  buildPunchCard();
+
+  // Shield animations
+  initShieldAnimations();
+
+  // Antenna comparison illustration
+  drawAntennaCompare();
+
+  // Set initial lang
+  setLang('en');
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   RAE ANIMATION ENGINE
+═══════════════════════════════════════════════════════════ */
+
+// ── FOX CYCLE TIMELINE ─────────────────────────────────────
+var cyclePos = 0, cycleRunning = false, cycleTimer = null;
+
+function initFoxCycle(){
+  var wrap = document.getElementById('fox-cycle-rows');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  for(var i=0;i<5;i++){
+    var txStart = i * 0.2;
+    var row = document.createElement('div');
+    row.className = 'fox-row'; row.id = 'fox-row-'+i;
+    row.innerHTML = '<div class="fox-lbl">&#x1F98A; Fox '+(i+1)+'</div>'+
+      '<div class="fox-tl" id="ftl-'+i+'">'+
+        '<div class="fox-seg-silent" style="left:0;width:100%"></div>'+
+        '<div class="fox-seg-tx" style="left:'+(txStart*100)+'%;width:20%"></div>'+
+        '<div class="fox-cur" id="fcl-'+i+'" style="left:0%"></div>'+
+      '</div>'+
+      '<div class="fox-dot" id="fdot-'+i+'"></div>';
+    wrap.appendChild(row);
+  }
+  updateCycleFrame();
+}
+
+function toggleCycleAnim(){
+  cycleRunning = !cycleRunning;
+  var btn = document.getElementById('cycle-play-btn');
+  if(btn) btn.innerHTML = cycleRunning ? '&#9646;&#9646; Pause' : '&#9654; Play';
+  if(cycleRunning){ cycleTimer = setInterval(advanceCycle, 80); }
+  else clearInterval(cycleTimer);
+}
+
+function advanceCycle(){
+  cyclePos = (cyclePos + 0.004) % 1;
+  updateCycleFrame();
+}
+
+function updateCycleFrame(){
+  var tot = Math.floor(cyclePos*300), m=Math.floor(tot/60), s=tot%60;
+  var td = document.getElementById('cycle-time-disp');
+  if(td) td.textContent = m+':'+(s<10?'0':'')+s+' / 5:00';
+  var active = Math.floor(cyclePos*5);
+  for(var i=0;i<5;i++){
+    var row=document.getElementById('fox-row-'+i);
+    var dot=document.getElementById('fdot-'+i);
+    var cur=document.getElementById('fcl-'+i);
+    if(row) row.classList.toggle('fox-on', i===active);
+    if(cur) cur.style.left=(cyclePos*100)+'%';
+  }
+}
+
+// ── PROPAGATION CANVAS ─────────────────────────────────────
+var propScenario=0, propAnimId=null, propWaves=[];
+var PROP_DESCS=[
+  'Line of sight: VHF (144 MHz) travels in straight lines. Clear path = strong accurate signal — your bearing is reliable.',
+  'Shadow zone: A hill or building blocks the signal. The area behind the obstacle gets no signal — called a "shadow zone".',
+  'Reflection: The signal bounces off a metal surface. Your antenna picks up the reflected path and points to the WRONG direction — a false bearing!'
+];
+var PROP_DESCS_BM=[
+  'Pandangan terus: VHF (144 MHz) bergerak lurus. Laluan bersih = isyarat kuat dan tepat — bearing anda boleh dipercayai.',
+  'Zon bayang: Bukit atau bangunan menyekat isyarat. Kawasan di belakang halangan tidak dapat isyarat — "zon bayang".',
+  'Pantulan: Isyarat melantun dari permukaan logam. Antena anda menghala ke arah SALAH — bearing palsu!'
+];
+
+function setPropScenario(n){
+  propScenario=n;
+  document.querySelectorAll('.scen-btn').forEach(function(b,i){b.classList.toggle('active',i===n);});
+  var d=document.getElementById('prop-desc');
+  if(d) d.textContent = (currentLang==='bm'?PROP_DESCS_BM:PROP_DESCS)[n];
+  propWaves=[];
+}
+
+function drawProp(){
+  var cv=document.getElementById('propCanvas'); if(!cv) return;
+  var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#071918'; ctx.fillRect(0,0,W,H);
+  // subtle grid
+  ctx.fillStyle='rgba(2,173,165,.07)';
+  for(var gx=25;gx<W;gx+=35) for(var gy=18;gy<H;gy+=35){ctx.beginPath();ctx.arc(gx,gy,1.2,0,Math.PI*2);ctx.fill();}
+
+  var foxX=80,foxY=H/2, rxX=W-65,rxY=H/2;
+
+  if(propScenario===0){
+    // Waves full
+    propWaves.forEach(function(w){
+      var a=Math.max(0,(1-w.r/220)*0.65);
+      ctx.strokeStyle='rgba(2,173,165,'+a+')'; ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.arc(foxX,foxY,w.r,0,Math.PI*2); ctx.stroke();
+    });
+    // Clear path arrow
+    ctx.strokeStyle='rgba(2,173,165,.5)'; ctx.lineWidth=2; ctx.setLineDash([7,5]);
+    ctx.beginPath(); ctx.moveTo(foxX+20,foxY); ctx.lineTo(rxX-20,rxY); ctx.stroke();
+    ctx.setLineDash([]);
+    drawArrowHead(ctx, rxX-20, rxY, '#02ADA5', 0);
+    // Label
+    ctx.fillStyle='#50c850'; ctx.font='bold 12px system-ui'; ctx.textAlign='center';
+    ctx.fillText('SIGNAL CLEAR', W/2, foxY-22);
+    ctx.fillStyle='rgba(80,200,80,.25)';
+    ctx.fillRect(foxX+20, foxY-18, rxX-foxX-40, 36);
+
+  } else if(propScenario===1){
+    var obX=W/2-24, obY=foxY-60, obW=48, obH=120;
+    // Waves — clip to left of obstacle
+    ctx.save(); ctx.beginPath(); ctx.rect(0,0,obX,H); ctx.clip();
+    propWaves.forEach(function(w){
+      var a=Math.max(0,(1-w.r/220)*0.65);
+      ctx.strokeStyle='rgba(2,173,165,'+a+')'; ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.arc(foxX,foxY,w.r,0,Math.PI*2); ctx.stroke();
+    });
+    ctx.restore();
+    // Obstacle building
+    ctx.fillStyle='#1a3a38'; ctx.strokeStyle='rgba(2,173,165,.5)'; ctx.lineWidth=2;
+    ctx.fillRect(obX,obY,obW,obH); ctx.strokeRect(obX,obY,obW,obH);
+    // Windows
+    for(var wr=0;wr<3;wr++) for(var wc=0;wc<2;wc++){
+      ctx.fillStyle='rgba(2,173,165,.25)';
+      ctx.fillRect(obX+6+wc*20, obY+12+wr*34, 14, 20);
+    }
+    ctx.fillStyle='rgba(2,173,165,.8)'; ctx.font='bold 9px system-ui'; ctx.textAlign='center';
+    ctx.fillText('BLDG', obX+obW/2, obY+obH+12);
+    // Shadow zone
+    ctx.fillStyle='rgba(0,0,0,.38)';
+    ctx.beginPath(); ctx.moveTo(obX+obW,obY-5); ctx.lineTo(W,obY-30); ctx.lineTo(W,obY+obH+30); ctx.lineTo(obX+obW,obY+obH+5); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='rgba(200,40,40,.7)'; ctx.font='bold 11px system-ui'; ctx.textAlign='center';
+    ctx.fillText('SHADOW ZONE', W-80, foxY-8);
+    ctx.fillStyle='rgba(200,40,40,.5)'; ctx.font='10px system-ui';
+    ctx.fillText('NO SIGNAL HERE', W-80, foxY+10);
+    // X on receiver
+    ctx.strokeStyle='#e05050'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(rxX-12,foxY-12); ctx.lineTo(rxX+12,foxY+12); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(rxX+12,foxY-12); ctx.lineTo(rxX-12,foxY+12); ctx.stroke();
+
+  } else {
+    var wallX=W-85; rxY=H*0.72;
+    // Wall
+    ctx.strokeStyle='#5090d0'; ctx.lineWidth=4;
+    ctx.beginPath(); ctx.moveTo(wallX,15); ctx.lineTo(wallX,H-15); ctx.stroke();
+    ctx.fillStyle='#5090d0'; ctx.font='bold 9px system-ui'; ctx.textAlign='center';
+    ctx.fillText('METAL WALL', wallX, H-4);
+    // Waves
+    propWaves.forEach(function(w){
+      var a=Math.max(0,(1-w.r/220)*0.5);
+      ctx.strokeStyle='rgba(2,173,165,'+a+')'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(foxX,foxY,w.r,0,Math.PI*2); ctx.stroke();
+    });
+    // Reflect point
+    var refY=(foxY+rxY)/2;
+    // True path (weak, dashed)
+    ctx.strokeStyle='rgba(2,173,165,.25)'; ctx.lineWidth=1; ctx.setLineDash([4,6]);
+    ctx.beginPath(); ctx.moveTo(foxX+18,foxY); ctx.lineTo(rxX-12,rxY); ctx.stroke();
+    ctx.setLineDash([]);
+    // Reflected path (bright red)
+    ctx.strokeStyle='#e05050'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(foxX+18,foxY); ctx.lineTo(wallX-4,refY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(wallX-4,refY); ctx.lineTo(rxX-12,rxY); ctx.stroke();
+    // Reflection dot
+    ctx.fillStyle='#e05050';
+    ctx.beginPath(); ctx.arc(wallX-4,refY,5,0,Math.PI*2); ctx.fill();
+    // False bearing arrow
+    var fbAng=Math.atan2(refY-rxY, wallX-rxX);
+    ctx.strokeStyle='#e05050'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+    ctx.beginPath(); ctx.moveTo(rxX-12,rxY); ctx.lineTo(rxX-12-Math.cos(fbAng)*90,rxY-Math.sin(fbAng)*90); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#e05050'; ctx.font='bold 10px system-ui'; ctx.textAlign='left';
+    ctx.fillText('FALSE BEARING \u2197', rxX-130, rxY+20);
+    // True bearing label
+    ctx.fillStyle='rgba(2,173,165,.5)'; ctx.font='10px system-ui'; ctx.textAlign='center';
+    ctx.fillText('(real path: weak)', W/2-40, foxY-14);
+  }
+
+  // Fox icon
+  ctx.font='24px system-ui'; ctx.textAlign='center';
+  ctx.fillText('\u{1F98A}', foxX, foxY+8);
+  ctx.fillStyle='rgba(2,173,165,.7)'; ctx.font='bold 9px system-ui';
+  ctx.fillText('FOX TX', foxX, foxY+24);
+
+  // Receiver antenna
+  if(propScenario!==1){
+    ctx.strokeStyle='#f0c040'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(rxX,rxY-6); ctx.lineTo(rxX-8,rxY-26); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(rxX-5,rxY-18); ctx.lineTo(rxX-14,rxY-18); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(rxX-2,rxY-14); ctx.lineTo(rxX-11,rxY-14); ctx.stroke();
+    ctx.fillStyle='#f0c040'; ctx.font='bold 9px system-ui'; ctx.textAlign='center';
+    ctx.fillText('HUNTER', rxX, rxY+22);
+    ctx.font='20px system-ui'; ctx.fillText('\u{1F9D1}', rxX, rxY+10);
+  }
+}
+
+function drawArrowHead(ctx,x,y,color,angle){
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  ctx.moveTo(x,y);
+  ctx.lineTo(x-12*Math.cos(angle-0.4),y-12*Math.sin(angle-0.4));
+  ctx.lineTo(x-12*Math.cos(angle+0.4),y-12*Math.sin(angle+0.4));
+  ctx.closePath(); ctx.fill();
+}
+
+function animateProp(){
+  if(propAnimId) cancelAnimationFrame(propAnimId);
+  var cv=document.getElementById('propCanvas');
+  if(!cv||!cv.offsetParent){propAnimId=null;return;}
+  var fc=0;
+  function loop(){
+    fc++;
+    if(fc%16===0) propWaves.push({r:0});
+    propWaves.forEach(function(w){w.r+=2.2;});
+    propWaves=propWaves.filter(function(w){return w.r<230;});
+    drawProp();
+    propAnimId=requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// ── ANTENNA PATTERN (IMPROVED) ─────────────────────────────
+var techPattern='loop', techAngle=0, techAnimId=null;
+
+var PAT_COLORS={loop:'#f0a030', cardioid:'#02ADA5', yagi:'#4090e0'};
+var PAT_DESCS={
+  loop:'Loop antenna: figure-8 pattern with TWO nulls (minimum points). Rotate until signal disappears — the null aims at the fox. Cannot tell front from back (180° ambiguity).',
+  cardioid:'Cardioid pattern (loop + sense element): SINGLE null at the back. Eliminates the 180° ambiguity. The standard ARDF antenna for phases 2–3.',
+  yagi:'Yagi-Uda beam: very narrow lobe, high gain (9–10 dBd). Peak points TOWARD the fox. Best for Phase 1 long-range bearings.'
+};
+var PAT_DESCS_BM={
+  loop:'Antena gelung: corak angka-8 dengan DUA titik null. Putar sehingga isyarat hilang — null menghala ke fox. Tidak dapat beza hadapan/belakang (kekaburan 180°).',
+  cardioid:'Corak kardioid (gelung + antena deria): SATU null di belakang. Hapuskan kekaburan 180°. Antena ARDF standard untuk fasa 2–3.',
+  yagi:'Alur Yagi-Uda: lobu sangat sempit, gandaan tinggi (9–10 dBd). Puncak menghala KE fox. Terbaik untuk bearing jarak jauh Fasa 1.'
+};
+
+function setTechPattern(p){
+  techPattern=p;
+  document.querySelectorAll('.pat-btn').forEach(function(b){b.classList.toggle('active',b.dataset.pat===p);});
+  var d=document.getElementById('pattern-desc');
+  if(d) d.textContent=(currentLang==='bm'?PAT_DESCS_BM:PAT_DESCS)[p];
+}
+
+function animateTech(){
+  if(techAnimId) cancelAnimationFrame(techAnimId);
+  var cv=document.getElementById('techCanvas');
+  if(!cv||!cv.offsetParent){techAnimId=null;return;}
+
+  var PAT_CFG={
+    loop:{
+      color:'#FFD700', fillA:.18, strokeW:3,
+      calcR:function(deg,R){ return R*Math.abs(Math.cos(deg*Math.PI/180)); },
+      nullAngles:[90,270], peakAngles:[],
+      label:'LOOP (Figure-8)'
+    },
+    cardioid:{
+      color:'#00E8D0', fillA:.20, strokeW:3,
+      calcR:function(deg,R){ return R*0.52*(1+Math.cos(deg*Math.PI/180)); },
+      nullAngles:[180], peakAngles:[0],
+      label:'CARDIOID'
+    },
+    yagi:{
+      color:'#66AAFF', fillA:.22, strokeW:3.5,
+      calcR:function(deg,R){
+        var b=Math.max(0,Math.cos(deg*Math.PI/180));
+        return R*Math.pow(b,9);
+      },
+      nullAngles:[], peakAngles:[0],
+      label:'YAGI BEAM'
+    }
+  };
+
+  var sweepAngle=0;
+
+  function draw(){
+    var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+    var cx=W/2, cy=H/2, R=Math.min(W,H)/2-38;
+
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#050d0c'; ctx.fillRect(0,0,W,H);
+
+    var cfg=PAT_CFG[techPattern];
+
+    // ── Reference rings ──────────────────────────────────────────
+    [0.33,0.66,1].forEach(function(f){
+      ctx.strokeStyle='rgba(255,255,255,.07)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.arc(cx,cy,R*f,0,Math.PI*2); ctx.stroke();
+      if(f<1){
+        ctx.fillStyle='rgba(255,255,255,.2)'; ctx.font='9px monospace'; ctx.textAlign='left';
+        ctx.fillText(Math.round(f*100)+'%', cx+R*f+3, cy-2);
+      }
+    });
+
+    // ── Axis lines ───────────────────────────────────────────────
+    var axData=[
+      [0,-1,'N','FOX \u{1F98A}','#FFD700'],
+      [1,0,'E',null,'rgba(255,255,255,.3)'],
+      [0,1,'S',null,'rgba(255,255,255,.3)'],
+      [-1,0,'W',null,'rgba(255,255,255,.3)']
+    ];
+    axData.forEach(function(ax){
+      ctx.strokeStyle='rgba(255,255,255,.1)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(cx-ax[0]*R, cy+ax[1]*R); ctx.lineTo(cx+ax[0]*R, cy-ax[1]*R); ctx.stroke();
+      // compass label
+      ctx.fillStyle=ax[4]; ctx.font='bold 11px system-ui'; ctx.textAlign='center';
+      ctx.fillText(ax[2], cx+ax[0]*(R+18), cy-ax[1]*(R+18)+4);
+      // "FOX" badge at North
+      if(ax[3]){
+        ctx.fillStyle='#FFD700'; ctx.font='bold 10px system-ui';
+        ctx.fillText(ax[3], cx+ax[0]*(R+18), cy-ax[1]*(R+18)+16);
+      }
+    });
+
+    // ── Pattern shape ─────────────────────────────────────────────
+    ctx.beginPath();
+    for(var deg=0;deg<=360;deg++){
+      var r=cfg.calcR(deg,R);
+      var ang=deg*Math.PI/180;
+      var px=cx+r*Math.sin(ang), py=cy-r*Math.cos(ang);
+      deg===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+    }
+    ctx.closePath();
+    // vibrant fill
+    var grad=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+    var c=cfg.color;
+    grad.addColorStop(0, hexAlpha(c, cfg.fillA*1.8));
+    grad.addColorStop(0.5, hexAlpha(c, cfg.fillA));
+    grad.addColorStop(1, hexAlpha(c, 0.04));
+    ctx.fillStyle=grad; ctx.fill();
+    ctx.strokeStyle=c; ctx.lineWidth=cfg.strokeW;
+    ctx.stroke();
+
+    // ── Sweep indicator (rotating line) ───────────────────────────
+    var sRad=sweepAngle*Math.PI/180;
+    var sx=cx+Math.sin(sRad)*R, sy=cy-Math.cos(sRad)*R;
+    // glow line
+    ctx.save();
+    ctx.shadowColor='rgba(255,255,255,.7)'; ctx.shadowBlur=6;
+    ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=1.5;
+    ctx.setLineDash([4,5]);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(sx,sy); ctx.stroke();
+    ctx.setLineDash([]);
+    // dot at tip
+    ctx.fillStyle='rgba(255,255,255,.7)';
+    ctx.beginPath(); ctx.arc(sx,sy,4,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+
+    // ── NULL arrows + labels ──────────────────────────────────────
+    cfg.nullAngles.forEach(function(nd){
+      var na=nd*Math.PI/180;
+      var nx=cx+Math.sin(na)*R*0.8, ny=cy-Math.cos(na)*R*0.8;
+      // dashed line
+      ctx.strokeStyle='rgba(255,70,70,.9)'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.sin(na)*R*0.92, cy-Math.cos(na)*R*0.92); ctx.stroke();
+      ctx.setLineDash([]);
+      // label badge
+      drawBadge(ctx, nx, ny, 'NULL — DEAF', '#FF4444', 'rgba(60,0,0,.8)');
+    });
+
+    // ── PEAK arrow + label ────────────────────────────────────────
+    cfg.peakAngles.forEach(function(pd){
+      var pa=pd*Math.PI/180;
+      var px2=cx+Math.sin(pa)*R*0.72, py2=cy-Math.cos(pa)*R*0.72;
+      ctx.strokeStyle='rgba(80,255,120,.9)'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.sin(pa)*R*0.88, cy-Math.cos(pa)*R*0.88); ctx.stroke();
+      ctx.setLineDash([]);
+      drawBadge(ctx, px2, py2, 'PEAK — LOUD', '#55FF88', 'rgba(0,40,10,.8)');
+    });
+
+    // ── "YOU" hunter at center ────────────────────────────────────
+    ctx.font='22px system-ui'; ctx.textAlign='center'; ctx.fillText('\u{1F9D1}', cx, cy+8);
+    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.font='bold 9px system-ui';
+    ctx.fillText('YOU', cx, cy+21);
+
+    // ── Pattern name banner ───────────────────────────────────────
+    ctx.fillStyle=c; ctx.font='bold 12px system-ui'; ctx.textAlign='center';
+    ctx.fillText(cfg.label, cx, H-8);
+
+    // ── Current reading (S-meter style) ──────────────────────────
+    var readR=cfg.calcR(sweepAngle, 1);
+    var barW=Math.round(readR*80);
+    var barX=cx-40, barY=H-28;
+    ctx.fillStyle='rgba(0,0,0,.5)';
+    ctx.fillRect(barX-1, barY-1, 82, 11);
+    ctx.fillStyle=readR>0.6?c:'#FF4444';
+    ctx.fillRect(barX, barY, barW, 9);
+    ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=.8;
+    ctx.strokeRect(barX-1, barY-1, 82, 11);
+    ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='8px monospace'; ctx.textAlign='left';
+    ctx.fillText('S-METER', barX+83, barY+8);
+  }
+
+  function drawBadge(ctx, x, y, text, textColor, bgColor){
+    ctx.font='bold 9px system-ui'; ctx.textAlign='center';
+    var tw=ctx.measureText(text).width;
+    var bx=x-tw/2-5, by=y-9, bw=tw+10, bh=14;
+    ctx.fillStyle=bgColor; ctx.beginPath();
+    ctx.roundRect?ctx.roundRect(bx,by,bw,bh,4):ctx.rect(bx,by,bw,bh);
+    ctx.fill();
+    ctx.strokeStyle=textColor; ctx.lineWidth=.8;
+    ctx.beginPath();
+    ctx.roundRect?ctx.roundRect(bx,by,bw,bh,4):ctx.rect(bx,by,bw,bh);
+    ctx.stroke();
+    ctx.fillStyle=textColor; ctx.fillText(text,x,y+2);
+  }
+
+  function hexAlpha(hex, a){
+    var r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+    return 'rgba('+r+','+g+','+b+','+a+')';
+  }
+
+  function techLoop(){
+    sweepAngle=(sweepAngle+1.2)%360;
+    draw();
+    techAnimId=requestAnimationFrame(techLoop);
+  }
+  techLoop();
+}
+
+// ── QUIZ ANIMATION// ── QUIZ ANIMATION ─────────────────────────────────────────
+var _origBuildRaeQuiz=buildRaeQuiz;
+buildRaeQuiz=function(l){
+  _origBuildRaeQuiz(l);
+  setTimeout(function(){
+    var items=document.querySelectorAll('#rae-quiz-area .quiz-item,#rae-quiz-area>div');
+    items.forEach(function(el,i){
+      el.classList.add('quiz-item-anim');
+      el.style.animationDelay=(i*0.08)+'s';
+    });
+  },50);
+};
+
+// ── TAB LIFECYCLE ──────────────────────────────────────────
+var _origSRTab=switchRaeTab;
+switchRaeTab=function(tab){
+  _origSRTab(tab);
+  if(propAnimId){cancelAnimationFrame(propAnimId);propAnimId=null;}
+  if(techAnimId){cancelAnimationFrame(techAnimId);techAnimId=null;}
+  if(tab==='prop'){setTimeout(function(){propWaves=[];animateProp();},60);}
+  else if(tab==='tech'){setTimeout(function(){animateTech();},60);}
+};
+
+var _origToggleRAE2=toggleRAE;
+toggleRAE=function(){
+  _origToggleRAE2();
+  var body=document.getElementById('rae-body');
+  if(body&&body.classList.contains('open')){
+    setTimeout(function(){initFoxCycle();},60);
+  } else {
+    cycleRunning=false; clearInterval(cycleTimer);
+    if(propAnimId){cancelAnimationFrame(propAnimId);propAnimId=null;}
+    if(techAnimId){cancelAnimationFrame(techAnimId);techAnimId=null;}
+  }
+};
+
+
+/* ═══════════════════════════════════════════════════════════
+   INTRO CANVAS — 4-SCENE ANIMATED EXPLAINER
+═══════════════════════════════════════════════════════════ */
+var introScene=0, introAnimId=null, introTick=0, introAutoTimer=null;
+var introWaves=[];
+
+var INTRO_SCENES=[
+  {title:'Fox Hides', desc:'A small radio transmitter is placed somewhere in the field. It stays hidden — you can only find it by radio!'},
+  {title:'Signal Travels', desc:'The fox broadcasts radio waves every 5 minutes — spreading out invisibly in all directions like ripples on water.'},
+  {title:'Rotate & Listen', desc:'You rotate your directional antenna. When the signal gets weakest (the "null"), the antenna points straight at the fox!'},
+  {title:'Found! Score!', desc:'Walk toward the bearing, reach the fox, punch your card. Fastest to find all 5 foxes wins the competition!'}
+];
+var INTRO_SCENES_BM=[
+  {title:'Fox Bersembunyi', desc:'Pemancar radio kecil diletakkan di suatu tempat di lapangan. Ia tersembunyi — anda hanya boleh menemuinya melalui radio!'},
+  {title:'Isyarat Merambat', desc:'Fox menyiar gelombang radio setiap 5 minit — tersebar secara tidak kelihatan ke semua arah seperti riak di air.'},
+  {title:'Putar &amp; Dengar', desc:'Anda memutar antena berarah. Apabila isyarat paling lemah (titik "null"), antena menunjuk tepat ke arah fox!'},
+  {title:'Ditemui! Markah!', desc:'Berjalan mengikut bearing, sampai ke fox, tebuk kad anda. Yang paling cepat cari semua 5 fox menang!'}
+];
+
+function setIntroScene(n){
+  introScene=n;
+  introWaves=[];
+  introTick=0;
+  document.querySelectorAll('.scene-dot').forEach(function(d,i){d.classList.toggle('active',i===n);});
+}
+
+function startIntroAnim(){
+  if(introAnimId) return;
+  var cv=document.getElementById('introCanvas');
+  if(!cv) return;
+  // auto-advance every 3.5s
+  clearInterval(introAutoTimer);
+  introAutoTimer=setInterval(function(){
+    setIntroScene((introScene+1)%4);
+  }, 3500);
+  animIntro();
+}
+
+function animIntro(){
+  var cv=document.getElementById('introCanvas');
+  if(!cv||!cv.offsetParent){introAnimId=null;clearInterval(introAutoTimer);return;}
+  drawIntroScene(cv);
+  introTick++;
+  introAnimId=requestAnimationFrame(animIntro);
+}
+
+function drawIntroScene(cv){
+  var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  // BG
+  ctx.fillStyle='#050d0c'; ctx.fillRect(0,0,W,H);
+  // subtle terrain
+  ctx.fillStyle='rgba(14,60,40,.3)';
+  ctx.beginPath(); ctx.ellipse(W*0.15,H*0.85,90,25,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(W*0.85,H*0.85,90,25,0,0,Math.PI*2); ctx.fill();
+  // dots grid
+  ctx.fillStyle='rgba(2,173,165,.06)';
+  for(var gx=40;gx<W;gx+=45) for(var gy=30;gy<H;gy+=40){ctx.beginPath();ctx.arc(gx,gy,1.2,0,Math.PI*2);ctx.fill();}
+
+  var foxX=W*0.78, foxY=H*0.46, rxX=W*0.24, rxY=H*0.46;
+
+  // Scene-specific drawing
+  if(introScene===0){
+    drawScene0(ctx,W,H,foxX,foxY,rxX,rxY);
+  } else if(introScene===1){
+    drawScene1(ctx,W,H,foxX,foxY,rxX,rxY);
+  } else if(introScene===2){
+    drawScene2(ctx,W,H,foxX,foxY,rxX,rxY);
+  } else {
+    drawScene3(ctx,W,H,foxX,foxY,rxX,rxY);
+  }
+
+  // Scene label at top
+  var sc=(currentLang==='bm'?INTRO_SCENES_BM:INTRO_SCENES)[introScene];
+  ctx.fillStyle='rgba(2,173,165,.85)'; ctx.font='bold 11px system-ui'; ctx.textAlign='left';
+  ctx.fillText('STEP '+(introScene+1)+' — '+sc.title.toUpperCase(), 14, 18);
+
+  // Progress bar
+  ctx.fillStyle='rgba(2,173,165,.15)';
+  ctx.fillRect(0, H-4, W, 4);
+  var prog=(introTick%210)/210;
+  ctx.fillStyle='var(--teal,#02ADA5)' ;
+  // manual teal
+  ctx.fillStyle='#02ADA5';
+  ctx.fillRect(0, H-4, W*prog, 4);
+}
+
+// SCENE 0: Fox hiding
+function drawScene0(ctx,W,H,fx,fy,rx,ry){
+  // Bush/hide area
+  ctx.fillStyle='rgba(14,60,30,.6)';
+  ctx.beginPath(); ctx.ellipse(fx,fy+18,48,22,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='rgba(14,70,36,.7)';
+  ctx.beginPath(); ctx.ellipse(fx-10,fy+12,32,16,-.3,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(fx+12,fy+14,30,14,.2,0,Math.PI*2); ctx.fill();
+
+  // Fox peeking
+  ctx.font='28px system-ui'; ctx.textAlign='center';
+  ctx.fillText('\u{1F98A}', fx, fy+10);
+
+  // Tiny antenna above fox
+  var ant = (introTick%60)/60;
+  var antH = 30*ant;
+  ctx.strokeStyle='rgba(2,173,165,'+(0.4+ant*0.5)+')'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(fx, fy-8); ctx.lineTo(fx, fy-8-antH); ctx.stroke();
+  if(antH>15){
+    ctx.beginPath(); ctx.moveTo(fx-8,fy-8-antH+8); ctx.lineTo(fx,fy-8-antH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(fx+8,fy-8-antH+8); ctx.lineTo(fx,fy-8-antH); ctx.stroke();
+  }
+
+  // "HIDDEN!" badge
+  ctx.fillStyle='rgba(240,192,64,.18)'; ctx.strokeStyle='#f0c040'; ctx.lineWidth=1.2;
+  ctx.beginPath(); ctx.roundRect?ctx.roundRect(fx-35,fy-60,70,20,8):ctx.rect(fx-35,fy-60,70,20);
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#f0c040'; ctx.font='bold 10px system-ui';
+  ctx.fillText('🕵️ HIDDEN!', fx, fy-46);
+
+  // Hunter on LEFT with question mark
+  ctx.font='26px system-ui'; ctx.textAlign='center'; ctx.fillText('\u{1F9D1}', rx, ry);
+  ctx.fillStyle='rgba(255,255,255,.4)'; ctx.font='bold 18px system-ui';
+  ctx.fillText('?', rx+16, ry-14);
+  ctx.fillStyle='rgba(255,255,255,.25)'; ctx.font='10px system-ui';
+  ctx.fillText('WHERE IS IT?', rx, ry+20);
+}
+
+// SCENE 1: Waves spreading
+function drawScene1(ctx,W,H,fx,fy,rx,ry){
+  // spawn waves
+  if(introTick%18===0) introWaves.push({r:8,alpha:.8,w:2.5});
+  introWaves.forEach(function(w){ w.r+=2.5; w.alpha=Math.max(0,w.alpha-0.012); });
+  introWaves=introWaves.filter(function(w){ return w.r<Math.max(W,H); });
+
+  // draw waves
+  introWaves.forEach(function(w){
+    ctx.strokeStyle='rgba(2,173,165,'+w.alpha+')'; ctx.lineWidth=w.w;
+    ctx.beginPath(); ctx.arc(fx,fy,w.r,0,Math.PI*2); ctx.stroke();
+  });
+
+  // Label on waves
+  if(introTick>20){
+    ctx.fillStyle='rgba(2,173,165,.45)'; ctx.font='9px system-ui'; ctx.textAlign='left';
+    ctx.fillText('144 MHz VHF', fx+8, fy-38);
+    ctx.fillText('radio waves', fx+8, fy-26);
+  }
+
+  // Fox
+  ctx.font='24px system-ui'; ctx.textAlign='center'; ctx.fillText('\u{1F98A}', fx, fy+8);
+  ctx.fillStyle='#02ADA5'; ctx.font='bold 9px system-ui';
+  ctx.fillText('FOX TX', fx, fy+24);
+
+  // Hunter receiving
+  ctx.font='24px system-ui'; ctx.fillText('\u{1F9D1}', rx, ry+8);
+  // S-meter responding to nearest wave
+  var nearestWave=null, minDist=9999;
+  introWaves.forEach(function(w){ var d=Math.abs(w.r-(rx-fx)); if(d<minDist){minDist=d;nearestWave=w;} });
+  if(nearestWave&&minDist<30){
+    var lvl=nearestWave.alpha;
+    ctx.fillStyle='rgba(0,0,0,.5)'; ctx.fillRect(rx-22,ry-18,44,8);
+    ctx.fillStyle='#02ADA5'; ctx.fillRect(rx-21,ry-17,Math.round(42*lvl),6);
+    ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='7px monospace'; ctx.textAlign='center';
+    ctx.fillText('S-METER', rx, ry-22);
+  }
+}
+
+// SCENE 2: Hunter rotating, bearing found
+function drawScene2(ctx,W,H,fx,fy,rx,ry){
+  // Fox with static waves
+  if(introTick%20===0) introWaves.push({r:8,alpha:.6,w:1.8});
+  introWaves.forEach(function(w){ w.r+=2; w.alpha=Math.max(0,w.alpha-0.014); });
+  introWaves=introWaves.filter(function(w){ return w.r<180; });
+  introWaves.forEach(function(w){
+    ctx.strokeStyle='rgba(2,173,165,'+w.alpha*0.5+')'; ctx.lineWidth=w.w;
+    ctx.beginPath(); ctx.arc(fx,fy,w.r,0,Math.PI*2); ctx.stroke();
+  });
+  ctx.font='22px system-ui'; ctx.textAlign='center'; ctx.fillText('\u{1F98A}', fx, fy+7);
+
+  // Antenna rotation — sweeps around, slows as it approaches fox direction
+  var targetAng = Math.atan2(fy-ry, fx-rx); // angle from hunter to fox
+  var sweepSpeed = 0.04;
+  var curAng = (introTick * sweepSpeed) % (Math.PI*2);
+  // gradually align
+  var diff = ((targetAng - curAng + Math.PI*3) % (Math.PI*2)) - Math.PI;
+  var aligned = Math.abs(diff)<0.25;
+  var antLen=42;
+  var ax = rx+Math.cos(aligned?targetAng:curAng)*antLen;
+  var ay = ry+Math.sin(aligned?targetAng:curAng)*antLen;
+
+  // Yagi antenna line
+  ctx.strokeStyle=aligned?'#FFD700':'rgba(240,192,64,.7)'; ctx.lineWidth=aligned?3:2;
+  ctx.beginPath(); ctx.moveTo(rx,ry); ctx.lineTo(ax,ay); ctx.stroke();
+  // elements
+  for(var i=1;i<=3;i++){
+    var ex=rx+Math.cos(aligned?targetAng:curAng)*antLen*(i/3.5);
+    var ey=ry+Math.sin(aligned?targetAng:curAng)*antLen*(i/3.5);
+    var perpLen=8-i*1.5;
+    var px=-Math.sin(aligned?targetAng:curAng)*perpLen;
+    var py=Math.cos(aligned?targetAng:curAng)*perpLen;
+    ctx.beginPath(); ctx.moveTo(ex+px,ey+py); ctx.lineTo(ex-px,ey-py); ctx.stroke();
+  }
+
+  // Hunter
+  ctx.font='22px system-ui'; ctx.textAlign='center'; ctx.fillText('\u{1F9D1}', rx, ry+8);
+
+  // When aligned — show bearing line
+  if(aligned){
+    ctx.strokeStyle='rgba(240,192,64,.8)'; ctx.lineWidth=2; ctx.setLineDash([8,5]);
+    ctx.beginPath(); ctx.moveTo(rx,ry); ctx.lineTo(fx+10,fy); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#f0c040'; ctx.font='bold 10px system-ui'; ctx.textAlign='center';
+    var mx=(rx+fx)/2, my=(ry+fy)/2-14;
+    ctx.fillText('★ BEARING FOUND!', mx, my);
+    ctx.fillStyle='rgba(240,192,64,.15)';
+    ctx.beginPath(); ctx.ellipse(mx,my+4,62,11,0,0,Math.PI*2); ctx.fill();
+  } else {
+    // "rotating..." hint
+    ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='10px system-ui'; ctx.textAlign='center';
+    ctx.fillText('rotating…', rx, ry+26);
+  }
+}
+
+// SCENE 3: Walk to fox, found!
+function drawScene3(ctx,W,H,fx,fy,rx,ry){
+  var prog=Math.min(1,(introTick%180)/100);
+  var hx=rx+(fx-rx)*prog, hy=ry+(fy-ry)*prog;
+
+  // Path trail
+  ctx.strokeStyle='rgba(2,173,165,.35)'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+  ctx.beginPath(); ctx.moveTo(rx,ry); ctx.lineTo(hx,hy); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Fox
+  ctx.font='22px system-ui'; ctx.textAlign='center'; ctx.fillText('\u{1F98A}', fx, fy+7);
+
+  // Hunter walking (fox is on the right, hunter runs left→right so 🏃 naturally faces correct way)
+  ctx.font='22px system-ui'; ctx.textAlign='center';
+  ctx.fillText('\u{1F3C3}', hx, hy+7);
+
+  if(prog>=0.92){
+    // FOUND!
+    var grd=ctx.createRadialGradient(fx,fy,0,fx,fy,70);
+    grd.addColorStop(0,'rgba(240,192,64,.35)');
+    grd.addColorStop(1,'rgba(240,192,64,0)');
+    ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(fx,fy,70,0,Math.PI*2); ctx.fill();
+
+    ctx.font='bold 16px system-ui'; ctx.textAlign='center'; ctx.fillStyle='#f0c040';
+    ctx.fillText('\u{1F3C6} FOUND! +80 pts', fx, fy-45);
+    // punch card icon
+    ctx.font='20px system-ui'; ctx.fillText('\u{1F4CB}✓', fx, fy-22);
+    // fox happy
+    ctx.font='26px system-ui'; ctx.fillText('\u{1F98A}✨', fx, fy+12);
+  }
+
+  // Score formula
+  ctx.fillStyle='rgba(2,173,165,.5)'; ctx.font='10px system-ui'; ctx.textAlign='center';
+  ctx.fillText('Score = 80 pts − elapsed minutes', W/2, H-14);
+}
+
+// ── Start intro when page loads ────────────────────────────────────────
+window.addEventListener('load', function(){
+  setTimeout(function(){ startIntroAnim(); }, 400);
+});
+
+</script>
+<script>(function(){var box=document.getElementById('see-box'),n=0,tm;if(!box)return;box.addEventListener('click',function(){n++;clearTimeout(tm);tm=setTimeout(function(){n=0;},800);if(n>=3){n=0;window.location.href='teacher-4.html';}});})();</script>
+<script src="tracker.js"></script>
+</body>
+</html>

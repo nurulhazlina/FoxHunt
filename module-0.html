@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orientation – Radio Foxhunting</title>
+  <link rel="stylesheet" href="style.css">
+  
+</head>
+<body>
+
+<!-- ── Chev bar ── -->
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="see-box">SEE</div>
+  <div class="chev-think">THINK</div>
+  <div class="chev-explore">EXPLORE</div>
+  <div class="chev-marvel">MARVEL</div>
+</div>
+
+<!-- ── Site nav ── -->
+<nav class="sitenav">
+  <a href="index.html" class="brand">Radio Foxhunting</a>
+  <div class="steps-dropdown">
+    <button class="steps-btn" id="stepsToggle">Steps ▾</button>
+    <div class="steps-menu" id="stepsMenu">
+      <a href="module-0.html" class="current">0 · Orientation</a>
+      <a href="module-1.html">1 · Morse Code</a>
+      <a href="module-2.html">2 · Radio Basics</a>
+      <a href="module-3.html">3 · Yagi Antenna</a>
+      <a href="module-4.html">4 · Field Guide</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <p class="eyebrow">UMPSA STEM LAB · Module 0 of 5</p>
+  <h1>Workshop Orientation</h1>
+  <p class="subtitle">Welcome to JOTA JOTI 2026 Radio Foxhunting! Discover ARDF, meet your equipment, and register your team before the hunt begins.</p>
+  <div class="pills">
+    <span class="pill">JOTA JOTI 2026</span>
+    <span class="pill">ARDF Sport</span>
+    <span class="pill">Scouts Welcome</span>
+    <span class="pill">1 Day</span>
+  </div>
+</section>
+
+<!-- ── Progress bar ── -->
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span>Overall Workshop Progress</span>
+    <span>Module 0 of 5 · Orientation</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" style="width:10%"></div></div>
+</div>
+
+<!-- ── Main content ── -->
+<main class="content">
+
+  <!-- 1. What is Radio Foxhunting? -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2>What is Radio Foxhunting?</h2>
+    </div>
+    <div class="card">
+      <div class="info-grid">
+        <div class="info-tile">
+          <div class="info-tile-label">ARDF</div>
+          <div class="info-tile-val"><strong style="color:var(--text)">A</strong>mateur <strong style="color:var(--text)">R</strong>adio <strong style="color:var(--text)">D</strong>irection <strong style="color:var(--text)">F</strong>inding — the official name for radio foxhunting</div>
+        </div>
+        <div class="info-tile">
+          <div class="info-tile-label">Combines</div>
+          <div class="info-tile-val">🏃 Orienteering &amp; navigation + 📻 Electronics + 📡 Radio direction finding</div>
+        </div>
+        <div class="info-tile">
+          <div class="info-tile-label">Objective</div>
+          <div class="info-tile-val">Find 5 hidden transmitters ("foxes") in an 80-minute competitive hunt</div>
+        </div>
+        <div class="info-tile">
+          <div class="info-tile-label">Beacon Cycle</div>
+          <div class="info-tile-val">Each fox transmits for 12 seconds in a rotating 60-second cycle</div>
+        </div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="mapCanvas" height="260"></canvas>
+      </div>
+      <p style="font-size:.78rem;color:var(--text-dim);text-align:center;margin-top:8px">▲ Animated map — watch the hunter triangulate toward each beacon</p>
+    </div>
+  </section>
+
+  <!-- 2. Equipment -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2>Your Equipment Today</h2>
+    </div>
+    <p style="color:var(--text-dim);margin-bottom:18px;font-size:.88rem">Click each card to check it off as you collect your gear:</p>
+    <div class="equip-grid" id="equipGrid">
+      <div class="equip-card" onclick="toggleEquip(this)">
+        <div class="equip-icon">📡</div>
+        <div class="equip-name">Yagi Antenna</div>
+        <div class="equip-sub">You'll build this!</div>
+        <div class="check-ring">✓</div>
+      </div>
+      <div class="equip-card" onclick="toggleEquip(this)">
+        <div class="equip-icon">📻</div>
+        <div class="equip-name">Handheld Radio</div>
+        <div class="equip-sub">144 MHz receiver</div>
+        <div class="check-ring">✓</div>
+      </div>
+      <div class="equip-card" onclick="toggleEquip(this)">
+        <div class="equip-icon">🧭</div>
+        <div class="equip-name">Compass</div>
+        <div class="equip-sub">Baseplate style</div>
+        <div class="check-ring">✓</div>
+      </div>
+      <div class="equip-card" onclick="toggleEquip(this)">
+        <div class="equip-icon">🗺️</div>
+        <div class="equip-name">Topo Map</div>
+        <div class="equip-sub">1:10,000 scale</div>
+        <div class="check-ring">✓</div>
+      </div>
+      <div class="equip-card" onclick="toggleEquip(this)">
+        <div class="equip-icon">📋</div>
+        <div class="equip-name">Fox Log Sheet</div>
+        <div class="equip-sub">Record each find</div>
+        <div class="check-ring">✓</div>
+      </div>
+      <div class="equip-card" onclick="toggleEquip(this)">
+        <div class="equip-icon">👟</div>
+        <div class="equip-name">Walking Shoes</div>
+        <div class="equip-sub">Closed-toe required</div>
+        <div class="check-ring">✓</div>
+      </div>
+    </div>
+    <p id="equipCount" style="margin-top:14px;text-align:center;font-size:.85rem;color:var(--text-dim)">
+      Checked: <strong style="color:var(--teal)">0</strong> / 6 items
+    </p>
+  </section>
+
+  <!-- 3. Beacons -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2>Meet the 5 Beacons</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Fox #</th><th>Callsign</th><th>Morse Pattern</th><th>Tx Time</th><th>Location Hint</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:var(--teal)">Fox 1</strong></td>
+            <td><code style="color:var(--accent);font-family:monospace">MOE</code></td>
+            <td><span class="morse">− − ·</span> <small style="color:var(--text-dim)">(1 dit)</small></td>
+            <td>12 s</td><td>Northern tree line</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--teal)">Fox 2</strong></td>
+            <td><code style="color:var(--accent);font-family:monospace">MOI</code></td>
+            <td><span class="morse">− − · ·</span> <small style="color:var(--text-dim)">(2 dits)</small></td>
+            <td>12 s</td><td>Near the stream</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--teal)">Fox 3</strong></td>
+            <td><code style="color:var(--accent);font-family:monospace">MOS</code></td>
+            <td><span class="morse">− − · · ·</span> <small style="color:var(--text-dim)">(3 dits)</small></td>
+            <td>12 s</td><td>South ridge clearing</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--teal)">Fox 4</strong></td>
+            <td><code style="color:var(--accent);font-family:monospace">MOH</code></td>
+            <td><span class="morse">− − · · · ·</span> <small style="color:var(--text-dim)">(4 dits)</small></td>
+            <td>12 s</td><td>Hilltop clearing</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--teal)">Fox 5</strong></td>
+            <td><code style="color:var(--accent);font-family:monospace">MO5</code></td>
+            <td><span class="morse">− − · · · · ·</span> <small style="color:var(--text-dim)">(5 dits)</small></td>
+            <td>12 s</td><td>East boundary fence</td>
+          </tr>
+          <tr style="background:rgba(255,255,255,.03)">
+            <td><em style="color:var(--text-dim)">Rest</em></td>
+            <td><code style="color:#7ab8b5;font-family:monospace">MO</code></td>
+            <td><span style="font-size:.9rem;color:var(--text-dim)">− −</span> <small style="color:var(--text-dim)">(rest beacon)</small></td>
+            <td>12 s</td><td>Start / Finish area</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout info" style="margin-top:14px">
+      <div class="callout-title">💡 Cycle Tip</div>
+      <p style="font-size:.87rem;color:var(--text-dim)">The MO rest beacon plays between each fox transmission. Listen for the pattern <strong style="color:var(--text)">MO → MOE → MO → MOI → MO → …</strong> to synchronise your hunting and predict which fox is next.</p>
+    </div>
+  </section>
+
+  <!-- 4. Team Registration -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2>Team Registration</h2>
+    </div>
+    <div class="card">
+      <p style="color:var(--text-dim);margin-bottom:20px;font-size:.88rem">Register your team before the hunt. Your profile saves locally in your browser.</p>
+      <form id="regForm" onsubmit="saveProfile(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Team Name *</label>
+            <input class="form-input" type="text" name="teamName" placeholder="e.g. Alpha Foxhunters" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Scout Name *</label>
+            <input class="form-input" type="text" name="scoutName" placeholder="Your full name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">School / Institution *</label>
+            <input class="form-input" type="text" name="school" placeholder="e.g. SMK Kuantan" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Age Group *</label>
+            <select class="form-select" name="ageGroup" required>
+              <option value="">Select age group…</option>
+              <option value="Junior">Junior (12–14 yrs)</option>
+              <option value="Senior">Senior (15–17 yrs)</option>
+              <option value="Open">Open (18+ yrs)</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <button type="submit" class="btn">💾 Save Registration</button>
+          <button type="button" class="btn btn-out" onclick="loadProfile()">📂 Load Saved</button>
+        </div>
+      </form>
+      <div class="success-msg" id="regSuccess"></div>
+    </div>
+  </section>
+
+  <!-- 5. Schedule -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <h2>Workshop Schedule</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-time">09:00</div>
+        <div class="tl-title">Registration &amp; Kit Collection</div>
+        <div class="tl-desc">Sign in, collect equipment, form teams of 2–4 scouts</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">09:30</div>
+        <div class="tl-title">Introduction Briefing</div>
+        <div class="tl-desc">Workshop overview, safety rules, beacon frequencies &amp; scoring system (this module)</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">10:00</div>
+        <div class="tl-title">Build Your Yagi Antenna</div>
+        <div class="tl-desc">Hands-on construction of a 3-element Yagi for 144 MHz — Module 3</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">11:00</div>
+        <div class="tl-title">Practice Exercises</div>
+        <div class="tl-desc">Body shielding technique, compass bearings, map reading, signal attenuation</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">12:00</div>
+        <div class="tl-title">Field Foxhunt! 🦊</div>
+        <div class="tl-desc">80-minute competitive hunt — find as many beacons as possible, punch each card</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">14:00</div>
+        <div class="tl-title">Awards &amp; Debrief</div>
+        <div class="tl-desc">Score tallying, certificates, debrief &amp; lessons-learned discussion</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Safety -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <h2>Safety Rules</h2>
+    </div>
+    <div class="callout">
+      <div class="callout-title">⚠️ Read Before Leaving the Start Area</div>
+      <ul>
+        <li>Always hunt with your partner — <strong>never alone</strong> in the field</li>
+        <li>Carry your water bottle; drink at least 200 mL every 20 minutes</li>
+        <li>Stay <strong>within the orange boundary markers</strong> at all times</li>
+        <li>If injured: blow the emergency whistle 3 times and stay put</li>
+        <li>Mobile phones are for <strong>emergencies only</strong> — not for navigation or GPS</li>
+        <li>Closed-toe shoes are <strong>mandatory</strong>; no sandals, thongs or bare feet</li>
+        <li>Return to Start/Finish <strong>before</strong> the 80-minute horn sounds (late return = time penalty)</li>
+        <li>Follow all instructions from hunt officials immediately and without argument</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── CTA ── -->
+<div class="cta-section">
+  <div class="cta-title">Ready to Test Your Knowledge?</div>
+  <p class="cta-sub">Complete the orientation activities to earn your Module 0 badge</p>
+  <a href="module-activity-0.html" class="btn btn-lg">Start Orientation Activities →</a>
+</div>
+
+<!-- ── Stepnav ── -->
+<nav class="stepnav">
+  <span class="step-ghost">← (First Module)</span>
+  <a href="module-1.html">Module 1: Morse Code →</a>
+</nav>
+
+<!-- ── Footer ── -->
+<footer class="site-footer">
+  <div class="footer-center">
+    <div class="footer-stem">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-title">UMPSA STEM LAB &middot; Radio Foxhunting</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a> &middot;
+      <a href="module-0.html">Module 0</a> &middot;
+      <a href="module-1.html">Module 1</a> &middot;
+      <a href="module-2.html">Module 2</a> &middot;
+      <a href="module-3.html">Module 3</a> &middot;
+      <a href="module-4.html">Module 4</a>
+    </nav>
+    <div class="footer-copy">&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative
+      <a href="https://umpsa.edu.my" target="_blank" aria-label="UMPSA website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" aria-label="Email">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ══ Chev bar ══
+var seeClicks = 0, seeTmr;
+document.getElementById('see-box').addEventListener('click', function() {
+  seeClicks++;
+  clearTimeout(seeTmr);
+  if (seeClicks >= 3) { window.location.href = 'teacher-0.html'; seeClicks = 0; return; }
+  seeTmr = setTimeout(function() { seeClicks = 0; }, 680);
+});
+document.querySelectorAll('.chev').forEach(function(c) {
+  c.addEventListener('click', function() {
+    document.querySelectorAll('.chev').forEach(function(x) { x.classList.remove('active'); });
+    c.classList.add('active');
+  });
+});
+
+// ══ Steps dropdown ══
+document.getElementById('stepsToggle').addEventListener('click', function(e) {
+  e.stopPropagation();
+  document.getElementById('stepsMenu').classList.toggle('open');
+});
+document.addEventListener('click', function() { document.getElementById('stepsMenu').classList.remove('open'); });
+
+// ══ Equipment checklist ══
+function toggleEquip(card) {
+  card.classList.toggle('checked');
+  var n = document.querySelectorAll('.equip-card.checked').length;
+  document.getElementById('equipCount').innerHTML =
+    'Checked: <strong style="color:var(--teal)">' + n + '</strong> / 6 items' +
+    (n === 6 ? ' <span style="color:var(--teal)">— All gear ready! ✓</span>' : '');
+}
+
+// ══ Registration ══
+function saveProfile(e) {
+  e.preventDefault();
+  var f = e.target;
+  var p = { team: f.teamName.value, name: f.scoutName.value,
+            school: f.school.value, age: f.ageGroup.value,
+            timestamp: new Date().toISOString() };
+  try { localStorage.setItem('fox_profile', JSON.stringify(p)); } catch(err) {}
+  var msg = document.getElementById('regSuccess');
+  msg.style.display = 'block';
+  msg.textContent = '✅ Team "' + p.team + '" registered! Scout: ' + p.name + ' (' + p.age + '). Good luck hunting!';
+}
+function loadProfile() {
+  try {
+    var p = JSON.parse(localStorage.getItem('fox_profile') || 'null');
+    if (!p) { alert('No saved profile found.'); return; }
+    var f = document.getElementById('regForm');
+    f.teamName.value = p.team || '';
+    f.scoutName.value = p.name || '';
+    f.school.value = p.school || '';
+    f.ageGroup.value = p.age || '';
+    var msg = document.getElementById('regSuccess');
+    msg.style.display = 'block';
+    msg.textContent = '📂 Profile loaded for "' + p.team + '"';
+  } catch(err) {}
+}
+(function() {
+  try {
+    var p = JSON.parse(localStorage.getItem('fox_profile') || 'null');
+    if (!p) return;
+    var f = document.getElementById('regForm');
+    f.teamName.value = p.team || ''; f.scoutName.value = p.name || '';
+    f.school.value = p.school || ''; f.ageGroup.value = p.age || '';
+  } catch(e) {}
+})();
+
+// ══ Canvas map animation ══
+(function() {
+  var cv = document.getElementById('mapCanvas');
+  if (!cv) return;
+  var ctx = cv.getContext('2d');
+  var H = 260;
+
+  var beacons = [
+    { rx:.18, ry:.28, label:'MOE', col:'#02ADA5', found:false },
+    { rx:.52, ry:.15, label:'MOI', col:'#f0c040', found:false },
+    { rx:.78, ry:.38, label:'MOS', col:'#e05050', found:false },
+    { rx:.68, ry:.72, label:'MOH', col:'#80d080', found:false },
+    { rx:.28, ry:.78, label:'MO5', col:'#c080e0', found:false }
+  ];
+  var hunter = { rx:.5, ry:.5, trx:.5, try_:.5 };
+  var trail = [], tgt = 0, t = 0;
+
+  function nextTarget() {
+    var avail = beacons.filter(function(b) { return !b.found; });
+    if (!avail.length) { beacons.forEach(function(b) { b.found = false; }); avail = beacons.slice(); }
+    var b = avail[Math.floor(Math.random() * avail.length)];
+    hunter.trx = b.rx; hunter.try_ = b.ry; tgt = beacons.indexOf(b);
+  }
+
+  function frame() {
+    var W = (cv.parentElement ? cv.parentElement.clientWidth : 0) || cv.offsetWidth || 860;
+    if (W < 10) { requestAnimationFrame(frame); return; }
+    cv.width = W; cv.height = H; t++;
+
+    // bg
+    ctx.fillStyle = '#071c1a'; ctx.fillRect(0, 0, W, H);
+    // grid
+    ctx.strokeStyle = 'rgba(2,173,165,.07)'; ctx.lineWidth = 1;
+    for (var gx = 0; gx < W; gx += 55) { ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke(); }
+    for (var gy = 0; gy < H; gy += 55) { ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke(); }
+    // contours
+    ctx.strokeStyle = 'rgba(2,173,165,.06)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(W*.42, H*.52, W*.22, H*.28, 0, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(W*.42, H*.52, W*.34, H*.38, 0, 0, Math.PI*2); ctx.stroke();
+    // boundary
+    ctx.strokeStyle = 'rgba(2,173,165,.35)'; ctx.lineWidth = 2;
+    ctx.strokeRect(18, 18, W-36, H-36);
+
+    // beacons
+    beacons.forEach(function(b) {
+      var bx = b.rx * W, by = b.ry * H;
+      if (!b.found) {
+        var pr = 14 + Math.sin(t * .06) * 7;
+        ctx.beginPath(); ctx.arc(bx, by, pr, 0, Math.PI*2);
+        ctx.strokeStyle = b.col + '55'; ctx.lineWidth = 2; ctx.stroke();
+      }
+      ctx.beginPath(); ctx.arc(bx, by, 8, 0, Math.PI*2);
+      ctx.fillStyle = b.found ? '#333' : b.col; ctx.fill();
+      ctx.font = 'bold 10px monospace'; ctx.textAlign = 'center'; ctx.fillStyle = b.found ? '#555' : '#fff';
+      ctx.fillText(b.label, bx, by - 13);
+    });
+
+    // move hunter
+    var dx = (hunter.trx - hunter.rx) * W, dy = (hunter.try_ - hunter.ry) * H;
+    var dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < 14) {
+      if (beacons[tgt]) beacons[tgt].found = true;
+      setTimeout(nextTarget, 900);
+    } else {
+      hunter.rx += (dx / dist) * 2 / W;
+      hunter.ry += (dy / dist) * 2 / H;
+    }
+
+    // trail
+    trail.push({ x: hunter.rx * W, y: hunter.ry * H });
+    if (trail.length > 90) trail.shift();
+    if (trail.length > 1) {
+      ctx.beginPath(); ctx.moveTo(trail[0].x, trail[0].y);
+      trail.forEach(function(p, i) { if (i) ctx.lineTo(p.x, p.y); });
+      ctx.strokeStyle = 'rgba(2,173,165,.45)'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+
+    // dashed line to target
+    if (beacons[tgt]) {
+      ctx.beginPath(); ctx.moveTo(hunter.rx*W, hunter.ry*H);
+      ctx.lineTo(beacons[tgt].rx*W, beacons[tgt].ry*H);
+      ctx.strokeStyle = 'rgba(255,255,255,.1)'; ctx.lineWidth = 1;
+      ctx.setLineDash([4,7]); ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    // hunter dot
+    var hx = hunter.rx*W, hy = hunter.ry*H;
+    ctx.beginPath(); ctx.arc(hx, hy, 11, 0, Math.PI*2); ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI*2); ctx.fillStyle = '#02ADA5'; ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('YOU', hx, hy - 17);
+
+    // HUD
+    var found = beacons.filter(function(b) { return b.found; }).length;
+    ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fillRect(20, H-38, 160, 24); ctx.beginPath();
+    ctx.fillStyle = '#02ADA5'; ctx.font = '11px monospace'; ctx.textAlign = 'left';
+    ctx.fillText('Foxes: ' + found + '/5  |  Hunting…', 28, H-21);
+
+    requestAnimationFrame(frame);
+  }
+  nextTarget();
+  requestAnimationFrame(frame);
+})();
+</script>
+<script>
+/* ── Triple-click SEE → teacher notes ── */
+(function(){
+  var box = document.getElementById('see-box');
+  if (!box) return;
+  var clicks = 0, timer;
+  box.addEventListener('click', function() {
+    clicks++;
+    clearTimeout(timer);
+    timer = setTimeout(function() { clicks = 0; }, 800);
+    if (clicks >= 3) {
+      clicks = 0;
+      window.location.href = 'teacher-0.html';
+    }
+  });
+})();
+</script>
+<script src="tracker.js"></script>
+</body>
+</html>

@@ -1,0 +1,3439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Module 2 · Map Reading &amp; Triangulation — Radio Foxhunting</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{
+  --teal:#02ADA5;--teal-dim:#017e78;--teal-glow:rgba(2,173,165,0.18);
+  --bg:#08312F;--bg2:#0b3d3a;--bg3:#0f4a46;
+  --text:#d4f0ee;--text-muted:#7bbfba;
+  --border:rgba(2,173,165,0.25);--pill-bg:rgba(2,173,165,0.15);
+  --card-bg:rgba(11,61,58,0.85);--radius:10px;
+  --font:'Segoe UI',system-ui,sans-serif;
+  --gold:#D99A10;--gold-dim:rgba(217,154,16,0.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6}
+a{color:var(--teal)}
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-toggle{display:flex;gap:0;border:2px solid var(--line);border-radius:20px;overflow:hidden;flex-shrink:0}
+.lang-btn{padding:4px 14px;background:transparent;border:none;color:var(--muted);font-weight:700;font-size:.78rem;cursor:pointer;transition:all .18s;letter-spacing:.04em}
+.lang-btn.active{background:var(--teal);color:#fff}
+
+/* ── SECTION CARDS ── */
+.section-card{background:var(--card-bg);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px;margin-bottom:28px;
+  box-shadow:0 2px 16px rgba(0,0,0,.25)}
+.section-card h2{color:var(--teal);font-size:1.25rem;margin-bottom:16px;
+  padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section-card h3{color:var(--text);font-size:1rem;margin:16px 0 8px;font-weight:600}
+.section-card p{margin-bottom:12px;color:var(--text)}
+.section-card ul,
+.section-card ol{padding-left:20px;margin-bottom:12px;color:var(--text)}
+.section-card li{margin-bottom:6px}
+
+/* ── INFO GRID ── */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:14px;margin:14px 0}
+.info-card{background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:14px;text-align:center}
+.info-card .icon{font-size:2rem;margin-bottom:8px}
+.info-card strong{display:block;color:var(--teal);font-size:.9rem;margin-bottom:4px}
+.info-card span{font-size:.82rem;color:var(--text-muted)}
+
+/* ── CANVAS WRAPPERS ── */
+.canvas-wrap{text-align:center;margin:16px 0}
+.canvas-wrap canvas{border:1px solid var(--border);border-radius:8px;
+  background:#071a18;max-width:100%;cursor:crosshair}
+.canvas-hint{font-size:.78rem;color:var(--text-muted);margin-top:6px}
+#bearingReadout{margin-top:10px;padding:8px 16px;
+  background:var(--pill-bg);border:1px solid var(--border);
+  border-radius:6px;display:inline-block;font-size:.95rem;min-width:220px;text-align:center}
+
+/* ── BEARING QUIZ ── */
+.bq-container{background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:18px;margin-top:16px;text-align:center}
+.bq-angle{font-size:2.5rem;font-weight:700;color:var(--teal);margin:10px 0}
+.bq-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.bq-btn{background:var(--pill-bg);border:1px solid var(--border);
+  color:var(--text);padding:8px 4px;border-radius:6px;cursor:pointer;
+  font-size:.85rem;transition:background .15s}
+.bq-btn:hover{background:var(--teal-glow)}
+.bq-btn.correct{background:rgba(0,200,100,.25);border-color:#00c864;color:#00c864}
+.bq-btn.wrong{background:rgba(255,80,80,.2);border-color:#ff5050;color:#ff5050}
+.bq-score{font-size:.9rem;color:var(--text-muted);margin-top:8px}
+.bq-feedback{min-height:24px;font-size:.88rem;margin:6px 0;font-weight:600}
+
+/* ── SCALE CALC ── */
+.scale-calc{background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:18px;margin-top:16px}
+.scale-calc label{display:block;margin-bottom:4px;font-size:.85rem;color:var(--text-muted)}
+.scale-calc input[type=range]{width:100%;accent-color:var(--teal);margin:4px 0 12px}
+.scale-calc select{width:100%;background:var(--bg2);color:var(--text);
+  border:1px solid var(--border);border-radius:6px;padding:7px 10px;
+  font-size:.9rem;margin-bottom:12px}
+.scale-result{background:var(--pill-bg);border:1px solid var(--border);
+  border-radius:6px;padding:10px 16px;font-size:1rem;color:var(--teal);
+  text-align:center;font-weight:600}
+
+/* ── STEPS ── */
+.steps-list{counter-reset:step}
+.step-item{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.step-num{background:var(--teal);color:#08312F;min-width:28px;height:28px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.85rem;flex-shrink:0}
+
+/* ── TABS ── */
+.tab-group{margin-top:14px}
+.tab-bar{display:flex;gap:6px;margin-bottom:-1px;flex-wrap:wrap}
+.tab-btn{background:var(--bg3);border:1px solid var(--border);
+  border-bottom:none;color:var(--text-muted);padding:6px 14px;
+  border-radius:6px 6px 0 0;cursor:pointer;font-size:.85rem;transition:.15s}
+.tab-btn.active{background:var(--card-bg);color:var(--teal);border-bottom:1px solid var(--card-bg)}
+.tab-pane{display:none;border:1px solid var(--border);border-radius:0 6px 6px 6px;padding:16px}
+.tab-pane.active{display:block}
+
+/* ── TEMPLATE TABLE ── */
+.tpl-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.tpl-table th{background:var(--bg3);color:var(--teal);padding:8px 12px;text-align:left;
+  border:1px solid var(--border)}
+.tpl-table td{padding:7px 12px;border:1px solid var(--border);color:var(--text)}
+.tpl-table tr:nth-child(even){background:rgba(2,173,165,.04)}
+
+/* ── FUN FACTS ── */
+.facts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:14px;margin-top:14px}
+.fact-card{background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:16px;cursor:pointer;transition:border-color .2s}
+.fact-card:hover{border-color:var(--teal)}
+.fact-card .fact-q{font-weight:600;color:var(--teal);font-size:.9rem;margin-bottom:8px}
+.fact-card .fact-a{font-size:.83rem;color:var(--text-muted);display:none;margin-top:6px}
+.fact-card.open .fact-a{display:block}
+.fact-card .reveal-hint{font-size:.75rem;color:var(--text-muted);margin-top:8px}
+
+/* ── MCQ QUIZ ── */
+.quiz-wrap{margin-top:14px}
+.q-block{background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:16px;margin-bottom:14px}
+.q-block .q-text{font-weight:600;margin-bottom:12px;font-size:.95rem}
+.q-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.q-opt{background:var(--pill-bg);border:1px solid var(--border);
+  color:var(--text);padding:8px 12px;border-radius:6px;cursor:pointer;
+  font-size:.88rem;text-align:left;transition:.15s}
+.q-opt:hover:not(:disabled){background:var(--teal-glow)}
+.q-opt.correct{background:rgba(0,200,100,.2);border-color:#00c864;color:#00c864}
+.q-opt.wrong{background:rgba(255,80,80,.18);border-color:#ff5050;color:#ff5050}
+.q-opt:disabled{cursor:default}
+.q-exp{font-size:.82rem;color:var(--text-muted);margin-top:10px;min-height:18px}
+.quiz-score-bar{text-align:center;padding:16px;background:var(--pill-bg);
+  border:1px solid var(--border);border-radius:8px;font-size:1.05rem;color:var(--teal);margin-top:4px}
+
+/* ── RAE DIVIDER ── */
+.rae-divider{
+  background:linear-gradient(135deg,rgba(217,154,16,.10),rgba(217,154,16,.06),rgba(217,154,16,.10));
+  border:2px solid rgba(217,154,16,.38);border-radius:var(--radius);
+  padding:20px 24px;margin:28px 0 0;text-align:center}
+.rae-divider h3{color:var(--gold);font-size:1.15rem;margin-bottom:6px}
+.rae-divider p{color:var(--text-muted);font-size:.88rem;margin-bottom:14px}
+#raeToggleBtn{background:rgba(217,154,16,.18);border:1px solid rgba(217,154,16,.5);
+  color:var(--gold);padding:8px 22px;border-radius:6px;cursor:pointer;font-size:.9rem;font-weight:600}
+#raeToggleBtn:hover{background:rgba(217,154,16,.30)}
+
+/* ── RAE SECTIONS ── */
+.rae-section{display:none}
+.rae-section.visible{display:block}
+.rae-badge{display:inline-block;background:var(--gold);color:#1a1000;
+  font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;
+  vertical-align:middle;margin-left:8px;letter-spacing:.06em}
+
+/* ── FORMULA BOX ── */
+.formula-box{background:rgba(217,154,16,.08);border:1px solid rgba(217,154,16,.3);
+  border-radius:8px;padding:14px 18px;margin:14px 0;font-family:monospace;
+  font-size:.95rem;color:var(--gold)}
+
+/* ── ACCURACY TABLE ── */
+.acc-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:14px 0}
+.acc-table th{background:rgba(217,154,16,.12);color:var(--gold);
+  padding:8px 12px;border:1px solid rgba(217,154,16,.25);text-align:left}
+.acc-table td{padding:7px 12px;border:1px solid rgba(217,154,16,.15);color:var(--text)}
+.acc-table tr:nth-child(even){background:rgba(217,154,16,.04)}
+
+/* ── Q-CODE TABLE ── */
+.q-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.q-table th{background:rgba(217,154,16,.12);color:var(--gold);
+  padding:8px 12px;border:1px solid rgba(217,154,16,.25)}
+.q-table td{padding:7px 12px;border:1px solid rgba(217,154,16,.15);color:var(--text)}
+.q-table tr:nth-child(even){background:rgba(217,154,16,.04)}
+.q-table td:first-child{font-weight:700;color:var(--gold)}
+
+/* ── STEP NAV ── */
+.stepnav{display:flex;justify-content:space-between;align-items:center;
+  padding:20px 0;border-top:1px solid var(--border);margin-top:16px;gap:10px}
+.stepnav a{text-decoration:none;background:var(--pill-bg);border:1px solid var(--border);
+  color:var(--teal);padding:8px 18px;border-radius:6px;font-size:.88rem;transition:.15s}
+.stepnav a:hover{background:var(--teal-glow)}
+
+/* ── CTA ── */
+.cta-block{text-align:center;padding:32px 20px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--card-bg);margin:28px 0}
+.cta-block h3{color:var(--teal);margin-bottom:8px}
+.cta-block p{color:var(--text-muted);font-size:.9rem;margin-bottom:16px}
+.cta-btn{display:inline-block;background:var(--teal);color:#08312F;
+  font-weight:700;padding:11px 28px;border-radius:6px;text-decoration:none;font-size:.95rem}
+.cta-btn:hover{background:var(--teal-dim);color:#d4f0ee}
+
+/* ── SECTION CROSS-LINKS ── */
+.section-link-bar{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;margin-top:14px;padding:10px 14px;
+  background:rgba(2,173,165,0.07);border:1px solid rgba(2,173,165,0.22);
+  border-radius:8px;font-size:.82rem;color:var(--text-muted)}
+.section-link-btn{color:var(--teal);font-weight:700;text-decoration:none;
+  white-space:nowrap;padding:6px 14px;border:1px solid var(--teal);
+  border-radius:6px;font-size:.78rem;background:transparent;cursor:pointer;
+  transition:background .15s}
+.section-link-btn:hover{background:rgba(2,173,165,0.18)}
+.section-link-chip{display:inline-block;margin-bottom:10px;padding:5px 14px;
+  background:rgba(2,173,165,0.09);border:1px solid rgba(2,173,165,0.28);
+  border-radius:20px;color:var(--teal);font-size:.78rem;font-weight:600;
+  text-decoration:none;cursor:pointer;transition:background .15s}
+.section-link-chip:hover{background:rgba(2,173,165,0.20)}
+/* ── TRIANGULATION SIM ── */
+.sim-wrap{display:grid;grid-template-columns:1fr minmax(165px,210px);gap:16px;align-items:start;margin-top:14px}
+@media(max-width:580px){.sim-wrap{grid-template-columns:1fr}}
+.sim-ctrl-col{display:flex;flex-direction:column;gap:9px}
+.node-toggle{display:flex;gap:5px}
+.node-btn{flex:1;padding:7px 3px;background:var(--bg3);border:1px solid var(--border);
+  color:var(--text-muted);border-radius:6px;cursor:pointer;font-size:.76rem;font-weight:700;transition:all .18s}
+.node-btn.active{background:var(--teal);color:#001a19;border-color:var(--teal)}
+.node-btn:hover:not(.active){border-color:var(--teal);color:var(--teal)}
+.bearing-ctrl{padding:7px 0;border-bottom:1px solid var(--border);transition:opacity .2s}
+.bearing-ctrl:last-of-type{border-bottom:none}
+.bearing-ctrl.dimmed{opacity:.25;pointer-events:none}
+.obs-label{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:.81rem;font-weight:700;color:var(--text)}
+.obs-swatch{width:10px;height:10px;border-radius:50%;flex-shrink:0;display:inline-block}
+.bear-row{display:flex;align-items:center;gap:7px}
+.bear-deg{font-family:monospace;font-size:.92rem;font-weight:700;color:var(--teal);min-width:32px}
+.bear-slider{flex:1;accent-color:var(--teal);cursor:pointer;height:4px}
+.bear-hint-small{font-size:.70rem;color:var(--text-muted);margin-top:3px;line-height:1.4}
+/* ── COMPARE TABLE ── */
+.compare-table{border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:.82rem}
+.cmp-row{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.cmp-row>div{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--text)}
+.cmp-row>div:first-child{border-right:1px solid var(--border)}
+.cmp-head>div{background:var(--bg3);color:var(--teal);font-weight:700;font-size:.85rem}
+.cmp-row:last-child>div{border-bottom:none}
+.info-box{background:rgba(217,154,16,0.08);border:1px solid rgba(217,154,16,0.30);
+  border-radius:8px;padding:10px 14px;font-size:.83rem;color:var(--text)}
+.info-box strong{color:var(--gold)}
+/* ── VIZ SECTION ── */
+.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+  gap:18px;margin-top:14px}
+.viz-panel{display:flex;flex-direction:column}
+.viz-panel h3{margin-bottom:6px;color:var(--text);font-size:.95rem}
+.contour-wrap{flex:1;position:relative;min-height:220px}
+.contour-wrap canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+.viz-hint{font-size:.8rem;color:var(--text-muted);margin-bottom:8px}
+.viz-readout{text-align:center;font-size:.82rem;color:var(--teal);margin-top:7px;
+  padding:5px 10px;background:var(--pill-bg);border:1px solid var(--border);border-radius:6px}
+.viz-canvas{border:1px solid var(--border);border-radius:8px;
+  display:block;width:100%;cursor:crosshair}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);text-align:center;
+  padding:20px;font-size:.78rem;color:var(--text-muted)}
+</style>
+</head>
+<body>
+
+<div class="chev" id="chev-top">
+  <div class="chev-see" id="chev-see">SEE</div>
+  <div class="chev-think" id="chev-think">THINK</div>
+  <div class="chev-explore" id="chev-explore">EXPLORE</div>
+  <div class="chev-marvel" id="chev-marvel">MARVEL</div>
+</div>
+
+<nav class="sitenav">
+  <a href="index.html" class="brand">Radio Foxhunting</a>
+  <div class="steps-dropdown">
+    <button class="steps-btn" id="stepsToggle" data-i18n="nav_modules">Modules &#9662;</button>
+    <div class="steps-menu" id="stepsMenu">
+      <a href="module-0.html" data-i18n="nav_m0">0 &middot; Orientation</a>
+      <a href="module-1.html" data-i18n="nav_m1">1 &middot; Morse Code</a>
+      <a href="module-2.html" class="current" data-i18n="nav_m2">2 &middot; Map Reading</a>
+      <a href="module-3.html" data-i18n="nav_m3">3 &middot; Antennas</a>
+      <a href="module-4.html" data-i18n="nav_m4">4 &middot; Field Guide</a>
+    </div>
+  </div>
+  <div class="lang-toggle" style="margin-left:auto">
+    <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" id="btnBM" onclick="setLang('bm')">BM</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <p class="eyebrow">UMPSA STEM LAB &middot; <span data-i18n="hero_eyebrow">Module 2 of 5</span></p>
+  <h1 data-i18n="hero_title">Map Reading &amp; Triangulation</h1>
+  <p class="subtitle" data-i18n="hero_sub">Read topographic maps, take compass bearings, and use triangulation to locate the hidden fox transmitter.</p>
+  <div class="pills">
+    <span class="pill" data-i18n="pill_topo">🗺️ Topo Maps</span>
+    <span class="pill" data-i18n="pill_compass">🧭 Compass Bearings</span>
+    <span class="pill" data-i18n="pill_tri">📐 Triangulation</span>
+    <span class="pill" data-i18n="pill_gps">📡 GPS Coordinates</span>
+    <span class="pill" data-i18n="pill_sim">🎮 Live Simulator</span>
+  </div>
+</section>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span data-i18n="prog_label">Workshop Progress</span>
+    <span data-i18n="prog_detail">Module 2 of 5 &middot; Map Reading</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" style="width:40%"></div></div>
+</div>
+
+<main class="content">
+
+<!-- S1: TOPOGRAPHIC MAP BASICS -->
+<div class="section-card">
+  <h2 data-i18n="s1_title">🗺️ Topographic Map Basics</h2>
+  <p data-i18n="s1_intro">Topographic maps show the shape of the land using contour lines. Each line connects points at the same elevation. Learning to read them is your first foxhunting superpower!</p>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="icon">📏</div>
+      <strong data-i18n="s1_c1_title">Contour Lines</strong>
+      <span data-i18n="s1_c1_desc">Lines connecting equal elevation. Closely spaced = steep slope. Widely spaced = gentle slope.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">🔵</div>
+      <strong data-i18n="s1_c2_title">Index Contours</strong>
+      <span data-i18n="s1_c2_desc">Every 5th contour is thicker and labelled with the elevation in metres.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">📐</div>
+      <strong data-i18n="s1_c3_title">Map Scale</strong>
+      <span data-i18n="s1_c3_desc">1:50,000 means 1 cm on map = 500 m on the ground. Malaysian topo maps use 1:25,000 or 1:50,000.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">🎨</div>
+      <strong data-i18n="s1_c4_title">Colours</strong>
+      <span data-i18n="s1_c4_desc">Blue = water, Green = vegetation, Brown = contours, Black = man-made features, Red = roads.</span>
+    </div>
+  </div>
+  <h3 data-i18n="s1_h3">Reading Contour Patterns</h3>
+  <p data-i18n="s1_patterns">Contour patterns tell a story: a hill looks like concentric rings; a valley has a V pointing uphill; a ridge has a V pointing downhill. A saddle (low point between two peaks) looks like an hourglass.</p>
+</div>
+
+<!-- S1a: WORLD ORIENTATION MAP -->
+<div class="section-card">
+  <h2 data-i18n="s1wm_title">🌍 Earth at a Glance — North, South, East, West</h2>
+  <p data-i18n="s1wm_intro">Before reading any map, know which way is up. By convention, <strong>North</strong> is always at the top, <strong>South</strong> at the bottom, <strong>East</strong> to the right, and <strong>West</strong> to the left. The Equator divides Earth into the Northern and Southern hemispheres — Malaysia sits just north of it, in the Northern Hemisphere.</p>
+  <canvas id="worldMapCanvas" class="viz-canvas" style="background:#07131f;height:auto;cursor:default"></canvas>
+  <div id="worldMapReadout" class="viz-readout" data-i18n="s1wm_readout">📍 Malaysia: 4°N, 109°E — Northern Hemisphere, east of the Prime Meridian</div>
+</div>
+
+<!-- S1b: MAP ALIVE — COORDINATES & CONTOURS -->
+<div class="section-card">
+  <h2 data-i18n="s1b_title">🌐 Map Alive — Coordinates &amp; Contours</h2>
+  <p data-i18n="s1b_intro">Explore how latitude and longitude pinpoint any location on Earth, then watch contour lines reveal the hidden shape of the land — the same two skills you use every time you read a topographic map.</p>
+  <div class="viz-grid">
+
+    <!-- Panel A: Lat/Lon -->
+    <div class="viz-panel">
+      <h3 data-i18n="s1b_ll_title">🌍 Latitude &amp; Longitude</h3>
+      <p class="viz-hint" data-i18n="s1b_ll_intro">Latitude lines run east–west and measure how far north or south you are. Longitude lines run north–south and measure east or west. Move your mouse over the map to read any coordinate.</p>
+      <canvas id="latlonCanvas" class="viz-canvas" style="max-width:100%;display:block;margin:0 auto"></canvas>
+      <div id="latlonReadout" class="viz-readout" data-i18n="s1b_ll_hover">Hover over the map to read coordinates</div>
+    </div>
+
+    <!-- Panel B: Contour -->
+    <div class="viz-panel">
+      <h3 data-i18n="s1b_ct_title">🏔️ Contour Terrain Visualiser</h3>
+      <p class="viz-hint" data-i18n="s1b_ct_intro">Colours show elevation — blue = water, green = lowland, brown = highland, white = peak. Each white contour line connects equal heights. Hover to read elevation; click to cycle through views.</p>
+      <div class="contour-wrap">
+        <canvas id="contourCanvas" style="cursor:pointer;border:1px solid var(--border);border-radius:8px"></canvas>
+      </div>
+      <div id="contourReadout" class="viz-readout" data-i18n="s1b_view_heat">View: Terrain Colours — Click to change</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S2: COMPASS BEARINGS (interactive) -->
+<div class="section-card">
+  <h2 data-i18n="s2_title">🧭 Compass Bearings</h2>
+  <p data-i18n="s2_intro">A bearing is the direction from you to the fox, measured in degrees clockwise from North (0° to 359°). Click anywhere on the compass rose below to measure a bearing.</p>
+  <div class="canvas-wrap">
+    <canvas id="compassCanvas" style="max-width:100%;display:block;margin:0 auto"></canvas>
+    <p class="canvas-hint" data-i18n="s2_hint">Click on the compass to set a bearing · Mouse over to preview</p>
+    <div id="bearingReadout" data-i18n="s2_readout">Click the compass to measure a bearing</div>
+  </div>
+
+  <!-- BEARING DIRECTION QUIZ -->
+  <h3 data-i18n="bq_title">🎯 Bearing Direction Quiz</h3>
+  <p data-i18n="bq_desc">A bearing is shown — tap the correct compass direction!</p>
+  <div class="bq-container">
+    <div data-i18n="bq_label" style="font-size:.85rem;color:var(--text-muted)">Bearing:</div>
+    <div class="bq-angle" id="bqAngle">045°</div>
+    <div class="bq-grid" id="bqGrid"></div>
+    <div class="bq-feedback" id="bqFeedback"></div>
+    <div class="bq-score" id="bqScoreDisp">Score: 0 / 0</div>
+  </div>
+</div>
+
+<!-- S3: TAKING A BEARING -->
+<div class="section-card">
+  <h2 data-i18n="s3_title">📡 Taking a Bearing to the Fox</h2>
+  <p data-i18n="s3_intro">When you hear the fox transmitter, you need to take an accurate compass bearing toward the signal. Here's the technique:</p>
+  <div class="steps-list">
+    <div class="step-item"><div class="step-num">1</div><div data-i18n="s3_step1">Hold the compass level and point the direction-of-travel arrow toward the signal source.</div></div>
+    <div class="step-item"><div class="step-num">2</div><div data-i18n="s3_step2">Rotate the bezel until the orienting arrow aligns with the red end of the magnetic needle.</div></div>
+    <div class="step-item"><div class="step-num">3</div><div data-i18n="s3_step3">Read the bearing where the index line crosses the degree scale.</div></div>
+    <div class="step-item"><div class="step-num">4</div><div data-i18n="s3_step4">Record the bearing and your position (grid reference) on your map.</div></div>
+    <div class="step-item"><div class="step-num">5</div><div data-i18n="s3_step5">Move to a new position at least 30–50 m away and repeat for triangulation.</div></div>
+  </div>
+  <div class="info-grid" style="margin-top:10px">
+    <div class="info-card">
+      <div class="icon">✅</div>
+      <strong data-i18n="s3_tip_title">Pro Tip</strong>
+      <span data-i18n="s3_tip_desc">Take 3 bearings from different positions. Where the lines cross on the map is the fox!</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">⚠️</div>
+      <strong data-i18n="s3_warn_title">Watch Out</strong>
+      <span data-i18n="s3_warn_desc">Metal objects (fences, cars, your radio) can deflect the compass needle. Stand clear.</span>
+    </div>
+  </div>
+</div>
+
+<!-- S4: TRIANGULATION (animated) -->
+<div class="section-card">
+  <h2 data-i18n="s4_title">🦊 Triangulation — Finding the Fox</h2>
+  <p data-i18n="s4_intro">Triangulation uses two or more bearings taken from different positions to pinpoint the fox's location. Watch the animation below — click to pause/resume.</p>
+  <div class="canvas-wrap">
+    <canvas id="triangCanvas" width="500" height="300"></canvas>
+    <p class="canvas-hint" data-i18n="s4_hint">Click canvas to pause / resume animation</p>
+  </div>
+  <h3 data-i18n="s4_h3">Why It Works</h3>
+  <p data-i18n="s4_why">Each bearing line is drawn from its observation point on your map. Two lines cross at one point. That point is where the fox is hidden. With three lines, the intersection gives you a "cocked hat" — a small triangle that tells you how accurate your bearings are.</p>
+</div>
+
+<!-- S4a: TRIANGULATION SIMULATOR -->
+<div class="section-card" id="sim-section">
+  <h2 data-i18n="s4a_title">🎯 Try It — Triangulation Simulator</h2>
+  <p data-i18n="s4a_intro">Drag the bearing sliders and watch how the number of observers changes everything. With one observer you only get a direction. With two, the lines cross — and with three you get a "cocked hat" triangle that shows how accurate your fix really is. Can you guide all three bearing lines to the hidden fox 🦊?</p>
+  <div class="sim-wrap">
+    <div>
+      <canvas id="simCanvas" class="viz-canvas" style="background:#0d2418;height:auto"></canvas>
+    </div>
+    <div class="sim-ctrl-col">
+      <div class="node-toggle">
+        <button class="node-btn active" onclick="simSetNodes(1)" data-i18n="s4a_n1">1 Observer</button>
+        <button class="node-btn" onclick="simSetNodes(2)" data-i18n="s4a_n2">2 Observers</button>
+        <button class="node-btn" onclick="simSetNodes(3)" data-i18n="s4a_n3">3 Observers</button>
+      </div>
+      <div class="bearing-ctrl" id="simCtrl0">
+        <div class="obs-label"><span class="obs-swatch" style="background:#F5A623"></span><span data-i18n="s4a_obs_a">Observer A</span></div>
+        <div class="bear-row">
+          <span class="bear-deg" id="bearVal0">030</span>°
+          <input class="bear-slider" type="range" min="0" max="359" value="30" oninput="simSetBear(0,+this.value)">
+        </div>
+        <div class="bear-hint-small" data-i18n="s4a_compass_hint">↑ N=000°  →E=090°  ↓S=180°  ←W=270°</div>
+      </div>
+      <div class="bearing-ctrl dimmed" id="simCtrl1">
+        <div class="obs-label"><span class="obs-swatch" style="background:#7ED321"></span><span data-i18n="s4a_obs_b">Observer B</span></div>
+        <div class="bear-row">
+          <span class="bear-deg" id="bearVal1">285</span>°
+          <input class="bear-slider" type="range" min="0" max="359" value="285" oninput="simSetBear(1,+this.value)">
+        </div>
+      </div>
+      <div class="bearing-ctrl dimmed" id="simCtrl2">
+        <div class="obs-label"><span class="obs-swatch" style="background:#BD10E0"></span><span data-i18n="s4a_obs_c">Observer C</span></div>
+        <div class="bear-row">
+          <span class="bear-deg" id="bearVal2">155</span>°
+          <input class="bear-slider" type="range" min="0" max="359" value="155" oninput="simSetBear(2,+this.value)">
+        </div>
+      </div>
+      <div class="viz-readout" id="simReadout" data-i18n="s4a_readout_start">1 bearing = a direction line only</div>
+    </div>
+  </div>
+  <!-- link to templates -->
+  <div class="section-link-bar">
+    <span data-i18n="s4a_link_hint">📋 Got your bearings? Record them in the field log →</span>
+    <button class="section-link-btn" onclick="simGoToTemplates()" data-i18n="s4a_link_btn">Open Reference Templates ↓</button>
+  </div>
+</div>
+
+<!-- S4b: GPS SATELLITE TRIANGULATION -->
+<div class="section-card">
+  <h2 data-i18n="s4b_title">🛰️ GPS — Triangulation from Space</h2>
+  <p data-i18n="s4b_intro">The same triangulation principle you use with a compass and map is what your phone's GPS does — except the "observation posts" are satellites orbiting 20,000 km above Earth, and instead of compass bearings, each satellite broadcasts the time a signal was sent. Your receiver measures how long the signal took to arrive, converts that to a distance (a radius), and draws a sphere around each satellite. Where three or more spheres intersect is <em>exactly where you are</em>.</p>
+
+  <div class="viz-grid" style="margin-top:14px">
+    <div class="viz-panel">
+      <h3 data-i18n="s4b_anim_title">🌍 Live Satellite Fix</h3>
+      <p class="viz-hint" data-i18n="s4b_anim_hint">Satellites orbit and cast range circles. Watch the fix zone shrink as more satellites are used. Click to toggle 3 / 4 satellites.</p>
+      <canvas id="gpsCanvas" class="viz-canvas" width="380" height="280" style="cursor:pointer;background:#060e1a"></canvas>
+      <div id="gpsReadout" class="viz-readout" data-i18n="s4b_readout_default">Click to toggle satellite count</div>
+    </div>
+    <div class="viz-panel">
+      <h3 data-i18n="s4b_compare_title">📡 Fox-Hunt vs GPS — Same Idea</h3>
+      <div class="compare-table">
+        <div class="cmp-row cmp-head">
+          <div data-i18n="s4b_col_fox">🦊 Fox-Hunt</div>
+          <div data-i18n="s4b_col_gps">🛰️ GPS</div>
+        </div>
+        <div class="cmp-row">
+          <div data-i18n="s4b_r1_fox">You stand at 2–3 positions</div>
+          <div data-i18n="s4b_r1_gps">3–4 satellites in orbit</div>
+        </div>
+        <div class="cmp-row">
+          <div data-i18n="s4b_r2_fox">Compass bearing lines</div>
+          <div data-i18n="s4b_r2_gps">Time-of-flight range spheres</div>
+        </div>
+        <div class="cmp-row">
+          <div data-i18n="s4b_r3_fox">Lines cross on the map</div>
+          <div data-i18n="s4b_r3_gps">Spheres intersect in 3-D space</div>
+        </div>
+        <div class="cmp-row">
+          <div data-i18n="s4b_r4_fox">Accuracy: ~10–50 m</div>
+          <div data-i18n="s4b_r4_gps">Accuracy: 3–5 m (civilian)</div>
+        </div>
+        <div class="cmp-row">
+          <div data-i18n="s4b_r5_fox">Tool: compass + map</div>
+          <div data-i18n="s4b_r5_gps">Tool: atomic clock + radio</div>
+        </div>
+      </div>
+      <div class="info-box" style="margin-top:12px">
+        <p data-i18n="s4b_why_4">⚡ <strong data-i18n="s4b_why_4_strong">Why 4 satellites?</strong> <span data-i18n="s4b_why_4_body">Three spheres fix your X, Y, Z position in space, but GPS receivers have cheap clocks with tiny timing errors. A 4th satellite solves for that clock error — turning a rough fix into a precise one.</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- S4c: CELLULAR FOOTPRINT -->
+<div class="section-card">
+  <h2 data-i18n="s4c_title">📡 Cellular Networks — Same Triangle Idea</h2>
+  <p data-i18n="s4c_intro">Every mobile phone tower broadcasts a radio signal with a circular coverage footprint. When towers are evenly spaced, their circular footprints overlap — and the boundary between any two towers' coverage is exactly halfway between them. Pack six towers symmetrically around a central one and those midpoint boundaries form a <strong>perfect hexagon</strong>. That's where the honeycomb cell grid comes from — not a design choice, but pure geometry.</p>
+
+  <div class="viz-card">
+    <h3 data-i18n="s4c_canvas_title">🗼 Click the Grid — Watch Three Towers Triangulate</h3>
+    <p class="viz-hint" data-i18n="s4c_canvas_hint">Click anywhere on the cell grid. The three nearest towers will send ranging signals — watch their rings converge on your tap point, exactly like foxhunting triangulation.</p>
+    <canvas id="cellCanvas" class="viz-canvas" style="max-width:100%;display:block;margin:0 auto;cursor:crosshair"></canvas>
+    <div id="cellReadout" class="viz-readout" data-i18n="s4c_readout_default">Tap the grid to locate a signal source</div>
+  </div>
+
+  <div class="info-grid" style="margin-top:18px">
+    <div class="info-card">
+      <div class="icon">⬡</div>
+      <strong data-i18n="s4c_hex_title">Why Hexagons?</strong>
+      <span data-i18n="s4c_hex_body">Circles leave gaps. Squares waste overlap. The hexagon tiles a plane with minimum overlap while keeping every point equally served — so hexagons emerge naturally when circular coverage areas are packed efficiently. This is called Voronoi tessellation.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">🦊</div>
+      <strong data-i18n="s4c_fox_title">Fox-Hunt = Cell Location</strong>
+      <span data-i18n="s4c_fox_body">Your phone is located by cell towers every few seconds using the same principle you practise here — multiple fixed points, each contributing a distance measurement, all intersecting on one location. The fox transmitter is just a very low-power base station.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">📐</div>
+      <strong data-i18n="s4c_tri_title">Trilateration vs Triangulation</strong>
+      <span data-i18n="s4c_tri_body">Cell towers use <em>trilateration</em> — measuring distance (signal strength) from 3+ towers. Foxhunting uses <em>triangulation</em> — measuring angles (compass bearings) from 3+ positions. Both methods locate a target by intersecting 3+ reference lines or circles.</span>
+    </div>
+  </div>
+</div>
+
+<!-- S5: GRID REFERENCES -->
+<div class="section-card">
+  <h2 data-i18n="s5_title">📍 Grid References</h2>
+  <p data-i18n="s5_intro">Grid references are coordinates that precisely locate a point on a map. Malaysian topographic maps use the Universal Transverse Mercator (UTM) grid.</p>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="icon">➡️</div>
+      <strong data-i18n="s5_c1_title">Easting (X)</strong>
+      <span data-i18n="s5_c1_desc">The number of the vertical grid line to the left of your point, read first ("along the corridor").</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">⬆️</div>
+      <strong data-i18n="s5_c2_title">Northing (Y)</strong>
+      <span data-i18n="s5_c2_desc">The number of the horizontal grid line below your point, read second ("then up the stairs").</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">6️⃣</div>
+      <strong data-i18n="s5_c3_title">6-Figure Ref</strong>
+      <span data-i18n="s5_c3_desc">3 digits Easting + 3 digits Northing = 100 m accuracy. e.g., 374 582.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">8️⃣</div>
+      <strong data-i18n="s5_c4_title">8-Figure Ref</strong>
+      <span data-i18n="s5_c4_desc">4 digits Easting + 4 digits Northing = 10 m accuracy. Used for foxhunting!</span>
+    </div>
+  </div>
+  <h3 data-i18n="s5_mnemonic">Memory Trick</h3>
+  <p><strong style="color:var(--teal)" data-i18n="s5_mnemonic_text">"Along the corridor, then up the stairs" — Easting first, Northing second.</strong></p>
+
+  <!-- SCALE CALCULATOR -->
+  <h3 data-i18n="scale_title" style="margin-top:20px">📏 Map Scale Calculator</h3>
+  <p data-i18n="scale_desc">Use this tool to convert a map measurement to a real-world distance.</p>
+  <div class="scale-calc">
+    <label data-i18n="scale_lbl_mm">Map distance (mm): <span id="mmVal">50</span> mm</label>
+    <input type="range" id="mmSlider" min="1" max="200" value="50" oninput="calcScale()">
+    <label data-i18n="scale_lbl_scale">Map scale:</label>
+    <select id="scaleSelect" onchange="calcScale()">
+      <option value="25000">1 : 25,000</option>
+      <option value="50000" selected>1 : 50,000</option>
+      <option value="63360">1 : 63,360 (1 inch = 1 mile)</option>
+      <option value="100000">1 : 100,000</option>
+    </select>
+    <div class="scale-result" id="scaleResult">50 mm on 1:50,000 = 2,500 m (2.50 km)</div>
+  </div>
+</div>
+
+<!-- S6: REFERENCE TEMPLATES (tabs) -->
+<div class="section-card" id="templates-section">
+  <h2 data-i18n="s6_title">📋 Reference Templates</h2>
+  <a class="section-link-chip" onclick="document.getElementById('sim-section').scrollIntoView({behavior:'smooth'})" href="#sim-section" data-i18n="s6_sim_link">↑ Practice bearings in the Triangulation Simulator first</a>
+  <p data-i18n="s6_intro">Use these templates in the field to record your bearings and triangulation data accurately.</p>
+  <div class="tab-group">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('t1',this)" data-i18n="tab_bearing">Bearing Log</button>
+      <button class="tab-btn" onclick="switchTab('t2',this)" data-i18n="tab_tri">Triangulation</button>
+      <button class="tab-btn" onclick="switchTab('t3',this)" data-i18n="tab_grid">Grid Ref</button>
+    </div>
+    <div class="tab-pane active" id="t1">
+      <table class="tpl-table">
+        <tr><th data-i18n="tbl_time">Time</th><th data-i18n="tbl_pos">Position (Grid Ref)</th><th data-i18n="tbl_bearing">Bearing (°)</th><th data-i18n="tbl_signal">Signal Strength</th></tr>
+        <tr><td>__:__</td><td>________</td><td>___°</td><td>S _</td></tr>
+        <tr><td>__:__</td><td>________</td><td>___°</td><td>S _</td></tr>
+        <tr><td>__:__</td><td>________</td><td>___°</td><td>S _</td></tr>
+      </table>
+    </div>
+    <div class="tab-pane" id="t2">
+      <table class="tpl-table">
+        <tr><th data-i18n="tbl_obs">Observer</th><th data-i18n="tbl_grid">Grid Ref</th><th data-i18n="tbl_bearing">Bearing (°)</th><th data-i18n="tbl_note">Notes</th></tr>
+        <tr><td data-i18n="tbl_obs1">Observer 1</td><td>________</td><td>___°</td><td></td></tr>
+        <tr><td data-i18n="tbl_obs2">Observer 2</td><td>________</td><td>___°</td><td></td></tr>
+        <tr><td data-i18n="tbl_obs3">Observer 3</td><td>________</td><td>___°</td><td></td></tr>
+      </table>
+    </div>
+    <div class="tab-pane" id="t3">
+      <table class="tpl-table">
+        <tr><th data-i18n="tbl_feature">Feature</th><th data-i18n="tbl_easting">Easting</th><th data-i18n="tbl_northing">Northing</th><th data-i18n="tbl_elev">Elevation (m)</th></tr>
+        <tr><td data-i18n="tbl_start">Start Point</td><td>______</td><td>______</td><td>___</td></tr>
+        <tr><td data-i18n="tbl_fox">Fox Location</td><td>______</td><td>______</td><td>___</td></tr>
+        <tr><td data-i18n="tbl_end">End Point</td><td>______</td><td>______</td><td>___</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- S7: MAP FUN FACTS -->
+<div class="section-card">
+  <h2 data-i18n="s7_title">🌟 Map Fun Facts</h2>
+  <p data-i18n="s7_intro">Tap any card to reveal the answer — test yourself on these map knowledge gems!</p>
+  <div class="facts-grid">
+    <div class="fact-card" onclick="toggleFact(this)">
+      <div class="fact-q" data-i18n="f1_q">How thick is a printed contour line compared to real land?</div>
+      <div class="fact-a" data-i18n="f1_a">A 0.1 mm contour line on a 1:50,000 map represents a strip of land 5 metres wide — about the width of a small house!</div>
+      <div class="reveal-hint" data-i18n="fact_hint">👆 Tap to reveal</div>
+    </div>
+    <div class="fact-card" onclick="toggleFact(this)">
+      <div class="fact-q" data-i18n="f2_q">Which country first invented modern topographic maps?</div>
+      <div class="fact-a" data-i18n="f2_a">France! The Carte de Cassini (1789) was the world's first nationwide topographic survey. It took the Cassini family four generations to complete.</div>
+      <div class="reveal-hint" data-i18n="fact_hint">👆 Tap to reveal</div>
+    </div>
+    <div class="fact-card" onclick="toggleFact(this)">
+      <div class="fact-q" data-i18n="f3_q">What is the highest point on a Malaysian topographic map?</div>
+      <div class="fact-a" data-i18n="f3_a">Mount Kinabalu in Sabah at 4,095 m above sea level — the highest peak in Southeast Asia outside the Himalayas.</div>
+      <div class="reveal-hint" data-i18n="fact_hint">👆 Tap to reveal</div>
+    </div>
+    <div class="fact-card" onclick="toggleFact(this)">
+      <div class="fact-q" data-i18n="f4_q">Why are contour lines never straight?</div>
+      <div class="fact-a" data-i18n="f4_a">Because the Earth's surface is never perfectly flat! Even seemingly flat plains have gentle undulations. A perfectly straight contour would only exist on a mathematically ideal plane.</div>
+      <div class="reveal-hint" data-i18n="fact_hint">👆 Tap to reveal</div>
+    </div>
+    <div class="fact-card" onclick="toggleFact(this)">
+      <div class="fact-q" data-i18n="f5_q">How accurate is a GPS compared to a paper map grid reference?</div>
+      <div class="fact-a" data-i18n="f5_a">A civilian GPS is accurate to about 3–5 m. An 8-figure grid reference gives 10 m accuracy — very close! But a GPS needs batteries; a map never dies.</div>
+      <div class="reveal-hint" data-i18n="fact_hint">👆 Tap to reveal</div>
+    </div>
+  </div>
+</div>
+
+<!-- S8: QUICK CHECK QUIZ -->
+<div class="section-card">
+  <h2 data-i18n="s8_title">✅ Quick Check Quiz</h2>
+  <p data-i18n="s8_intro">Test your map reading knowledge — 6 questions to check your understanding before hitting the field!</p>
+  <div class="quiz-wrap" id="quizWrap"></div>
+  <div class="quiz-score-bar" id="quizScore" style="display:none"></div>
+</div>
+
+<!-- RAE DIVIDER -->
+<div class="rae-divider">
+  <h3 data-i18n="rae_divider_title">⚡ Dig Deeper — Advanced Content</h3>
+  <p data-i18n="rae_divider_desc">The sections below cover advanced topics for Radio Amateur Examination (RAE) candidates and anyone wanting to go beyond the basics. Toggle to show or hide.</p>
+  <button id="raeToggleBtn" onclick="toggleRAE()" data-i18n="rae_btn_show">▼ Show Advanced Content</button>
+</div>
+
+<!-- S9 RAE: THREE NORTHS -->
+<div class="rae-section" id="rae-s9">
+<div class="section-card" style="border-color:rgba(217,154,16,.35)">
+  <h2 data-i18n="s9_title">🧲 The Three Norths &amp; Magnetic Declination <span class="rae-badge">RAE</span></h2>
+  <p data-i18n="s9_intro">Maps have three different "North" directions, and confusing them causes navigational errors. Understanding the difference is essential for precise foxhunting and RAE navigation questions.</p>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="icon">🌍</div>
+      <strong data-i18n="s9_tn_title">True North (TN)</strong>
+      <span data-i18n="s9_tn_desc">The geographic North Pole — where the Earth's axis meets the surface. All longitude lines converge here. Maps are aligned to True North.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">🧲</div>
+      <strong data-i18n="s9_mn_title">Magnetic North (MN)</strong>
+      <span data-i18n="s9_mn_desc">Where your compass needle points. The magnetic pole is currently in the Canadian Arctic, and it drifts about 55 km per year!</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">📐</div>
+      <strong data-i18n="s9_gn_title">Grid North (GN)</strong>
+      <span data-i18n="s9_gn_desc">The direction of the vertical UTM grid lines on your map. Very close to True North but varies slightly by position within the UTM zone.</span>
+    </div>
+  </div>
+  <h3 data-i18n="s9_decl_title">Magnetic Declination</h3>
+  <p data-i18n="s9_decl_desc">Magnetic declination (or magnetic variation) is the angle between True North and Magnetic North at your location. In Peninsular Malaysia, declination is approximately <strong style="color:var(--gold)">0.7° East</strong> (2024) — very small but important for precision work.</p>
+  <div class="formula-box" data-i18n="s9_formula">True Bearing = Magnetic Bearing + Declination (East = add, West = subtract)<br>
+Malaysia: True Bearing ≈ Magnetic Bearing + 0.7°</div>
+  <p data-i18n="s9_practical">For foxhunting at competition distances (&lt;5 km), 0.7° introduces an error of only ~60 m — usually acceptable. For RAE exam purposes, always apply the correction formula.</p>
+  <p data-i18n="s9_variation">Declination changes slowly over time (secular variation). Always check the map's publication date and the stated declination — an old map can have significant error.</p>
+</div>
+</div>
+
+<!-- S10 RAE: UTM GRID -->
+<div class="rae-section" id="rae-s10">
+<div class="section-card" style="border-color:rgba(217,154,16,.35)">
+  <h2 data-i18n="s10_title">🗺️ UTM Grid System for Malaysia <span class="rae-badge">RAE</span></h2>
+  <p data-i18n="s10_intro">The Universal Transverse Mercator (UTM) system divides the Earth into 60 zones, each 6° of longitude wide. Malaysia spans four UTM zones, which affects how grid references are written.</p>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="icon">🇲🇾</div>
+      <strong data-i18n="s10_z47_title">Zone 47N</strong>
+      <span data-i18n="s10_z47_desc">Northwestern Peninsular Malaysia (Perlis, Kedah, N. Perak). Roughly 96°E–102°E.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">🏙️</div>
+      <strong data-i18n="s10_z48_title">Zone 48N</strong>
+      <span data-i18n="s10_z48_desc">Most of Peninsular Malaysia including KL, Johor, Pahang. 102°E–108°E. Most common.</span>
+    </div>
+    <div class="info-card">
+      <div class="icon">🌿</div>
+      <strong data-i18n="s10_z49_title">Zone 49N/50N</strong>
+      <span data-i18n="s10_z49_desc">Sarawak (49N) and Sabah (50N). Must state the zone when giving grid references in Borneo.</span>
+    </div>
+  </div>
+  <h3 data-i18n="s10_coord_title">Coordinate Precision</h3>
+  <table class="acc-table">
+    <tr><th data-i18n="s10_col_digits">Digits Each</th><th data-i18n="s10_col_prec">Precision</th><th data-i18n="s10_col_use">Use Case</th></tr>
+    <tr><td data-i18n="s10_r1d">2+2 (4-fig)</td><td>1,000 m</td><td data-i18n="s10_r1u">General area reference</td></tr>
+    <tr><td data-i18n="s10_r2d">3+3 (6-fig)</td><td>100 m</td><td data-i18n="s10_r2u">Standard map reference</td></tr>
+    <tr><td data-i18n="s10_r3d">4+4 (8-fig)</td><td>10 m</td><td data-i18n="s10_r3u">Foxhunting / orienteering</td></tr>
+    <tr><td data-i18n="s10_r4d">5+5 (10-fig)</td><td>1 m</td><td data-i18n="s10_r4u">Survey / engineering</td></tr>
+  </table>
+  <p data-i18n="s10_tip" style="margin-top:10px">Always state the UTM zone (e.g., "48N 374853 0384721") when sharing grid references across zone boundaries or with people unfamiliar with your region.</p>
+</div>
+</div>
+
+<!-- S11 RAE: COCKED HAT -->
+<div class="rae-section" id="rae-s11">
+<div class="section-card" style="border-color:rgba(217,154,16,.35)">
+  <h2 data-i18n="s11_title">🎯 Triangulation Accuracy &amp; the "Cocked Hat" <span class="rae-badge">RAE</span></h2>
+  <p data-i18n="s11_intro">In practice, three bearing lines rarely meet at a single point. They form a small triangle called the "cocked hat." Understanding its causes and minimising it is key to precise foxhunting.</p>
+  <h3 data-i18n="s11_sources_title">Sources of Error</h3>
+  <div class="info-grid">
+    <div class="info-card"><div class="icon">📡</div><strong data-i18n="s11_e1_title">Signal Path</strong><span data-i18n="s11_e1_desc">Reflected or refracted signals arrive from the wrong direction. Most common in urban/forested areas.</span></div>
+    <div class="info-card"><div class="icon">🧲</div><strong data-i18n="s11_e2_title">Local Magnetic Anomalies</strong><span data-i18n="s11_e2_desc">Iron-rich rock, buried pipes or nearby metal objects deflect the compass needle.</span></div>
+    <div class="info-card"><div class="icon">📏</div><strong data-i18n="s11_e3_title">Plotting Error</strong><span data-i18n="s11_e3_desc">1° bearing error at 1 km range = 17 m position error. Small protractor mistakes matter!</span></div>
+    <div class="info-card"><div class="icon">📐</div><strong data-i18n="s11_e4_title">Crossing Angle</strong><span data-i18n="s11_e4_desc">Bearings crossing at shallow angles (&lt;30°) create elongated cocked hats with large position uncertainty.</span></div>
+  </div>
+  <h3 data-i18n="s11_gdop_title">Geometric Dilution of Precision (GDOP)</h3>
+  <p data-i18n="s11_gdop_desc">GDOP describes how the geometry of your observation positions affects accuracy. The ideal geometry places observers at 90° to each other relative to the fox — this minimises the cocked hat area.</p>
+  <table class="acc-table">
+    <tr><th data-i18n="s11_col_angle">Crossing Angle</th><th data-i18n="s11_col_gdop">GDOP Factor</th><th data-i18n="s11_col_result">Position Uncertainty</th></tr>
+    <tr><td>90° (ideal)</td><td>1.0×</td><td data-i18n="s11_r1">Minimum — best geometry</td></tr>
+    <tr><td>60°</td><td>1.15×</td><td data-i18n="s11_r2">Good — acceptable</td></tr>
+    <tr><td>30°</td><td>2.0×</td><td data-i18n="s11_r3">Poor — avoid if possible</td></tr>
+    <tr><td>&lt;20°</td><td>&gt;3×</td><td data-i18n="s11_r4">Very poor — large triangle</td></tr>
+  </table>
+  <h3 data-i18n="s11_reduce_title">How to Reduce the Cocked Hat</h3>
+  <ul>
+    <li data-i18n="s11_red1">Take more bearings (3–4) from well-spaced positions at ≥90° geometry</li>
+    <li data-i18n="s11_red2">Stand clear of metal objects and iron-rich terrain</li>
+    <li data-i18n="s11_red3">Use a directional antenna (Yagi) for sharper null point</li>
+    <li data-i18n="s11_red4">The fox is most likely inside or at the centroid of the cocked hat triangle</li>
+    <li data-i18n="s11_red5">Use signal strength as a third data point to weight bearings</li>
+  </ul>
+</div>
+</div>
+
+<!-- S12 RAE: EXAM CORNER -->
+<div class="rae-section" id="rae-s12">
+<div class="section-card" style="border-color:rgba(217,154,16,.35)">
+  <h2 data-i18n="s12_title">📚 RAE Exam Corner — Map &amp; Navigation <span class="rae-badge">RAE</span></h2>
+  <p data-i18n="s12_intro">These are the map reading and navigation topics covered in the Malaysian Radio Amateur Examination. Study these for the technical paper.</p>
+  <h3 data-i18n="s12_topics_title">Key Topics</h3>
+  <ul>
+    <li data-i18n="s12_t1">Magnetic declination and correction formula (East = add, West = subtract)</li>
+    <li data-i18n="s12_t2">Difference between True, Magnetic and Grid North</li>
+    <li data-i18n="s12_t3">UTM grid system and Malaysian zone numbers (47N–50N)</li>
+    <li data-i18n="s12_t4">6-figure and 8-figure grid references — reading and plotting</li>
+    <li data-i18n="s12_t5">Triangulation principles and sources of bearing error</li>
+    <li data-i18n="s12_t6">Map scale conversions — map distance to ground distance</li>
+  </ul>
+  <h3 data-i18n="s12_qcodes_title" style="margin-top:18px">Navigational Q-Codes</h3>
+  <p data-i18n="s12_qcodes_intro">Certain Q-codes are used specifically for radio direction finding and navigation:</p>
+  <table class="q-table">
+    <tr><th data-i18n="s12_col_code">Code</th><th data-i18n="s12_col_meaning">Meaning (as a statement)</th></tr>
+    <tr><td>QRA</td><td data-i18n="s12_qra">The name of my station is ___</td></tr>
+    <tr><td>QRB</td><td data-i18n="s12_qrb">The approximate distance between our stations is ___ km</td></tr>
+    <tr><td>QTE</td><td data-i18n="s12_qte">Your true bearing from my station is ___°</td></tr>
+    <tr><td>QTF</td><td data-i18n="s12_qtf">Your position according to bearings taken by DF stations is ___</td></tr>
+    <tr><td>QTH</td><td data-i18n="s12_qth">My location is ___ (town / grid reference)</td></tr>
+    <tr><td>QUJ</td><td data-i18n="s12_quj">The true bearing of your station from mine is ___° (reciprocal of QTE)</td></tr>
+  </table>
+  <h3 data-i18n="s12_sample_title" style="margin-top:18px">Sample RAE Questions</h3>
+  <div style="background:rgba(217,154,16,.07);border:1px solid rgba(217,154,16,.25);border-radius:8px;padding:14px;margin-top:8px">
+    <p style="margin-bottom:8px;color:var(--gold);font-weight:600" data-i18n="s12_sq1">Q: If your compass reads 135° and the magnetic declination is 1°W, what is the true bearing?</p>
+    <p data-i18n="s12_sq1_a">A: True = Magnetic − 1° = <strong style="color:var(--teal)">134°</strong> (West declination means subtract)</p>
+    <p style="margin-top:10px;color:var(--gold);font-weight:600" data-i18n="s12_sq2">Q: What UTM zone covers Kuala Lumpur?</p>
+    <p data-i18n="s12_sq2_a">A: <strong style="color:var(--teal)">Zone 48N</strong> — KL sits at approximately 101.7°E, within the 102°E–108°E zone 48N band.</p>
+    <p style="margin-top:10px;color:var(--gold);font-weight:600" data-i18n="s12_sq3">Q: What angle between bearing lines gives the smallest cocked hat?</p>
+    <p data-i18n="s12_sq3_a">A: <strong style="color:var(--teal)">90°</strong> — perpendicular bearings give the best (GDOP = 1.0×) geometric precision.</p>
+  </div>
+</div>
+</div>
+
+<!-- CTA -->
+<div class="cta-block">
+  <h3 data-i18n="cta_title">Ready to Hunt? 🦊</h3>
+  <p data-i18n="cta_desc">You can now read a topo map, take bearings, and triangulate the fox's position. Next up — build your direction-finding antenna!</p>
+  <a href="module-3.html" class="cta-btn" data-i18n="cta_btn">Module 3: Yagi Antenna →</a>
+</div>
+
+<!-- STEP NAV -->
+<div class="stepnav">
+  <a href="module-1.html" data-i18n="nav_prev">← Module 1: Morse Code</a>
+  <a href="module-activity-2.html" style="background:rgba(2,173,165,.15);border-color:var(--teal)">&#127919; Go to Activity &rarr;</a>
+  <a href="module-3.html" data-i18n="nav_next">Module 3: Yagi Antenna →</a>
+</div>
+
+</main>
+
+<footer>
+  <p data-i18n="footer_text">UMPSA STEM Lab · Radio Foxhunting Workshop · JOTA/JOTI 2026</p>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   TRANSLATIONS
+══════════════════════════════════════════════════════════════ */
+var TR = {
+  en: {
+    nav_modules:'Modules',
+    nav_m0:'0 &middot; Orientation',nav_m1:'1 &middot; Morse Code',nav_m2:'2 &middot; Map Reading',
+    nav_m3:'3 &middot; Antennas',nav_m4:'4 &middot; Field Guide',
+    hero_eyebrow:'Module 2 of 5',
+    hero_title:'Map Reading &amp; Triangulation',
+    hero_sub:'Read topographic maps, take compass bearings, and use triangulation to locate the hidden fox transmitter.',
+    pill_topo:'🗺️ Topo Maps',pill_compass:'🧭 Compass Bearings',pill_tri:'📐 Triangulation',
+    pill_gps:'📡 GPS Coordinates',pill_sim:'🎮 Live Simulator',
+    prog_label:'Workshop Progress',prog_detail:'Module 2 of 5 &middot; Map Reading',
+
+    s1_title:'🗺️ Topographic Map Basics',
+    s1_intro:'Topographic maps show the shape of the land using contour lines. Each line connects points at the same elevation. Learning to read them is your first foxhunting superpower!',
+    s1_c1_title:'Contour Lines',s1_c1_desc:'Lines connecting equal elevation. Closely spaced = steep slope. Widely spaced = gentle slope.',
+    s1_c2_title:'Index Contours',s1_c2_desc:'Every 5th contour is thicker and labelled with the elevation in metres.',
+    s1_c3_title:'Map Scale',s1_c3_desc:'1:50,000 means 1 cm on map = 500 m on the ground. Malaysian topo maps use 1:25,000 or 1:50,000.',
+    s1_c4_title:'Colours',s1_c4_desc:'Blue = water, Green = vegetation, Brown = contours, Black = man-made features, Red = roads.',
+    s1_h3:'Reading Contour Patterns',
+    s1_patterns:'Contour patterns tell a story: a hill looks like concentric rings; a valley has a V pointing uphill; a ridge has a V pointing downhill. A saddle (low point between two peaks) looks like an hourglass.',
+
+    s2_title:'🧭 Compass Bearings',
+    s2_intro:'A bearing is the direction from you to the fox, measured in degrees clockwise from North (0° to 359°). Click anywhere on the compass rose below to measure a bearing.',
+    s2_hint:'Click on the compass to set a bearing · Mouse over to preview',
+    s2_readout:'Click the compass to measure a bearing',
+    bq_title:'🎯 Bearing Direction Quiz',
+    bq_desc:'A bearing is shown — tap the correct compass direction!',
+    bq_label:'Bearing:',
+
+    s3_title:'📡 Taking a Bearing to the Fox',
+    s3_intro:'When you hear the fox transmitter, you need to take an accurate compass bearing toward the signal. Here\'s the technique:',
+    s3_step1:'Hold the compass level and point the direction-of-travel arrow toward the signal source.',
+    s3_step2:'Rotate the bezel until the orienting arrow aligns with the red end of the magnetic needle.',
+    s3_step3:'Read the bearing where the index line crosses the degree scale.',
+    s3_step4:'Record the bearing and your position (grid reference) on your map.',
+    s3_step5:'Move to a new position at least 30–50 m away and repeat for triangulation.',
+    s3_tip_title:'Pro Tip',s3_tip_desc:'Take 3 bearings from different positions. Where the lines cross on the map is the fox!',
+    s3_warn_title:'Watch Out',s3_warn_desc:'Metal objects (fences, cars, your radio) can deflect the compass needle. Stand clear.',
+
+    s4b_title:'🛰️ GPS — Triangulation from Space',
+    s4b_intro:'The same triangulation principle you use with a compass and map is what your phone\'s GPS does — except the "observation posts" are satellites orbiting 20,000 km above Earth, and instead of compass bearings, each satellite broadcasts the time a signal was sent. Your receiver measures how long the signal took to arrive, converts that to a distance (a radius), and draws a sphere around each satellite. Where three or more spheres intersect is exactly where you are.',
+    s4b_anim_title:'🌍 Live Satellite Fix',
+    s4b_anim_hint:'Satellites orbit and cast range circles. Watch the fix zone shrink as more satellites are used. Click to toggle 3 / 4 satellites.',
+    s4b_readout_default:'Click to toggle satellite count',
+    s4b_compare_title:'📡 Fox-Hunt vs GPS — Same Idea',
+    s4b_col_fox:'🦊 Fox-Hunt',
+    s4b_col_gps:'🛰️ GPS',
+    s4b_r1_fox:'You stand at 2–3 positions',
+    s4b_r1_gps:'3–4 satellites in orbit',
+    s4b_r2_fox:'Compass bearing lines',
+    s4b_r2_gps:'Time-of-flight range spheres',
+    s4b_r3_fox:'Lines cross on the map',
+    s4b_r3_gps:'Spheres intersect in 3-D space',
+    s4b_r4_fox:'Accuracy: ~10–50 m',
+    s4b_r4_gps:'Accuracy: 3–5 m (civilian)',
+    s4b_r5_fox:'Tool: compass + map',
+    s4b_r5_gps:'Tool: atomic clock + radio',
+    s4b_why_4:'',
+    s4b_why_4_strong:'Why 4 satellites?',
+    s4b_why_4_body:'Three spheres fix your X, Y, Z position in space, but GPS receivers have cheap clocks with tiny timing errors. A 4th satellite solves for that clock error — turning a rough fix into a precise one.',
+    s4c_title:'📡 Cellular Networks — Same Triangle Idea',
+    s4c_intro:'Every mobile phone tower broadcasts a radio signal with a circular coverage footprint. When towers are evenly spaced, their footprints overlap — and the boundary between any two towers\' coverage is exactly halfway between them. Pack six towers symmetrically around a central one and those midpoint boundaries form a <strong>perfect hexagon</strong>. That\'s where the honeycomb cell grid comes from — not design, but pure geometry.',
+    s4c_canvas_title:'🗼 Click the Grid — Watch Three Towers Triangulate',
+    s4c_canvas_hint:'Click anywhere on the cell grid. The three nearest towers will send ranging signals — watch their rings converge on your tap point, exactly like foxhunting triangulation.',
+    s4c_readout_default:'Tap the grid to locate a signal source',
+    s4c_readout_fix:'Position fixed! 3 towers · same principle as foxhunting.',
+    s4c_hex_title:'Why Hexagons?',
+    s4c_hex_body:'Circles leave gaps. Squares waste overlap. The hexagon tiles a plane with minimum overlap while keeping every point equally served — so hexagons emerge naturally when circular coverage areas are packed efficiently. This is called Voronoi tessellation.',
+    s4c_fox_title:'Fox-Hunt = Cell Location',
+    s4c_fox_body:'Your phone is located by cell towers every few seconds using the same principle you practise here — multiple fixed points, each contributing a distance measurement, all intersecting on one location. The fox transmitter is just a very low-power base station.',
+    s4c_tri_title:'Trilateration vs Triangulation',
+    s4c_tri_body:'Cell towers use <em>trilateration</em> — measuring distance (signal strength) from 3+ towers. Foxhunting uses <em>triangulation</em> — measuring angles (compass bearings) from 3+ positions. Both methods locate a target by intersecting 3+ reference lines or circles.',
+
+    s4_title:'🦊 Triangulation — Finding the Fox',
+    s4_intro:'Triangulation uses two or more bearings taken from different positions to pinpoint the fox\'s location. Watch the animation below — click to pause/resume.',
+    s4_hint:'Click canvas to pause / resume animation',
+    s4_h3:'Why It Works',
+    s4_why:'Each bearing line is drawn from its observation point on your map. Two lines cross at one point. That point is where the fox is hidden. With three lines, the intersection gives you a "cocked hat" — a small triangle that tells you how accurate your bearings are.',
+    s4a_title:'🎯 Try It — Triangulation Simulator',
+    s4a_intro:'Drag the bearing sliders and watch how the number of observers changes everything. With one observer you only get a direction. With two, the lines cross — and with three you get a "cocked hat" triangle that shows how accurate your fix really is. Can you guide all three bearing lines to the hidden fox 🦊?',
+    s4a_n1:'1 Observer',
+    s4a_n2:'2 Observers',
+    s4a_n3:'3 Observers',
+    s4a_obs_a:'Observer A',
+    s4a_obs_b:'Observer B',
+    s4a_obs_c:'Observer C',
+    s4a_compass_hint:'↑ N=000°  →E=090°  ↓S=180°  ←W=270°',
+    s4a_readout_start:'1 bearing = a direction line only',
+    s4a_link_hint:'📋 Got your bearings? Record them in the field log →',
+    s4a_link_btn:'Open Reference Templates ↓',
+    s6_sim_link:'↑ Practice bearings in the Triangulation Simulator first',
+
+    s5_title:'📍 Grid References',
+    s5_intro:'Grid references are coordinates that precisely locate a point on a map. Malaysian topographic maps use the Universal Transverse Mercator (UTM) grid.',
+    s5_c1_title:'Easting (X)',s5_c1_desc:'The number of the vertical grid line to the left of your point, read first ("along the corridor").',
+    s5_c2_title:'Northing (Y)',s5_c2_desc:'The number of the horizontal grid line below your point, read second ("then up the stairs").',
+    s5_c3_title:'6-Figure Ref',s5_c3_desc:'3 digits Easting + 3 digits Northing = 100 m accuracy. e.g., 374 582.',
+    s5_c4_title:'8-Figure Ref',s5_c4_desc:'4 digits Easting + 4 digits Northing = 10 m accuracy. Used for foxhunting!',
+    s5_mnemonic:'Memory Trick',
+    s5_mnemonic_text:'"Along the corridor, then up the stairs" — Easting first, Northing second.',
+    scale_title:'📏 Map Scale Calculator',
+    scale_desc:'Use this tool to convert a map measurement to a real-world distance.',
+    scale_lbl_mm:'Map distance (mm): ',
+    scale_lbl_scale:'Map scale:',
+
+    s6_title:'📋 Reference Templates',
+    s6_intro:'Use these templates in the field to record your bearings and triangulation data accurately.',
+    tab_bearing:'Bearing Log',tab_tri:'Triangulation',tab_grid:'Grid Ref',
+    tbl_time:'Time',tbl_pos:'Position (Grid Ref)',tbl_bearing:'Bearing (°)',tbl_signal:'Signal Strength',
+    tbl_obs:'Observer',tbl_grid:'Grid Ref',tbl_note:'Notes',
+    tbl_obs1:'Observer 1',tbl_obs2:'Observer 2',tbl_obs3:'Observer 3',
+    tbl_feature:'Feature',tbl_easting:'Easting',tbl_northing:'Northing',tbl_elev:'Elevation (m)',
+    tbl_start:'Start Point',tbl_fox:'Fox Location',tbl_end:'End Point',
+
+    s7_title:'🌟 Map Fun Facts',
+    s7_intro:'Tap any card to reveal the answer — test yourself on these map knowledge gems!',
+    f1_q:'How thick is a printed contour line compared to real land?',
+    f1_a:'A 0.1 mm contour line on a 1:50,000 map represents a strip of land 5 metres wide — about the width of a small house!',
+    f2_q:'Which country first invented modern topographic maps?',
+    f2_a:'France! The Carte de Cassini (1789) was the world\'s first nationwide topographic survey. It took the Cassini family four generations to complete.',
+    f3_q:'What is the highest point on a Malaysian topographic map?',
+    f3_a:'Mount Kinabalu in Sabah at 4,095 m above sea level — the highest peak in Southeast Asia outside the Himalayas.',
+    f4_q:'Why are contour lines never straight?',
+    f4_a:'Because the Earth\'s surface is never perfectly flat! Even seemingly flat plains have gentle undulations. A perfectly straight contour would only exist on a mathematically ideal plane.',
+    f5_q:'How accurate is a GPS compared to a paper map grid reference?',
+    f5_a:'A civilian GPS is accurate to about 3–5 m. An 8-figure grid reference gives 10 m accuracy — very close! But a GPS needs batteries; a map never dies.',
+    fact_hint:'👆 Tap to reveal',
+
+    s8_title:'✅ Quick Check Quiz',
+    s8_intro:'Test your map reading knowledge — 6 questions to check your understanding before hitting the field!',
+
+    rae_divider_title:'⚡ Dig Deeper — Advanced Content',
+    rae_divider_desc:'The sections below cover advanced topics for Radio Amateur Examination (RAE) candidates and anyone wanting to go beyond the basics. Toggle to show or hide.',
+    rae_btn_show:'▼ Show Advanced Content',
+    rae_btn_hide:'▲ Hide Advanced Content',
+
+    s9_title:'🧲 The Three Norths &amp; Magnetic Declination',
+    s9_intro:'Maps have three different "North" directions, and confusing them causes navigational errors. Understanding the difference is essential for precise foxhunting and RAE navigation questions.',
+    s9_tn_title:'True North (TN)',s9_tn_desc:'The geographic North Pole — where the Earth\'s axis meets the surface. All longitude lines converge here. Maps are aligned to True North.',
+    s9_mn_title:'Magnetic North (MN)',s9_mn_desc:'Where your compass needle points. The magnetic pole is currently in the Canadian Arctic, and it drifts about 55 km per year!',
+    s9_gn_title:'Grid North (GN)',s9_gn_desc:'The direction of the vertical UTM grid lines on your map. Very close to True North but varies slightly by position within the UTM zone.',
+    s9_decl_title:'Magnetic Declination',
+    s9_decl_desc:'Magnetic declination (or magnetic variation) is the angle between True North and Magnetic North at your location. In Peninsular Malaysia, declination is approximately <strong style="color:var(--gold)">0.7° East</strong> (2024) — very small but important for precision work.',
+    s9_formula:'True Bearing = Magnetic Bearing + Declination (East = add, West = subtract)<br>Malaysia: True Bearing ≈ Magnetic Bearing + 0.7°',
+    s9_practical:'For foxhunting at competition distances (&lt;5 km), 0.7° introduces an error of only ~60 m — usually acceptable. For RAE exam purposes, always apply the correction formula.',
+    s9_variation:'Declination changes slowly over time (secular variation). Always check the map\'s publication date and the stated declination — an old map can have significant error.',
+
+    s10_title:'🗺️ UTM Grid System for Malaysia',
+    s10_intro:'The Universal Transverse Mercator (UTM) system divides the Earth into 60 zones, each 6° of longitude wide. Malaysia spans four UTM zones, which affects how grid references are written.',
+    s10_z47_title:'Zone 47N',s10_z47_desc:'Northwestern Peninsular Malaysia (Perlis, Kedah, N. Perak). Roughly 96°E–102°E.',
+    s10_z48_title:'Zone 48N',s10_z48_desc:'Most of Peninsular Malaysia including KL, Johor, Pahang. 102°E–108°E. Most common.',
+    s10_z49_title:'Zone 49N/50N',s10_z49_desc:'Sarawak (49N) and Sabah (50N). Must state the zone when giving grid references in Borneo.',
+    s10_coord_title:'Coordinate Precision',
+    s10_col_digits:'Digits Each',s10_col_prec:'Precision',s10_col_use:'Use Case',
+    s10_r1d:'2+2 (4-fig)',s10_r1u:'General area reference',
+    s10_r2d:'3+3 (6-fig)',s10_r2u:'Standard map reference',
+    s10_r3d:'4+4 (8-fig)',s10_r3u:'Foxhunting / orienteering',
+    s10_r4d:'5+5 (10-fig)',s10_r4u:'Survey / engineering',
+    s10_tip:'Always state the UTM zone (e.g., "48N 374853 0384721") when sharing grid references across zone boundaries or with people unfamiliar with your region.',
+
+    s11_title:'🎯 Triangulation Accuracy &amp; the "Cocked Hat"',
+    s11_intro:'In practice, three bearing lines rarely meet at a single point. They form a small triangle called the "cocked hat." Understanding its causes and minimising it is key to precise foxhunting.',
+    s11_sources_title:'Sources of Error',
+    s11_e1_title:'Signal Path',s11_e1_desc:'Reflected or refracted signals arrive from the wrong direction. Most common in urban/forested areas.',
+    s11_e2_title:'Local Magnetic Anomalies',s11_e2_desc:'Iron-rich rock, buried pipes or nearby metal objects deflect the compass needle.',
+    s11_e3_title:'Plotting Error',s11_e3_desc:'1° bearing error at 1 km range = 17 m position error. Small protractor mistakes matter!',
+    s11_e4_title:'Crossing Angle',s11_e4_desc:'Bearings crossing at shallow angles (<30°) create elongated cocked hats with large position uncertainty.',
+    s11_gdop_title:'Geometric Dilution of Precision (GDOP)',
+    s11_gdop_desc:'GDOP describes how the geometry of your observation positions affects accuracy. The ideal geometry places observers at 90° to each other relative to the fox — this minimises the cocked hat area.',
+    s11_col_angle:'Crossing Angle',s11_col_gdop:'GDOP Factor',s11_col_result:'Position Uncertainty',
+    s11_r1:'Minimum — best geometry',s11_r2:'Good — acceptable',s11_r3:'Poor — avoid if possible',s11_r4:'Very poor — large triangle',
+    s11_reduce_title:'How to Reduce the Cocked Hat',
+    s11_red1:'Take more bearings (3–4) from well-spaced positions at ≥90° geometry',
+    s11_red2:'Stand clear of metal objects and iron-rich terrain',
+    s11_red3:'Use a directional antenna (Yagi) for sharper null point',
+    s11_red4:'The fox is most likely inside or at the centroid of the cocked hat triangle',
+    s11_red5:'Use signal strength as a third data point to weight bearings',
+
+    s12_title:'📚 RAE Exam Corner — Map &amp; Navigation',
+    s12_intro:'These are the map reading and navigation topics covered in the Malaysian Radio Amateur Examination. Study these for the technical paper.',
+    s12_topics_title:'Key Topics',
+    s12_t1:'Magnetic declination and correction formula (East = add, West = subtract)',
+    s12_t2:'Difference between True, Magnetic and Grid North',
+    s12_t3:'UTM grid system and Malaysian zone numbers (47N–50N)',
+    s12_t4:'6-figure and 8-figure grid references — reading and plotting',
+    s12_t5:'Triangulation principles and sources of bearing error',
+    s12_t6:'Map scale conversions — map distance to ground distance',
+    s12_qcodes_title:'Navigational Q-Codes',
+    s12_qcodes_intro:'Certain Q-codes are used specifically for radio direction finding and navigation:',
+    s12_col_code:'Code',s12_col_meaning:'Meaning (as a statement)',
+    s12_qra:'The name of my station is ___',
+    s12_qrb:'The approximate distance between our stations is ___ km',
+    s12_qte:'Your true bearing from my station is ___°',
+    s12_qtf:'Your position according to bearings taken by DF stations is ___',
+    s12_qth:'My location is ___ (town / grid reference)',
+    s12_quj:'The true bearing of your station from mine is ___° (reciprocal of QTE)',
+    s12_sample_title:'Sample RAE Questions',
+    s12_sq1:'Q: If your compass reads 135° and the magnetic declination is 1°W, what is the true bearing?',
+    s12_sq1_a:'A: True = Magnetic − 1° = <strong style="color:var(--teal)">134°</strong> (West declination means subtract)',
+    s12_sq2:'Q: What UTM zone covers Kuala Lumpur?',
+    s12_sq2_a:'A: <strong style="color:var(--teal)">Zone 48N</strong> — KL sits at approximately 101.7°E, within the 102°E–108°E zone 48N band.',
+    s12_sq3:'Q: What angle between bearing lines gives the smallest cocked hat?',
+    s12_sq3_a:'A: <strong style="color:var(--teal)">90°</strong> — perpendicular bearings give the best (GDOP = 1.0×) geometric precision.',
+
+    cta_title:'Ready to Hunt? 🦊',
+    cta_desc:'You can now read a topo map, take bearings, and triangulate the fox\'s position. Next up — build your direction-finding antenna!',
+    cta_btn:'Module 3: Yagi Antenna →',
+    nav_prev:'← Module 1: Morse Code',
+    nav_next:'Module 3: Yagi Antenna →',
+    footer_text:'UMPSA STEM Lab · Radio Foxhunting Workshop · JOTA/JOTI 2026',
+    s1wm_title:'🌍 Earth at a Glance — North, South, East, West',
+    s1wm_intro:'Before reading any map, know which way is up. By convention, <strong>North</strong> is always at the top, <strong>South</strong> at the bottom, <strong>East</strong> to the right, and <strong>West</strong> to the left. The Equator divides Earth into the Northern and Southern hemispheres — Malaysia sits just north of it, in the Northern Hemisphere.',
+    s1wm_readout:'📍 Malaysia: 4°N, 109°E — Northern Hemisphere, east of the Prime Meridian',
+    s1b_title:'🌐 Map Alive — Coordinates &amp; Contours',
+    s1b_intro:'Explore how latitude and longitude pinpoint any location on Earth, then watch contour lines reveal the hidden shape of the land — the same two skills you use every time you read a topographic map.',
+    s1b_ll_title:'🌍 Latitude &amp; Longitude',
+    s1b_ll_intro:'Latitude lines run east–west and measure how far north or south you are. Longitude lines run north–south and measure east or west. Move your mouse over the map to read any coordinate.',
+    s1b_ll_hover:'Hover over the map to read coordinates',
+    s1b_ct_title:'🏔️ Contour Terrain Visualiser',
+    s1b_ct_intro:'Colours show elevation — blue = water, green = lowland, brown = highland, white = peak. Each white contour line connects equal heights. Hover to read elevation; click to cycle through views.',
+    s1b_view_heat:'View: Terrain Colours — Click to change',
+    s1b_view_cont:'View: Contour Lines — Click to change',
+    s1b_view_both:'View: Combined — Click to change',
+
+    /* quiz */
+    q1_text:'What do closely-spaced contour lines on a topographic map indicate?',
+    q1_a:'Flat terrain',q1_b:'Steep terrain',q1_c:'Deep water',q1_d:'Dense vegetation',
+    q1_exp:'Correct! Closely spaced contour lines mean the elevation changes rapidly over a short horizontal distance — steep terrain.',
+    q2_text:'A compass bearing of 270° points in which direction?',
+    q2_a:'North',q2_b:'South',q2_c:'East',q2_d:'West',
+    q2_exp:'Correct! 0°/360° = North, 90° = East, 180° = South, 270° = West.',
+    q3_text:'What crossing angle between bearing lines gives the best triangulation accuracy?',
+    q3_a:'30°',q3_b:'45°',q3_c:'90°',q3_d:'180°',
+    q3_exp:'Correct! Lines crossing at 90° give the smallest cocked hat — best geometric precision (GDOP = 1.0×).',
+    q4_text:'Which coordinate do you read FIRST when giving a grid reference?',
+    q4_a:'Northing',q4_b:'Elevation',q4_c:'Easting',q4_d:'Declination',
+    q4_exp:'Correct! Easting first, Northing second — "along the corridor, then up the stairs."',
+    q5_text:'Magnetic declination is the angle between which two directions?',
+    q5_a:'True North and Grid North',q5_b:'Magnetic North and True North',q5_c:'Grid North and Magnetic North',q5_d:'East and West',
+    q5_exp:'Correct! Magnetic declination is the angle between Magnetic North (compass needle) and True North (geographic).',
+    q6_text:'The mnemonic "along the corridor" reminds you to read ___ first.',
+    q6_a:'Northing',q6_b:'Elevation',q6_c:'Latitude',q6_d:'Easting',
+    q6_exp:'Correct! "Along the corridor" = Easting (horizontal) first; "up the stairs" = Northing (vertical) second.',
+    q_correct:'✅ Correct! ',q_wrong:'❌ Not quite. ',q_score:'Score: ',
+  },
+  bm: {
+    nav_modules:'Modul',
+    nav_m0:'0 &middot; Orientasi',nav_m1:'1 &middot; Kod Morse',nav_m2:'2 &middot; Bacaan Peta',
+    nav_m3:'3 &middot; Antena',nav_m4:'4 &middot; Panduan Lapangan',
+    hero_eyebrow:'Modul 2 daripada 5',
+    hero_title:'Bacaan Peta &amp; Triangulasi',
+    hero_sub:'Baca peta topografi, ambil baringan kompas, dan gunakan triangulasi untuk menemui pemancar musang tersembunyi.',
+    pill_topo:'🗺️ Peta Topo',pill_compass:'🧭 Baringan Kompas',pill_tri:'📐 Triangulasi',
+    pill_gps:'📡 Koordinat GPS',pill_sim:'🎮 Simulator Langsung',
+    prog_label:'Kemajuan Bengkel',prog_detail:'Modul 2 daripada 5 &middot; Bacaan Peta',
+
+    s1_title:'🗺️ Asas Peta Topografi',
+    s1_intro:'Peta topografi menunjukkan bentuk muka bumi menggunakan garis kontur. Setiap garis menghubungkan titik-titik pada ketinggian yang sama. Mempelajari cara membacanya adalah kuasa pertama anda dalam pemburuan musang!',
+    s1_c1_title:'Garis Kontur',s1_c1_desc:'Garis yang menghubungkan ketinggian yang sama. Rapat = cerun curam. Jarang = cerun landai.',
+    s1_c2_title:'Kontur Indeks',s1_c2_desc:'Setiap kontur ke-5 adalah lebih tebal dan dilabel dengan ketinggian dalam meter.',
+    s1_c3_title:'Skala Peta',s1_c3_desc:'1:50,000 bermakna 1 cm di peta = 500 m di lapangan. Peta topo Malaysia menggunakan 1:25,000 atau 1:50,000.',
+    s1_c4_title:'Warna',s1_c4_desc:'Biru = air, Hijau = tumbuh-tumbuhan, Coklat = kontur, Hitam = ciri buatan manusia, Merah = jalan.',
+    s1_h3:'Membaca Corak Kontur',
+    s1_patterns:'Corak kontur menceritakan kisah: bukit kelihatan seperti gelang konsentrik; lembah mempunyai V menghala ke atas bukit; rabung mempunyai V menghala ke bawah bukit. Pelana (titik rendah antara dua puncak) kelihatan seperti jam pasir.',
+
+    s2_title:'🧭 Baringan Kompas',
+    s2_intro:'Baringan ialah arah dari anda ke musang, diukur dalam darjah mengikut arah jam dari Utara (0° hingga 359°). Klik di mana-mana pada mawar kompas di bawah untuk mengukur baringan.',
+    s2_hint:'Klik kompas untuk menetapkan baringan · Layang tetikus untuk pratonton',
+    s2_readout:'Klik kompas untuk mengukur baringan',
+    bq_title:'🎯 Kuiz Arah Baringan',
+    bq_desc:'Baringan ditunjukkan — ketik arah kompas yang betul!',
+    bq_label:'Baringan:',
+
+    s3_title:'📡 Mengambil Baringan ke Musang',
+    s3_intro:'Apabila anda mendengar pemancar musang, anda perlu mengambil baringan kompas yang tepat ke arah isyarat. Berikut adalah tekniknya:',
+    s3_step1:'Pegang kompas mendatar dan arahkan anak panah arah perjalanan ke arah sumber isyarat.',
+    s3_step2:'Putar gelang sehingga anak panah pandu selari dengan hujung merah jarum magnetik.',
+    s3_step3:'Baca baringan di mana garis indeks bersilang dengan skala darjah.',
+    s3_step4:'Rekodkan baringan dan kedudukan anda (rujukan grid) pada peta anda.',
+    s3_step5:'Pindah ke kedudukan baru sekurang-kurangnya 30–50 m dan ulang untuk triangulasi.',
+    s3_tip_title:'Tip Pro',s3_tip_desc:'Ambil 3 baringan dari kedudukan berbeza. Di mana garis bersilang pada peta itulah musangnya!',
+    s3_warn_title:'Berhati-hati',s3_warn_desc:'Objek logam (pagar, kereta, radio anda) boleh menyelewengkan jarum kompas. Jauhkan diri.',
+
+    s4b_title:'🛰️ GPS — Triangulasi dari Angkasa',
+    s4b_intro:'Prinsip triangulasi yang sama yang anda gunakan dengan kompas dan peta adalah apa yang GPS telefon anda lakukan — kecuali "pos pemerhatian" adalah satelit yang mengorbit 20,000 km di atas Bumi, dan bukannya baringan kompas, setiap satelit menyiarkan masa isyarat dihantar. Penerima anda mengukur berapa lama isyarat mengambil masa untuk tiba, menukarnya kepada jarak (jejari), dan melukis sfera di sekeliling setiap satelit. Di mana tiga atau lebih sfera bersilang adalah tepat di mana anda berada.',
+    s4b_anim_title:'🌍 Penetapan Satelit Langsung',
+    s4b_anim_hint:'Satelit mengorbit dan memancarkan bulatan jarak. Perhatikan zon penetapan mengecil apabila lebih banyak satelit digunakan. Klik untuk togol 3 / 4 satelit.',
+    s4b_readout_default:'Klik untuk togol bilangan satelit',
+    s4b_compare_title:'📡 Perlumbaan Musang vs GPS — Idea Sama',
+    s4b_col_fox:'🦊 Perlumbaan Musang',
+    s4b_col_gps:'🛰️ GPS',
+    s4b_r1_fox:'Anda berdiri di 2–3 kedudukan',
+    s4b_r1_gps:'3–4 satelit dalam orbit',
+    s4b_r2_fox:'Garis baringan kompas',
+    s4b_r2_gps:'Sfera jarak masa-penerbangan',
+    s4b_r3_fox:'Garis bersilang di peta',
+    s4b_r3_gps:'Sfera bersilang dalam ruang 3-D',
+    s4b_r4_fox:'Ketepatan: ~10–50 m',
+    s4b_r4_gps:'Ketepatan: 3–5 m (awam)',
+    s4b_r5_fox:'Alat: kompas + peta',
+    s4b_r5_gps:'Alat: jam atom + radio',
+    s4b_why_4:'',
+    s4b_why_4_strong:'Mengapa 4 satelit?',
+    s4b_why_4_body:'Tiga sfera menetapkan kedudukan X, Y, Z anda dalam ruang, tetapi penerima GPS mempunyai jam murah dengan ralat pemasaan kecil. Satelit ke-4 menyelesaikan ralat jam itu — menukar penetapan kasar kepada yang tepat.',
+    s4c_title:'📡 Rangkaian Selular — Idea Segitiga yang Sama',
+    s4c_intro:'Setiap menara telefon bimbit memancar isyarat radio dengan jejak liputan berbentuk bulatan. Apabila menara ditempatkan secara sekata, jejak bulatan mereka bertindih — sempadan antara liputan dua menara berada tepat di tengah-tengahnya. Susun enam menara di sekeliling satu menara pusat dan sempadan-sempadan tersebut membentuk <strong>heksagon sempurna</strong>. Itulah asal-usul grid sel sarang lebah — bukan pilihan reka bentuk, tetapi geometri tulen.',
+    s4c_canvas_title:'🗼 Klik Grid — Tonton Tiga Menara Bertriangulasi',
+    s4c_canvas_hint:'Klik mana-mana tempat pada grid sel. Tiga menara terdekat akan menghantar isyarat julat — tonton cincin mereka menumpu ke titik ketukan anda, sama seperti triangulasi cari-musang.',
+    s4c_readout_default:'Ketuk grid untuk mencari sumber isyarat',
+    s4c_readout_fix:'Kedudukan ditetapkan! 3 menara · prinsip yang sama seperti cari-musang.',
+    s4c_hex_title:'Mengapa Heksagon?',
+    s4c_hex_body:'Bulatan meninggalkan jurang. Segi empat membazirkan pertindihan. Heksagon menutup satah dengan pertindihan minimum sambil memastikan setiap titik diliputi secara saksama — justeru heksagon terbentuk secara semulajadi apabila kawasan liputan bulatan dipadatkan dengan cekap. Ini dipanggil tesselasi Voronoi.',
+    s4c_fox_title:'Cari-Musang = Lokasi Sel',
+    s4c_fox_body:'Telefon anda dicari oleh menara sel setiap beberapa saat menggunakan prinsip yang sama yang anda amalkan di sini — berbilang titik tetap, setiap satu menyumbang pengukuran jarak, semua bersilang pada satu lokasi. Pemancar musang hanyalah stesen pangkalan berkuasa sangat rendah.',
+    s4c_tri_title:'Trilaterasi vs Triangulasi',
+    s4c_tri_body:'Menara sel menggunakan <em>trilaterasi</em> — mengukur jarak (kekuatan isyarat) dari 3+ menara. Cari-musang menggunakan <em>triangulasi</em> — mengukur sudut (baringan kompas) dari 3+ kedudukan. Kedua-dua kaedah mengesan sasaran dengan menyilangkan 3+ garis atau bulatan rujukan.',
+
+    s4_title:'🦊 Triangulasi — Mencari Musang',
+    s4_intro:'Triangulasi menggunakan dua atau lebih baringan yang diambil dari kedudukan berbeza untuk menentukan lokasi musang. Tonton animasi di bawah — klik untuk jeda/sambung.',
+    s4_hint:'Klik kanvas untuk jeda / sambung animasi',
+    s4_h3:'Mengapa Ia Berfungsi',
+    s4_why:'Setiap garis baringan dilukis dari titik pemerhatiannya pada peta anda. Dua garis bersilang pada satu titik. Titik itu adalah tempat musang disembunyikan. Dengan tiga garis, persilangan memberikan anda "topi tersenget" — segitiga kecil yang menunjukkan ketepatan baringan anda.',
+    s4a_title:'🎯 Cuba Sendiri — Simulator Triangulasi',
+    s4a_intro:'Seret peluncur baringan dan lihat bagaimana bilangan pemerhati mengubah segalanya. Dengan satu pemerhati anda hanya mendapat arah. Dengan dua, garis bersilang — dan dengan tiga anda mendapat segitiga "topi tersenget" yang menunjukkan ketepatan penetapan anda. Bolehkah anda mengarahkan ketiga-tiga garis baringan ke musang tersembunyi 🦊?',
+    s4a_n1:'1 Pemerhati',
+    s4a_n2:'2 Pemerhati',
+    s4a_n3:'3 Pemerhati',
+    s4a_obs_a:'Pemerhati A',
+    s4a_obs_b:'Pemerhati B',
+    s4a_obs_c:'Pemerhati C',
+    s4a_compass_hint:'↑ U=000°  →T=090°  ↓S=180°  ←B=270°',
+    s4a_readout_start:'1 baringan = garis arah sahaja',
+    s4a_link_hint:'📋 Sudah dapat baringan? Rekodkan dalam log lapangan →',
+    s4a_link_btn:'Buka Templat Rujukan ↓',
+    s6_sim_link:'↑ Cuba baringan dalam Simulator Triangulasi dahulu',
+
+    s5_title:'📍 Rujukan Grid',
+    s5_intro:'Rujukan grid adalah koordinat yang menentukan lokasi tepat titik pada peta. Peta topografi Malaysia menggunakan grid Universal Transverse Mercator (UTM).',
+    s5_c1_title:'Easting (X)',s5_c1_desc:'Nombor garisan grid menegak di sebelah kiri titik anda, dibaca dahulu ("sepanjang koridor").',
+    s5_c2_title:'Northing (Y)',s5_c2_desc:'Nombor garisan grid mendatar di bawah titik anda, dibaca kedua ("kemudian naik tangga").',
+    s5_c3_title:'Rujukan 6-Angka',s5_c3_desc:'3 digit Easting + 3 digit Northing = ketepatan 100 m. cth., 374 582.',
+    s5_c4_title:'Rujukan 8-Angka',s5_c4_desc:'4 digit Easting + 4 digit Northing = ketepatan 10 m. Digunakan untuk pemburuan musang!',
+    s5_mnemonic:'Kaedah Ingatan',
+    s5_mnemonic_text:'"Sepanjang koridor, kemudian naik tangga" — Easting dahulu, Northing kemudian.',
+    scale_title:'📏 Kalkulator Skala Peta',
+    scale_desc:'Gunakan alat ini untuk menukar ukuran peta kepada jarak sebenar.',
+    scale_lbl_mm:'Jarak peta (mm): ',
+    scale_lbl_scale:'Skala peta:',
+
+    s6_title:'📋 Templat Rujukan',
+    s6_intro:'Gunakan templat ini di lapangan untuk merekodkan baringan dan data triangulasi anda dengan tepat.',
+    tab_bearing:'Log Baringan',tab_tri:'Triangulasi',tab_grid:'Rujukan Grid',
+    tbl_time:'Masa',tbl_pos:'Kedudukan (Rujukan Grid)',tbl_bearing:'Baringan (°)',tbl_signal:'Kekuatan Isyarat',
+    tbl_obs:'Pemerhati',tbl_grid:'Rujukan Grid',tbl_note:'Nota',
+    tbl_obs1:'Pemerhati 1',tbl_obs2:'Pemerhati 2',tbl_obs3:'Pemerhati 3',
+    tbl_feature:'Ciri',tbl_easting:'Easting',tbl_northing:'Northing',tbl_elev:'Ketinggian (m)',
+    tbl_start:'Titik Mula',tbl_fox:'Lokasi Musang',tbl_end:'Titik Akhir',
+
+    s7_title:'🌟 Fakta Menarik Peta',
+    s7_intro:'Ketik mana-mana kad untuk mendedahkan jawapan — uji diri anda dengan permata ilmu peta ini!',
+    f1_q:'Seberapa tebal garis kontur yang dicetak berbanding tanah sebenar?',
+    f1_a:'Garis kontur 0.1 mm pada peta 1:50,000 mewakili jalur tanah selebar 5 meter — lebih kurang lebar sebuah rumah kecil!',
+    f2_q:'Negara manakah yang mencipta peta topografi moden pertama?',
+    f2_a:'Perancis! Carte de Cassini (1789) ialah tinjauan topografi seluruh negara pertama di dunia. Ia mengambil empat generasi keluarga Cassini untuk disiapkan.',
+    f3_q:'Apakah titik tertinggi pada peta topografi Malaysia?',
+    f3_a:'Gunung Kinabalu di Sabah pada 4,095 m di atas paras laut — puncak tertinggi di Asia Tenggara di luar banjaran Himalaya.',
+    f4_q:'Mengapa garis kontur tidak pernah lurus?',
+    f4_a:'Kerana permukaan Bumi tidak pernah rata sempurna! Walaupun dataran yang kelihatan rata mempunyai gelombang halus. Kontur lurus sempurna hanya wujud pada satah matematik yang ideal.',
+    f5_q:'Seberapa tepat GPS berbanding rujukan grid peta kertas?',
+    f5_a:'GPS awam tepat hingga 3–5 m. Rujukan grid 8-angka memberi ketepatan 10 m — sangat hampir! Tetapi GPS memerlukan bateri; peta tidak pernah mati.',
+    fact_hint:'👆 Ketik untuk dedahkan',
+
+    s8_title:'✅ Kuiz Semak Pantas',
+    s8_intro:'Uji pengetahuan membaca peta anda — 6 soalan untuk menyemak pemahaman anda sebelum ke lapangan!',
+
+    rae_divider_title:'⚡ Menyelami Lebih Dalam — Kandungan Lanjutan',
+    rae_divider_desc:'Bahagian di bawah meliputi topik lanjutan untuk calon Peperiksaan Amatur Radio (PAR) dan sesiapa yang ingin mendalami lebih jauh. Togol untuk tunjukkan atau sembunyikan.',
+    rae_btn_show:'▼ Tunjukkan Kandungan Lanjutan',
+    rae_btn_hide:'▲ Sembunyikan Kandungan Lanjutan',
+
+    s9_title:'🧲 Tiga Utara &amp; Declination Magnetik',
+    s9_intro:'Peta mempunyai tiga arah "Utara" yang berbeza, dan mengelirukan mereka menyebabkan ralat navigasi. Memahami perbezaannya adalah penting untuk pemburuan musang yang tepat dan soalan navigasi PAR.',
+    s9_tn_title:'Utara Sejati (TN)',s9_tn_desc:'Kutub Utara geografi — di mana paksi Bumi bertemu dengan permukaan. Semua garis longitud menumpu di sini. Peta diselaraskan kepada Utara Sejati.',
+    s9_mn_title:'Utara Magnetik (MN)',s9_mn_desc:'Tempat jarum kompas anda menunjuk. Kutub magnetik kini berada di Artik Kanada, dan ia hanyut sekitar 55 km setiap tahun!',
+    s9_gn_title:'Utara Grid (GN)',s9_gn_desc:'Arah garisan grid UTM menegak pada peta anda. Sangat hampir dengan Utara Sejati tetapi berbeza sedikit mengikut kedudukan dalam zon UTM.',
+    s9_decl_title:'Declination Magnetik',
+    s9_decl_desc:'Declination magnetik (atau variasi magnetik) ialah sudut antara Utara Sejati dan Utara Magnetik di lokasi anda. Di Semenanjung Malaysia, declination adalah kira-kira <strong style="color:var(--gold)">0.7° Timur</strong> (2024) — sangat kecil tetapi penting untuk kerja ketepatan.',
+    s9_formula:'Baringan Sejati = Baringan Magnetik + Declination (Timur = tambah, Barat = tolak)<br>Malaysia: Baringan Sejati ≈ Baringan Magnetik + 0.7°',
+    s9_practical:'Untuk pemburuan musang pada jarak pertandingan (&lt;5 km), 0.7° menimbulkan ralat hanya ~60 m — biasanya boleh diterima. Untuk tujuan peperiksaan PAR, sentiasa gunakan formula pembetulan.',
+    s9_variation:'Declination berubah perlahan dari masa ke masa (variasi sekular). Sentiasa semak tarikh penerbitan peta dan declination yang dinyatakan — peta lama boleh mempunyai ralat yang ketara.',
+
+    s10_title:'🗺️ Sistem Grid UTM untuk Malaysia',
+    s10_intro:'Sistem Universal Transverse Mercator (UTM) membahagikan Bumi kepada 60 zon, setiap satu selebar 6° longitud. Malaysia merentasi empat zon UTM, yang mempengaruhi cara rujukan grid ditulis.',
+    s10_z47_title:'Zon 47N',s10_z47_desc:'Barat laut Semenanjung Malaysia (Perlis, Kedah, U. Perak). Lebih kurang 96°T–102°T.',
+    s10_z48_title:'Zon 48N',s10_z48_desc:'Kebanyakan Semenanjung Malaysia termasuk KL, Johor, Pahang. 102°T–108°T. Paling biasa.',
+    s10_z49_title:'Zon 49N/50N',s10_z49_desc:'Sarawak (49N) dan Sabah (50N). Mesti nyatakan zon semasa memberi rujukan grid di Borneo.',
+    s10_coord_title:'Ketepatan Koordinat',
+    s10_col_digits:'Digit Setiap',s10_col_prec:'Ketepatan',s10_col_use:'Kes Penggunaan',
+    s10_r1d:'2+2 (4-angka)',s10_r1u:'Rujukan kawasan umum',
+    s10_r2d:'3+3 (6-angka)',s10_r2u:'Rujukan peta standard',
+    s10_r3d:'4+4 (8-angka)',s10_r3u:'Pemburuan musang / orienteering',
+    s10_r4d:'5+5 (10-angka)',s10_r4u:'Ukur / kejuruteraan',
+    s10_tip:'Sentiasa nyatakan zon UTM (cth., "48N 374853 0384721") apabila berkongsi rujukan grid merentasi sempadan zon atau dengan orang yang tidak biasa dengan kawasan anda.',
+
+    s11_title:'🎯 Ketepatan Triangulasi &amp; "Topi Tersenget"',
+    s11_intro:'Dalam amalan, tiga garis baringan jarang bertemu pada satu titik. Ia membentuk segitiga kecil yang dipanggil "topi tersenget." Memahami puncanya dan meminimumkannya adalah kunci kepada pemburuan musang yang tepat.',
+    s11_sources_title:'Punca Ralat',
+    s11_e1_title:'Laluan Isyarat',s11_e1_desc:'Isyarat yang dipantul atau dibiaskan tiba dari arah yang salah. Paling biasa di kawasan bandar/hutan.',
+    s11_e2_title:'Anomali Magnetik Tempatan',s11_e2_desc:'Batu kaya besi, paip tertanam atau objek logam berdekatan menyelewengkan jarum kompas.',
+    s11_e3_title:'Ralat Pemetaan',s11_e3_desc:'Ralat baringan 1° pada jarak 1 km = ralat kedudukan 17 m. Kesilapan protrak kecil penting!',
+    s11_e4_title:'Sudut Persilangan',s11_e4_desc:'Baringan yang bersilang pada sudut cetek (<30°) mewujudkan topi tersenget yang memanjang dengan ketidakpastian kedudukan yang besar.',
+    s11_gdop_title:'Pencairan Geometri Ketepatan (GDOP)',
+    s11_gdop_desc:'GDOP menerangkan bagaimana geometri kedudukan pemerhatian anda mempengaruhi ketepatan. Geometri ideal menempatkan pemerhati pada 90° antara satu sama lain relatif kepada musang — ini meminimumkan kawasan topi tersenget.',
+    s11_col_angle:'Sudut Persilangan',s11_col_gdop:'Faktor GDOP',s11_col_result:'Ketidakpastian Kedudukan',
+    s11_r1:'Minimum — geometri terbaik',s11_r2:'Baik — boleh diterima',s11_r3:'Lemah — elak jika boleh',s11_r4:'Sangat lemah — segitiga besar',
+    s11_reduce_title:'Cara Mengurangkan Topi Tersenget',
+    s11_red1:'Ambil lebih banyak baringan (3–4) dari kedudukan yang baik pada geometri ≥90°',
+    s11_red2:'Jauhkan diri dari objek logam dan tanah kaya besi',
+    s11_red3:'Gunakan antena berarah (Yagi) untuk titik nol yang lebih tajam',
+    s11_red4:'Musang kemungkinan besar berada di dalam atau di sentroid segitiga topi tersenget',
+    s11_red5:'Gunakan kekuatan isyarat sebagai titik data ketiga untuk menimbang baringan',
+
+    s12_title:'📚 Sudut Peperiksaan PAR — Peta &amp; Navigasi',
+    s12_intro:'Ini adalah topik bacaan peta dan navigasi yang diliputi dalam Peperiksaan Amatur Radio Malaysia. Pelajari ini untuk kertas teknikal.',
+    s12_topics_title:'Topik Utama',
+    s12_t1:'Declination magnetik dan formula pembetulan (Timur = tambah, Barat = tolak)',
+    s12_t2:'Perbezaan antara Utara Sejati, Magnetik dan Grid',
+    s12_t3:'Sistem grid UTM dan nombor zon Malaysia (47N–50N)',
+    s12_t4:'Rujukan grid 6-angka dan 8-angka — membaca dan memplot',
+    s12_t5:'Prinsip triangulasi dan punca ralat baringan',
+    s12_t6:'Penukaran skala peta — jarak peta ke jarak lapangan',
+    s12_qcodes_title:'Q-Kod Navigasi',
+    s12_qcodes_intro:'Q-kod tertentu digunakan khusus untuk mencari arah radio dan navigasi:',
+    s12_col_code:'Kod',s12_col_meaning:'Maksud (sebagai pernyataan)',
+    s12_qra:'Nama stesen saya ialah ___',
+    s12_qrb:'Jarak anggaran antara stesen kita ialah ___ km',
+    s12_qte:'Baringan sejati anda dari stesen saya ialah ___°',
+    s12_qtf:'Kedudukan anda mengikut baringan yang diambil oleh stesen DF ialah ___',
+    s12_qth:'Lokasi saya ialah ___ (bandar / rujukan grid)',
+    s12_quj:'Baringan sejati stesen anda dari stesen saya ialah ___° (resiprokal QTE)',
+    s12_sample_title:'Soalan Sampel PAR',
+    s12_sq1:'S: Jika kompas anda membaca 135° dan declination magnetik ialah 1°B, apakah baringan sejati?',
+    s12_sq1_a:'J: Sejati = Magnetik − 1° = <strong style="color:var(--teal)">134°</strong> (declination Barat bermakna tolak)',
+    s12_sq2:'S: Apakah zon UTM yang meliputi Kuala Lumpur?',
+    s12_sq2_a:'J: <strong style="color:var(--teal)">Zon 48N</strong> — KL terletak pada kira-kira 101.7°T, dalam jalur zon 48N 102°T–108°T.',
+    s12_sq3:'S: Apakah sudut antara garis baringan yang memberikan topi tersenget terkecil?',
+    s12_sq3_a:'J: <strong style="color:var(--teal)">90°</strong> — baringan berserenjang memberikan ketepatan geometri terbaik (GDOP = 1.0×).',
+
+    cta_title:'Bersedia untuk Memburu? 🦊',
+    cta_desc:'Anda kini boleh membaca peta topo, mengambil baringan, dan mentriangulasi kedudukan musang. Seterusnya — bina antena pencari arah anda!',
+    cta_btn:'Modul 3: Antena Yagi →',
+    nav_prev:'← Modul 1: Kod Morse',
+    nav_next:'Modul 3: Antena Yagi →',
+    footer_text:'UMPSA STEM Lab · Bengkel Radio Foxhunting · JOTA/JOTI 2026',
+    s1wm_title:'🌍 Bumi Sekilas — Utara, Selatan, Timur, Barat',
+    s1wm_intro:'Sebelum membaca mana-mana peta, anda perlu tahu hala mana yang "atas". Mengikut konvensyen, <strong>Utara</strong> sentiasa berada di atas, <strong>Selatan</strong> di bawah, <strong>Timur</strong> di kanan, <strong>Barat</strong> di kiri. Khatulistiwa membahagi Bumi kepada dua hemisfera — Malaysia terletak betul-betul di utaranya, di Hemisfera Utara.',
+    s1wm_readout:'📍 Malaysia: 4°U, 109°T — Hemisfera Utara, timur dari Meridian Perdana',
+    s1b_title:'🌐 Peta Hidup — Koordinat &amp; Kontur',
+    s1b_intro:'Terokai bagaimana latitud dan longitud menentukan lokasi mana-mana titik di Bumi, kemudian tonton garis kontur mendedahkan bentuk tersembunyi muka bumi — dua kemahiran yang sama anda gunakan setiap kali membaca peta topografi.',
+    s1b_ll_title:'🌍 Latitud &amp; Longitud',
+    s1b_ll_intro:'Garis latitud mengalir dari timur ke barat dan mengukur sejauh mana utara atau selatan anda. Garis longitud mengalir dari utara ke selatan dan mengukur timur atau barat. Gerakkan tetikus anda di atas peta untuk membaca sebarang koordinat.',
+    s1b_ll_hover:'Layang tetikus di atas peta untuk membaca koordinat',
+    s1b_ct_title:'🏔️ Pemapar Terrain Kontur',
+    s1b_ct_intro:'Warna menunjukkan ketinggian — biru = air, hijau = tanah rendah, coklat = tanah tinggi, putih = puncak. Setiap garis kontur putih menghubungkan ketinggian yang sama. Layang untuk baca ketinggian; klik untuk tukar paparan.',
+    s1b_view_heat:'Paparan: Warna Terrain — Klik untuk tukar',
+    s1b_view_cont:'Paparan: Garis Kontur — Klik untuk tukar',
+    s1b_view_both:'Paparan: Gabungan — Klik untuk tukar',
+
+    /* quiz BM */
+    q1_text:'Apakah yang ditunjukkan oleh garis kontur yang berdekatan pada peta topografi?',
+    q1_a:'Tanah rata',q1_b:'Cerun curam',q1_c:'Air dalam',q1_d:'Tumbuhan padat',
+    q1_exp:'Betul! Garis kontur yang rapat bermakna ketinggian berubah dengan cepat dalam jarak mendatar yang pendek — cerun curam.',
+    q2_text:'Baringan kompas 270° menunjukkan arah manakah?',
+    q2_a:'Utara',q2_b:'Selatan',q2_c:'Timur',q2_d:'Barat',
+    q2_exp:'Betul! 0°/360° = Utara, 90° = Timur, 180° = Selatan, 270° = Barat.',
+    q3_text:'Apakah sudut persilangan antara garis baringan yang memberikan ketepatan triangulasi terbaik?',
+    q3_a:'30°',q3_b:'45°',q3_c:'90°',q3_d:'180°',
+    q3_exp:'Betul! Garis yang bersilang pada 90° memberikan topi tersenget terkecil — ketepatan geometri terbaik (GDOP = 1.0×).',
+    q4_text:'Koordinat manakah yang dibaca DAHULU apabila memberi rujukan grid?',
+    q4_a:'Northing',q4_b:'Ketinggian',q4_c:'Easting',q4_d:'Declination',
+    q4_exp:'Betul! Easting dahulu, Northing kemudian — "sepanjang koridor, kemudian naik tangga."',
+    q5_text:'Declination magnetik ialah sudut antara dua arah manakah?',
+    q5_a:'Utara Sejati dan Utara Grid',q5_b:'Utara Magnetik dan Utara Sejati',q5_c:'Utara Grid dan Utara Magnetik',q5_d:'Timur dan Barat',
+    q5_exp:'Betul! Declination magnetik ialah sudut antara Utara Magnetik (jarum kompas) dan Utara Sejati (geografi).',
+    q6_text:'Kaedah ingatan "sepanjang koridor" mengingatkan anda untuk membaca ___ dahulu.',
+    q6_a:'Northing',q6_b:'Ketinggian',q6_c:'Latitud',q6_d:'Easting',
+    q6_exp:'Betul! "Sepanjang koridor" = Easting (mendatar) dahulu; "naik tangga" = Northing (menegak) kemudian.',
+    q_correct:'✅ Betul! ',q_wrong:'❌ Hampir. ',q_score:'Markah: ',
+  }
+};
+
+/* ── LANGUAGE SYSTEM ── */
+var curLang = 'en';
+function setLang(l){
+  curLang = l;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k = el.getAttribute('data-i18n');
+    if(TR[l][k] !== undefined) el.innerHTML = TR[l][k];
+  });
+  var btnEN=document.getElementById('btnEN'), btnBM=document.getElementById('btnBM');
+  if(btnEN) btnEN.classList.toggle('active', l==='en');
+  if(btnBM) btnBM.classList.toggle('active', l==='bm');
+  /* update RAE toggle button */
+  var raeBtn = document.getElementById('raeToggleBtn');
+  if(raeBtn){
+    raeBtn.textContent = raeVisible ? TR[l].rae_btn_hide : TR[l].rae_btn_show;
+  }
+  /* rebuild quiz labels */
+  buildQuiz();
+  /* update bearing quiz direction labels */
+  renderBQGrid();
+  /* update scale label */
+  calcScale();
+}
+function toggleLang(){ setLang(curLang==='en'?'bm':'en'); }
+
+/* ── RAE TOGGLE ── */
+var raeVisible = false;
+function toggleRAE(){
+  raeVisible = !raeVisible;
+  document.querySelectorAll('.rae-section').forEach(function(s){
+    s.classList.toggle('visible', raeVisible);
+  });
+  document.getElementById('raeToggleBtn').textContent =
+    raeVisible ? TR[curLang].rae_btn_hide : TR[curLang].rae_btn_show;
+}
+
+/* ── MODULES DROPDOWN ── */
+document.getElementById('stepsToggle').addEventListener('click', function(){
+  document.getElementById('stepsMenu').classList.toggle('open');
+});
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.steps-dropdown'))
+    document.getElementById('stepsMenu').classList.remove('open');
+});
+
+/* ── TAB SWITCHING ── */
+function switchTab(id, btn){
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+/* jump from simulator → reference templates, opening the Triangulation tab */
+function simGoToTemplates(){
+  var triBtn = document.querySelector('[onclick="switchTab(\'t2\',this)"]');
+  if(triBtn) switchTab('t2', triBtn);
+  var el = document.getElementById('templates-section');
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ── FUN FACTS ── */
+function toggleFact(card){
+  card.classList.toggle('open');
+}
+
+/* ── SCALE CALCULATOR ── */
+function calcScale(){
+  var mm = parseInt(document.getElementById('mmSlider').value);
+  var scale = parseInt(document.getElementById('scaleSelect').value);
+  document.getElementById('mmVal').textContent = mm;
+  var metres = (mm * scale) / 1000;
+  var km = (metres/1000).toFixed(2);
+  document.getElementById('scaleResult').textContent =
+    mm + ' mm on 1:' + scale.toLocaleString() + ' = ' + metres.toLocaleString() + ' m (' + km + ' km)';
+}
+calcScale();
+
+/* ── BEARING DIRECTION QUIZ ── */
+var bqDirs_en = ['N','NE','E','SE','S','SW','W','NW'];
+var bqDirs_bm = ['U','TL','T','TG','S','BD','B','BL'];
+var bqLabels_en = ['North','North-East','East','South-East','South','South-West','West','North-West'];
+var bqLabels_bm = ['Utara','Timur Laut','Timur','Tenggara','Selatan','Barat Daya','Barat','Barat Laut'];
+var bqAngles = [0,45,90,135,180,225,270,315];
+var bqScore = 0, bqTotal = 0;
+var bqCurrentIdx = 0, bqAnswered = false;
+
+function newBQQuestion(){
+  bqCurrentIdx = Math.floor(Math.random()*8);
+  var ang = bqAngles[bqCurrentIdx];
+  document.getElementById('bqAngle').textContent =
+    (ang < 10 ? '00' : ang < 100 ? '0' : '') + ang + '°';
+  document.getElementById('bqFeedback').textContent = '';
+  bqAnswered = false;
+  renderBQGrid();
+}
+
+function renderBQGrid(){
+  var grid = document.getElementById('bqGrid');
+  grid.innerHTML = '';
+  var dirs = curLang==='bm' ? bqDirs_bm : bqDirs_en;
+  dirs.forEach(function(d,i){
+    var btn = document.createElement('button');
+    btn.className = 'bq-btn';
+    btn.textContent = d;
+    btn.onclick = function(){ checkBQ(i, btn); };
+    grid.appendChild(btn);
+  });
+}
+
+function checkBQ(idx, btn){
+  if(bqAnswered) return;
+  bqAnswered = true;
+  bqTotal++;
+  var labels = curLang==='bm' ? bqLabels_bm : bqLabels_en;
+  var correct = (idx === bqCurrentIdx);
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if(!correct){
+    document.querySelectorAll('#bqGrid .bq-btn')[bqCurrentIdx].classList.add('correct');
+  }
+  if(correct) bqScore++;
+  document.getElementById('bqFeedback').textContent =
+    correct ? (TR[curLang].q_correct + labels[bqCurrentIdx]) : (TR[curLang].q_wrong + labels[bqCurrentIdx]);
+  document.getElementById('bqScoreDisp').textContent =
+    (curLang==='bm'?'Markah':'Score') + ': ' + bqScore + ' / ' + bqTotal;
+  setTimeout(newBQQuestion, 1400);
+}
+
+newBQQuestion();
+
+/* ── MCQ QUIZ ── */
+var mcqAnswered = [];
+var mcqCorrect = 0;
+var mcqTotal = 6;
+
+function buildQuiz(){
+  var l = curLang;
+  var qs = [
+    {text:TR[l].q1_text, opts:[TR[l].q1_a,TR[l].q1_b,TR[l].q1_c,TR[l].q1_d], ans:1, exp:TR[l].q1_exp},
+    {text:TR[l].q2_text, opts:[TR[l].q2_a,TR[l].q2_b,TR[l].q2_c,TR[l].q2_d], ans:3, exp:TR[l].q2_exp},
+    {text:TR[l].q3_text, opts:[TR[l].q3_a,TR[l].q3_b,TR[l].q3_c,TR[l].q3_d], ans:2, exp:TR[l].q3_exp},
+    {text:TR[l].q4_text, opts:[TR[l].q4_a,TR[l].q4_b,TR[l].q4_c,TR[l].q4_d], ans:2, exp:TR[l].q4_exp},
+    {text:TR[l].q5_text, opts:[TR[l].q5_a,TR[l].q5_b,TR[l].q5_c,TR[l].q5_d], ans:1, exp:TR[l].q5_exp},
+    {text:TR[l].q6_text, opts:[TR[l].q6_a,TR[l].q6_b,TR[l].q6_c,TR[l].q6_d], ans:3, exp:TR[l].q6_exp},
+  ];
+  var wrap = document.getElementById('quizWrap');
+  wrap.innerHTML = '';
+  mcqAnswered = new Array(mcqTotal).fill(false);
+  mcqCorrect = 0;
+  document.getElementById('quizScore').style.display = 'none';
+
+  qs.forEach(function(q,qi){
+    var block = document.createElement('div'); block.className='q-block';
+    var qtxt = document.createElement('div'); qtxt.className='q-text';
+    qtxt.textContent = (qi+1)+'. '+q.text;
+    block.appendChild(qtxt);
+    var opts = document.createElement('div'); opts.className='q-opts';
+    q.opts.forEach(function(o,oi){
+      var btn = document.createElement('button'); btn.className='q-opt';
+      btn.textContent = o;
+      btn.onclick = function(){ answerMCQ(qi,oi,q.ans,block,oi===q.ans,q.exp); };
+      opts.appendChild(btn);
+    });
+    block.appendChild(opts);
+    var exp = document.createElement('div'); exp.className='q-exp'; exp.id='qexp'+qi;
+    block.appendChild(exp);
+    wrap.appendChild(block);
+  });
+}
+
+function answerMCQ(qi, oi, ans, block, correct, exp){
+  if(mcqAnswered[qi]) return;
+  mcqAnswered[qi] = true;
+  var btns = block.querySelectorAll('.q-opt');
+  btns.forEach(function(b,i){
+    b.disabled = true;
+    if(i===ans) b.classList.add('correct');
+    else if(i===oi && !correct) b.classList.add('wrong');
+  });
+  var expEl = document.getElementById('qexp'+qi);
+  expEl.textContent = (correct?TR[curLang].q_correct:TR[curLang].q_wrong) + exp;
+  if(correct) mcqCorrect++;
+  if(mcqAnswered.every(Boolean)){
+    var sc = document.getElementById('quizScore');
+    sc.style.display = 'block';
+    sc.textContent = TR[curLang].q_score + mcqCorrect + ' / ' + mcqTotal;
+  }
+}
+
+buildQuiz();
+
+/* ── WORLD ORIENTATION MAP ── */
+(function(){
+  var can = document.getElementById('worldMapCanvas');
+  if(!can) return;
+  var ctx = can.getContext('2d');
+  var W = 960, H = 440;
+  var dpr = window.devicePixelRatio || 1;
+  can.width = W * dpr;
+  can.height = H * dpr;
+  can.style.maxWidth = '100%';
+  can.style.height = 'auto';
+  ctx.scale(dpr, dpr);
+
+  function proj(lon, lat) {
+    return { x: (lon + 180) / 360 * W, y: (90 - lat) / 180 * H };
+  }
+
+  var tt = 0;
+
+  var NORTH_AMERICA = [
+    [-168,71],[-140,70],[-132,58],[-130,54],[-126,50],
+    [-124,46],[-124,40],[-122,37],[-118,34],[-117,30],
+    [-110,23],[-105,22],[-96,16],[-90,15],
+    [-83,10],[-78,8],
+    [-75,10],[-64,11],
+    [-74,20],[-77,20],[-82,23],[-84,22],
+    [-81,25],[-82,29],
+    [-80,32],[-75,35],[-74,40],[-70,42],[-66,45],
+    [-60,46],[-52,47],
+    [-55,53],[-58,60],
+    [-64,62],[-70,63],[-78,62],[-83,62],
+    [-85,68],[-100,73],[-120,73],[-140,70],[-155,70],[-168,71]
+  ];
+
+  var SOUTH_AMERICA = [
+    [-78,8],[-73,11],[-63,11],[-60,7],
+    [-52,4],[-50,1],[-44,3],
+    [-37,-4],[-35,-8],[-38,-13],[-40,-21],[-43,-23],
+    [-48,-27],[-52,-33],
+    [-57,-35],
+    [-58,-38],[-62,-43],[-65,-47],
+    [-67,-46],[-66,-52],[-68,-55],
+    [-71,-54],[-74,-54],
+    [-75,-50],[-74,-42],[-72,-33],[-71,-28],[-70,-18],
+    [-75,-10],[-80,-2],[-80,1],
+    [-77,5],[-78,8]
+  ];
+
+  var EUROPE = [
+    [-9.5,37],[-9,38],[-9,39],[-8.5,42],[-8.5,43],
+    [-8,44],[-4,48],[-2,49],
+    [-4.5,48],[-5,48],[-4,47],
+    [-2,47],[1,46],[2,48],[2,50],[2,51],
+    [3,51],[5,53],[7,53],
+    [8,55],[8,57],[10,57],[10,58],
+    [5,57],[5,60],[7,62],[14,65],[15,68],[18,70],[20,71],[25,71],[28,71],
+    [28,69],[26,65],[25,60],[23,59],[21,57],
+    [14,54],[10,55],
+    [14,51],[14,48],[16,48],[18,48],[18,47],
+    [20,46],[22,45],[24,45],[27,45],[28,46],[30,44],[30,43],
+    [29,41],
+    [26,42],[24,38],[22,37],[23,37],[25,37],[27,37],
+    [26,37],
+    [18,40],[16,40],[15,38],[13,38],[12,38],[10,44],
+    [12,37],[15,37],
+    [14,41],[12,44],[9,44],[7,44],[5,44],[3,43],[2,43],
+    [7,43],[8,44],
+    [3,43],[1,41],[0,39],[-2,37],[-4,37],[-5.5,36],[-6,37],
+    [-9,37],[-9.5,37]
+  ];
+
+  var AFRICA = [
+    [-5.5,36],[-2,35],[0,34],[5,37],[10,37],
+    [13,32],[25,31],[32,31],[34,30],[34,28],
+    [35,28],[36,22],[37,18],[38,14],
+    [42,12],[43,12],[44,11],[46,11],[50,11],[51,11],
+    [50,8],[46,3],[42,2],[41,-2],[40,-6],
+    [40,-10],[38,-15],[36,-18],[35,-22],
+    [33,-27],[31,-30],[26,-34],[20,-35],
+    [18,-34],[16,-30],[14,-23],[13,-17],
+    [12,-15],[9,-4],[9,2],[9,4],
+    [2,5],[1,7],[-1,6],[-3,5],[-5,5],[-8,5],
+    [-11,7],[-13,10],[-15,12],
+    [-17,15],[-17,20],
+    [-14,28],[-10,32],[-8,35],[-5.5,36]
+  ];
+
+  var ASIA = [
+    [26,37],[29,37],[36,37],[36,36],
+    [36,34],[35,33],[35,32],[34,31],
+    [34,30],[34,28],[38,14],
+    [43,12],[43,16],[45,12],[46,14],[50,19],[55,24],
+    [58,22],[60,22],[58,23],[56,24],[55,24],
+    [63,23],[66,24],[63,25],
+    [68,23],[72,20],[73,15],[77,8],[80,8],
+    [81,8],[82,6],[81,8],
+    [80,14],[80,20],[87,22],[89,22],
+    [90,22],[91,22],[92,21],
+    [94,20],[98,16],[100,8],[102,4],[103,1],[104,1],
+    [104,1],[104,5],[107,11],[109,15],[108,18],[108,21],
+    [110,18],[112,22],[114,22],[116,24],[120,26],
+    [121,30],[122,32],[122,38],[122,40],[121,41],
+    [125,34],[128,34],[130,37],[129,35],[126,34],
+    [126,43],[130,42],[133,46],[137,46],
+    [142,48],[142,54],[143,50],
+    [163,60],[163,56],[160,52],[152,50],
+    [170,64],[180,66],[-170,66],[-168,65],
+    [160,62],[140,55],[130,50],[110,53],[80,54],[60,54],
+    [50,45],[42,43],[41,42],[38,42],
+    [36,42],[30,43],[28,41],[26,41],[26,37]
+  ];
+
+  var AUSTRALIA = [
+    [130,-12],[132,-12],
+    [136,-12],[138,-13],
+    [145,-11],[146,-14],
+    [148,-18],[151,-24],[152,-27],[153,-28],
+    [151,-33],[150,-36],
+    [148,-38],[146,-38],[145,-38],[143,-38],
+    [140,-37],[138,-35],[136,-35],[134,-33],[132,-33],
+    [130,-32],[126,-34],[122,-34],[118,-34],[116,-32],
+    [114,-22],[114,-21],[120,-20],[122,-18],[124,-16],[125,-14],
+    [128,-14],[130,-12]
+  ];
+
+  var GREENLAND = [
+    [-44,83],[-28,83],[-18,77],[-18,72],[-22,68],[-27,65],
+    [-32,65],[-42,67],[-48,70],[-52,70],[-54,67],[-52,65],
+    [-48,64],[-44,64],[-42,66],[-44,69],[-48,72],[-50,76],
+    [-46,80],[-44,83]
+  ];
+
+  var BRITISH_ISLES = [
+    [-5,50],[-3,50],[-2,51],[0,51],[0,53],[-2,54],[-3,55],
+    [-2,56],[-1,57],[0,58],[-2,58],[-3,58],[-5,58],[-5,57],
+    [-4,56],[-4,55],[-5,55],[-5,54],[-4,54],[-4,52],[-5,51],[-5,50],
+    [-7,52],[-8,54],[-7,55],[-6,55],[-5,54],[-6,53],[-7,53],[-8,52],[-7,52]
+  ];
+
+  var MADAGASCAR = [
+    [44,-12],[47,-12],[50,-16],[50,-20],[48,-24],[46,-25],[44,-22],[44,-18],[44,-12]
+  ];
+
+  var JAPAN = [
+    [130,31],[131,33],[132,33],[133,34],[134,35],[136,36],[137,37],
+    [138,38],[140,40],[141,41],[141,42],[140,44],[141,45],[143,44],
+    [144,43],[142,41],[140,38],[138,36],[136,35],[134,34],[132,33],
+    [131,32],[130,31]
+  ];
+
+  var NEW_ZEALAND = [
+    [170,-34],[172,-34],[174,-36],[175,-37],[178,-38],[178,-41],
+    [176,-42],[174,-41],[173,-40],[172,-38],[170,-36],[170,-34],
+    [168,-46],[170,-46],[172,-44],[173,-43],[172,-42],[170,-44],[168,-46]
+  ];
+
+  var BORNEO = [
+    [108,1],[109,2],[115,4],[117,5],[119,5],[119,4],[118,2],[116,0],[114,0],
+    [112,1],[110,1],[108,1]
+  ];
+
+  var SUMATRA = [
+    [95,5],[97,5],[100,4],[104,2],[106,0],[106,-2],[104,-4],[102,-4],
+    [100,-2],[99,0],[98,3],[96,4],[95,5]
+  ];
+
+  var PHILIPPINES = [
+    [122,18],[124,17],[126,8],[126,6],[124,8],[122,11],[120,14],[118,11],
+    [120,8],[122,8],[124,6],[120,6],[118,8],[116,10],[118,14],[120,18],[122,18]
+  ];
+
+  var CUBA = [
+    [-84,23],[-82,22],[-80,22],[-77,22],[-75,20],[-75,22],[-77,22],
+    [-80,23],[-82,23],[-84,23]
+  ];
+
+  var ICELAND = [
+    [-24,64],[-18,63],[-14,64],[-13,66],[-16,66],[-20,65],[-24,64]
+  ];
+
+  var ANTARCTICA = [
+    [-180,-68],[180,-68],[180,-90],[-180,-90],[-180,-68]
+  ];
+
+  var landPolygons = [
+    { pts: NORTH_AMERICA, color: '#1c4d35' },
+    { pts: SOUTH_AMERICA, color: '#17422c' },
+    { pts: EUROPE,        color: '#253e6a' },
+    { pts: AFRICA,        color: '#4a3015' },
+    { pts: ASIA,          color: '#1d5040' },
+    { pts: AUSTRALIA,     color: '#4a3822' },
+    { pts: GREENLAND,     color: '#2a4458' },
+    { pts: BRITISH_ISLES, color: '#253e6a' },
+    { pts: MADAGASCAR,    color: '#4a3015' },
+    { pts: JAPAN,         color: '#1d5040' },
+    { pts: NEW_ZEALAND,   color: '#4a3822' },
+    { pts: BORNEO,        color: '#1d5040' },
+    { pts: SUMATRA,       color: '#1d5040' },
+    { pts: PHILIPPINES,   color: '#1d5040' },
+    { pts: CUBA,          color: '#1c4d35' },
+    { pts: ICELAND,       color: '#2a4458' }
+  ];
+
+  function drawPolygon(pts, fillColor) {
+    if(!pts || pts.length < 2) return;
+    ctx.beginPath();
+    var p = proj(pts[0][0], pts[0][1]);
+    ctx.moveTo(p.x, p.y);
+    for(var i = 1; i < pts.length; i++) {
+      p = proj(pts[i][0], pts[i][1]);
+      ctx.lineTo(p.x, p.y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(120,200,180,0.35)';
+    ctx.lineWidth = 0.7;
+    ctx.stroke();
+  }
+
+  function drawGrid() {
+    ctx.save();
+    // 30° grid
+    ctx.strokeStyle = 'rgba(2,173,165,0.07)';
+    ctx.lineWidth = 0.5;
+    for(var lon = -180; lon <= 180; lon += 30) {
+      var x = proj(lon, 0).x;
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for(var lat = -90; lat <= 90; lat += 30) {
+      var y = proj(0, lat).y;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+    // Equator
+    ctx.strokeStyle = 'rgba(0,200,150,0.55)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([]);
+    var ye = proj(0, 0).y;
+    ctx.beginPath(); ctx.moveTo(0, ye); ctx.lineTo(W, ye); ctx.stroke();
+    // Prime meridian
+    ctx.strokeStyle = 'rgba(200,200,200,0.18)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    var xpm = proj(0, 0).x;
+    ctx.beginPath(); ctx.moveTo(xpm, 0); ctx.lineTo(xpm, H); ctx.stroke();
+    // Tropics
+    ctx.strokeStyle = 'rgba(210,160,40,0.28)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 5]);
+    var yt1 = proj(0, 23.5).y;
+    var yt2 = proj(0, -23.5).y;
+    ctx.beginPath(); ctx.moveTo(0, yt1); ctx.lineTo(W, yt1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, yt2); ctx.lineTo(W, yt2); ctx.stroke();
+    // Arctic/Antarctic
+    ctx.strokeStyle = 'rgba(80,160,240,0.18)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 6]);
+    var ya1 = proj(0, 66.5).y;
+    var ya2 = proj(0, -66.5).y;
+    ctx.beginPath(); ctx.moveTo(0, ya1); ctx.lineTo(W, ya1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, ya2); ctx.lineTo(W, ya2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  function drawOceanLabel(lon, lat, text) {
+    var p = proj(lon, lat);
+    ctx.save();
+    ctx.font = 'italic 9px sans-serif';
+    ctx.fillStyle = 'rgba(2,173,165,0.40)';
+    ctx.textAlign = 'center';
+    ctx.fillText(text, p.x, p.y);
+    ctx.restore();
+  }
+
+  function drawRose(rx, ry, r) {
+    var lang = (typeof curLang !== 'undefined') ? curLang : 'en';
+    var labels = (lang === 'bm') ? ['U','T','S','B'] : ['N','E','S','W'];
+    ctx.save();
+    // Background circle
+    ctx.beginPath();
+    ctx.arc(rx, ry, r + 4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(6,15,30,0.65)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(2,173,165,0.3)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+    // 8 spokes
+    var dirs = [0, 45, 90, 135, 180, 225, 270, 315];
+    for(var i = 0; i < 8; i++) {
+      var a = (dirs[i] - 90) * Math.PI / 180;
+      var isCard = (i % 2 === 0);
+      var len = isCard ? r : r * 0.65;
+      ctx.beginPath();
+      ctx.moveTo(rx, ry);
+      ctx.lineTo(rx + Math.cos(a) * len, ry + Math.sin(a) * len);
+      ctx.strokeStyle = isCard ? 'rgba(2,173,165,0.8)' : 'rgba(2,173,165,0.4)';
+      ctx.lineWidth = isCard ? 1.2 : 0.7;
+      ctx.stroke();
+    }
+    // N spike gold
+    ctx.beginPath();
+    var na = -Math.PI / 2;
+    ctx.moveTo(rx, ry);
+    ctx.lineTo(rx - 4, ry + r * 0.4);
+    ctx.lineTo(rx + 4, ry + r * 0.4);
+    ctx.closePath();
+    ctx.fillStyle = '#D99A10';
+    ctx.fill();
+    ctx.moveTo(rx, ry);
+    ctx.lineTo(rx - 3, ry - r);
+    ctx.lineTo(rx + 3, ry - r);
+    ctx.closePath();
+    ctx.fillStyle = '#D99A10';
+    ctx.fill();
+    // Cardinal labels
+    var cardDirs = [{ a: -Math.PI/2, l: labels[0] }, { a: 0, l: labels[1] }, { a: Math.PI/2, l: labels[2] }, { a: Math.PI, l: labels[3] }];
+    ctx.font = 'bold 8px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for(var j = 0; j < 4; j++) {
+      var d = cardDirs[j];
+      var lx = rx + Math.cos(d.a) * (r + 8);
+      var ly = ry + Math.sin(d.a) * (r + 8);
+      ctx.fillStyle = j === 0 ? '#D99A10' : '#02ADA5';
+      ctx.fillText(d.l, lx, ly);
+    }
+    ctx.restore();
+  }
+
+  function draw() {
+    // Ocean gradient
+    var oceanGrad = ctx.createLinearGradient(0, 0, 0, H);
+    oceanGrad.addColorStop(0, '#060f1e');
+    oceanGrad.addColorStop(1, '#0b1a2e');
+    ctx.fillStyle = oceanGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    drawGrid();
+
+    // Antarctica
+    ctx.beginPath();
+    var pAnt = proj(-180, -68);
+    ctx.moveTo(0, pAnt.y);
+    ctx.lineTo(W, pAnt.y);
+    ctx.lineTo(W, H);
+    ctx.lineTo(0, H);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(210,230,240,0.85)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(2,173,165,0.3)';
+    ctx.lineWidth = 0.7;
+    ctx.stroke();
+
+    // Continents
+    for(var i = 0; i < landPolygons.length; i++) {
+      drawPolygon(landPolygons[i].pts, landPolygons[i].color);
+    }
+
+    // Ocean labels
+    drawOceanLabel(-150, 10, 'Pacific Ocean');
+    drawOceanLabel(165, -20, 'Pacific Ocean');
+    drawOceanLabel(-30, 8, 'Atlantic Ocean');
+    drawOceanLabel(75, -22, 'Indian Ocean');
+    drawOceanLabel(0, 82, 'Arctic Ocean');
+    drawOceanLabel(0, -58, 'Southern Ocean');
+    drawOceanLabel(15, 36, 'Mediterranean');
+    drawOceanLabel(113, 12, 'South China Sea');
+
+    // Cardinal edge labels
+    var lang = (typeof curLang !== 'undefined') ? curLang : 'en';
+    var NL = lang === 'bm' ? 'U' : 'N';
+    var SL = lang === 'bm' ? 'S' : 'S';
+    var EL = lang === 'bm' ? 'T' : 'E';
+    var WL = lang === 'bm' ? 'B' : 'W';
+    ctx.save();
+    ctx.font = 'bold 10px sans-serif';
+    ctx.fillStyle = '#D99A10';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(NL, W/2, 4);
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(SL, W/2, H - 4);
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(WL, 14, H/2);
+    ctx.textAlign = 'left';
+    ctx.fillText(EL, W - 14, H/2);
+    ctx.restore();
+
+    // Malaysia markers
+    var pMY1 = proj(109.5, 4);
+    var pMY2 = proj(102, 3.5);
+    // Pulsing ring
+    var pulse = 0.4 + 0.5 * Math.abs(Math.sin(tt * 0.06));
+    ctx.beginPath();
+    ctx.arc(pMY1.x, pMY1.y, 6 + 4 * Math.abs(Math.sin(tt * 0.06)), 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,140,0,' + pulse + ')';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(pMY1.x, pMY1.y, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#ff8c00';
+    ctx.fill();
+    // Peninsular dot
+    ctx.beginPath();
+    ctx.arc(pMY2.x, pMY2.y, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#ff8c00';
+    ctx.fill();
+    // MY label
+    ctx.save();
+    ctx.font = 'bold 9px sans-serif';
+    ctx.fillStyle = '#ff8c00';
+    ctx.textAlign = 'left';
+    ctx.fillText('MY', pMY1.x + 6, pMY1.y - 4);
+    ctx.restore();
+
+    // Compass rose
+    drawRose(W - 52, 52, 36);
+
+    tt++;
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+
+/* ── LAT / LON CANVAS ── */
+(function(){
+  var can = document.getElementById('latlonCanvas');
+  if(!can) return;
+  var ctx = can.getContext('2d');
+  var W = 640, H = 440;
+  var dpr = window.devicePixelRatio || 1;
+  can.width = W * dpr;
+  can.height = H * dpr;
+  can.style.width = W + 'px';
+  can.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+
+  var LAT_MIN = 1.0, LAT_MAX = 7.5;
+  var LON_MIN = 99.0, LON_MAX = 106.5;
+  var PAD = { top: 30, bottom: 36, left: 42, right: 22 };
+  var MW = W - PAD.left - PAD.right;
+  var MH = H - PAD.top - PAD.bottom;
+
+  function mp(lon, lat) {
+    return {
+      x: PAD.left + (lon - LON_MIN) / (LON_MAX - LON_MIN) * MW,
+      y: PAD.top + (LAT_MAX - lat) / (LAT_MAX - LAT_MIN) * MH
+    };
+  }
+
+  function drawCatmull(pts, closed) {
+    if(pts.length < 2) return;
+    var n = pts.length;
+    ctx.beginPath();
+    var startIdx = closed ? n - 1 : 0;
+    var p0 = mp(pts[startIdx][1], pts[startIdx][0]);
+    ctx.moveTo(p0.x, p0.y);
+    for(var i = 0; i < (closed ? n : n - 1); i++) {
+      var p1 = mp(pts[i][1], pts[i][0]);
+      var p2 = mp(pts[(i + 1) % n][1], pts[(i + 1) % n][0]);
+      var pA = mp(pts[Math.max(0, i - 1)][1], pts[Math.max(0, i - 1)][0]);
+      var pB = mp(pts[Math.min(n - 1, i + 2)][1], pts[Math.min(n - 1, i + 2)][0]);
+      var cp1x = p1.x + (p2.x - pA.x) / 6;
+      var cp1y = p1.y + (p2.y - pA.y) / 6;
+      var cp2x = p2.x - (pB.x - p1.x) / 6;
+      var cp2y = p2.y - (pB.y - p1.y) / 6;
+      ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
+    }
+    if(closed) ctx.closePath();
+  }
+
+  // Peninsular Malaysia coastline [lat, lon], ~100 points, clockwise
+  var COAST = [
+    [6.40,100.10],[6.30,100.16],[6.18,100.10],[6.05,100.12],[5.90,100.18],
+    [5.72,100.24],[5.55,100.28],[5.42,100.34],[5.25,100.30],[5.10,100.22],
+    [4.95,100.32],[4.82,100.44],[4.68,100.56],[4.52,100.58],[4.38,100.60],
+    [4.20,100.68],[4.05,100.78],[3.90,100.90],[3.75,101.05],[3.60,101.18],
+    [3.45,101.28],[3.30,101.38],[3.15,101.48],[3.00,101.58],[2.88,101.72],
+    [2.76,101.88],[2.62,102.04],[2.50,102.18],[2.38,102.28],[2.25,102.38],
+    [2.12,102.48],[2.02,102.60],[1.90,102.72],[1.80,102.86],[1.70,102.98],
+    [1.60,103.10],[1.52,103.22],[1.44,103.35],[1.36,103.48],[1.30,103.60],
+    [1.26,103.51],
+    [1.32,103.70],[1.40,103.80],[1.48,103.90],[1.58,103.96],[1.68,104.10],
+    [1.80,104.16],[1.92,104.12],[2.05,104.00],[2.18,103.90],[2.30,103.82],
+    [2.44,103.70],[2.56,103.60],[2.68,103.50],[2.82,103.48],[2.96,103.45],
+    [3.10,103.42],[3.24,103.40],[3.38,103.38],[3.52,103.35],[3.66,103.36],
+    [3.80,103.38],[3.94,103.40],[4.08,103.42],[4.22,103.44],[4.36,103.46],
+    [4.50,103.44],[4.64,103.44],[4.76,103.38],[4.88,103.28],[5.00,103.20],
+    [5.12,103.12],[5.24,103.08],[5.36,102.96],[5.48,102.80],[5.58,102.64],
+    [5.68,102.50],[5.78,102.38],[5.88,102.28],[5.98,102.18],[6.08,102.10],
+    [6.18,102.04],[6.28,102.00],[6.38,101.92],[6.40,101.80],[6.42,101.68]
+  ];
+
+  var LOCS = [
+    { lat:3.54,  lon:103.43, label:'UMPSA',       star:true,  color:'#ff4444' },
+    { lat:3.14,  lon:101.69, label:'KL',           star:false, color:'#02ADA5' },
+    { lat:5.41,  lon:100.33, label:'Penang',       star:false, color:'#02ADA5' },
+    { lat:1.46,  lon:103.74, label:'JB',           star:false, color:'#02ADA5' },
+    { lat:6.13,  lon:102.24, label:'Kota Bharu',   star:false, color:'#02ADA5' },
+    { lat:4.60,  lon:101.07, label:'Ipoh',         star:false, color:'#02ADA5' },
+    { lat:5.33,  lon:103.14, label:'K.Trengganu',  star:false, color:'#02ADA5' },
+    { lat:2.19,  lon:102.25, label:'Melaka',       star:false, color:'#D99A10' }
+  ];
+
+  var hoverPt = null;
+  var t = 0;
+
+  can.addEventListener('mousemove', function(e) {
+    var rect = can.getBoundingClientRect();
+    var cx = (e.clientX - rect.left);
+    var cy = (e.clientY - rect.top);
+    if(cx >= PAD.left && cx <= PAD.left + MW && cy >= PAD.top && cy <= PAD.top + MH) {
+      var lon = LON_MIN + (cx - PAD.left) / MW * (LON_MAX - LON_MIN);
+      var lat = LAT_MAX - (cy - PAD.top) / MH * (LAT_MAX - LAT_MIN);
+      hoverPt = { x: cx, y: cy, lat: lat, lon: lon };
+      var el = document.getElementById('latlonReadout');
+      if(el) el.textContent = lat.toFixed(4) + '°N, ' + lon.toFixed(4) + '°E';
+    } else {
+      hoverPt = null;
+    }
+  });
+
+  can.addEventListener('mouseleave', function() {
+    hoverPt = null;
+    var lang = (typeof curLang !== 'undefined') ? curLang : 'en';
+    var el = document.getElementById('latlonReadout');
+    if(el) {
+      if(typeof TR !== 'undefined' && TR[lang] && TR[lang].s1b_ll_hover) {
+        el.textContent = TR[lang].s1b_ll_hover;
+      } else {
+        el.textContent = 'Hover to read coordinates';
+      }
+    }
+  });
+
+  function drawMiniRose(rx, ry, r) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(rx, ry, r + 3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(8,49,47,0.75)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(2,173,165,0.3)';
+    ctx.lineWidth = 0.7;
+    ctx.stroke();
+    var dirs8 = [0,45,90,135,180,225,270,315];
+    for(var i = 0; i < 8; i++) {
+      var a = (dirs8[i] - 90) * Math.PI / 180;
+      var isCard = (i % 2 === 0);
+      var len = isCard ? r : r * 0.6;
+      ctx.beginPath();
+      ctx.moveTo(rx, ry);
+      ctx.lineTo(rx + Math.cos(a) * len, ry + Math.sin(a) * len);
+      ctx.strokeStyle = isCard ? 'rgba(2,173,165,0.75)' : 'rgba(2,173,165,0.35)';
+      ctx.lineWidth = isCard ? 1 : 0.6;
+      ctx.stroke();
+    }
+    // N spike
+    ctx.beginPath();
+    ctx.moveTo(rx, ry - r);
+    ctx.lineTo(rx - 3, ry - r * 0.35);
+    ctx.lineTo(rx + 3, ry - r * 0.35);
+    ctx.closePath();
+    ctx.fillStyle = '#D99A10';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(rx, ry);
+    ctx.lineTo(rx - 3, ry - r * 0.35);
+    ctx.lineTo(rx + 3, ry - r * 0.35);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(2,173,165,0.5)';
+    ctx.fill();
+    ctx.save();
+    ctx.font = 'bold 8px sans-serif';
+    ctx.fillStyle = '#D99A10';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    var lang = (typeof curLang !== 'undefined') ? curLang : 'en';
+    ctx.fillText(lang === 'bm' ? 'U' : 'N', rx, ry - r - 2);
+    ctx.restore();
+    ctx.restore();
+  }
+
+  function drawStar(cx, cy, r, color) {
+    ctx.save();
+    ctx.beginPath();
+    for(var i = 0; i < 5; i++) {
+      var a1 = (i * 72 - 90) * Math.PI / 180;
+      var a2 = (i * 72 + 36 - 90) * Math.PI / 180;
+      var px1 = cx + Math.cos(a1) * r;
+      var py1 = cy + Math.sin(a1) * r;
+      var px2 = cx + Math.cos(a2) * (r * 0.45);
+      var py2 = cy + Math.sin(a2) * (r * 0.45);
+      if(i === 0) ctx.moveTo(px1, py1);
+      else ctx.lineTo(px1, py1);
+      ctx.lineTo(px2, py2);
+    }
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 0.6;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function draw() {
+    // Ocean background
+    var oceanGrad = ctx.createLinearGradient(0, 0, W, H);
+    oceanGrad.addColorStop(0, '#060f1e');
+    oceanGrad.addColorStop(1, '#0b1a2e');
+    ctx.fillStyle = oceanGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid half-degree
+    ctx.save();
+    ctx.setLineDash([2, 4]);
+    ctx.strokeStyle = 'rgba(2,173,165,0.07)';
+    ctx.lineWidth = 0.5;
+    var lon, lat, p;
+    for(lon = Math.ceil(LON_MIN * 2) / 2; lon <= LON_MAX; lon += 0.5) {
+      p = mp(lon, LAT_MIN);
+      ctx.beginPath();
+      ctx.moveTo(p.x, PAD.top);
+      ctx.lineTo(p.x, PAD.top + MH);
+      ctx.stroke();
+    }
+    for(lat = Math.ceil(LAT_MIN * 2) / 2; lat <= LAT_MAX; lat += 0.5) {
+      p = mp(LON_MIN, lat);
+      ctx.beginPath();
+      ctx.moveTo(PAD.left, p.y);
+      ctx.lineTo(PAD.left + MW, p.y);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    // Full-degree grid
+    ctx.strokeStyle = 'rgba(2,173,165,0.22)';
+    ctx.lineWidth = 0.8;
+    for(lon = Math.ceil(LON_MIN); lon <= LON_MAX; lon++) {
+      p = mp(lon, LAT_MIN);
+      ctx.beginPath();
+      ctx.moveTo(p.x, PAD.top);
+      ctx.lineTo(p.x, PAD.top + MH);
+      ctx.stroke();
+    }
+    for(lat = Math.ceil(LAT_MIN); lat <= LAT_MAX; lat++) {
+      p = mp(LON_MIN, lat);
+      ctx.beginPath();
+      ctx.moveTo(PAD.left, p.y);
+      ctx.lineTo(PAD.left + MW, p.y);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Land
+    drawCatmull(COAST, true);
+    var landGrad = ctx.createLinearGradient(PAD.left, PAD.top, PAD.left + MW, PAD.top + MH);
+    landGrad.addColorStop(0, '#0e4a28');
+    landGrad.addColorStop(1, '#0a3820');
+    ctx.fillStyle = landGrad;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(2,173,165,0.65)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // State boundary hints
+    ctx.save();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(2,173,165,0.20)';
+    ctx.lineWidth = 1;
+    // Kelantan/Terengganu approximate divide
+    var kb1 = mp(102.4, 5.8);
+    var kb2 = mp(102.9, 4.4);
+    ctx.beginPath(); ctx.moveTo(kb1.x, kb1.y); ctx.lineTo(kb2.x, kb2.y); ctx.stroke();
+    // Perak/highland divide
+    var pk1 = mp(101.2, 5.6);
+    var pk2 = mp(102.0, 4.8);
+    ctx.beginPath(); ctx.moveTo(pk1.x, pk1.y); ctx.lineTo(pk2.x, pk2.y); ctx.stroke();
+    // Pahang/Johor
+    var pj1 = mp(103.0, 3.0);
+    var pj2 = mp(102.0, 2.8);
+    ctx.beginPath(); ctx.moveTo(pj1.x, pj1.y); ctx.lineTo(pj2.x, pj2.y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // Axis labels
+    ctx.save();
+    ctx.font = '10px monospace';
+    ctx.fillStyle = 'rgba(2,173,165,0.70)';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    for(lat = Math.ceil(LAT_MIN); lat < LAT_MAX; lat++) {
+      p = mp(LON_MIN, lat);
+      ctx.fillText(lat + '°N', PAD.left - 4, p.y);
+    }
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    for(lon = Math.ceil(LON_MIN); lon <= LON_MAX; lon++) {
+      p = mp(lon, LAT_MIN);
+      ctx.fillText(lon + '°E', p.x, PAD.top + MH + 4);
+    }
+    ctx.restore();
+
+    // City markers
+    for(var i = 0; i < LOCS.length; i++) {
+      var loc = LOCS[i];
+      var lp = mp(loc.lon, loc.lat);
+      if(loc.star) {
+        // UMPSA: pulsing ring + star
+        var pulse = 0.4 + 0.5 * Math.abs(Math.sin(t * 0.06));
+        var ring = 8 + 4 * Math.abs(Math.sin(t * 0.06));
+        ctx.beginPath();
+        ctx.arc(lp.x, lp.y, ring, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,68,68,' + pulse + ')';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        drawStar(lp.x, lp.y, 6, loc.color);
+        ctx.save();
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillStyle = loc.color;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(loc.label, lp.x + 9, lp.y);
+        ctx.restore();
+      } else {
+        ctx.beginPath();
+        ctx.arc(lp.x, lp.y, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = loc.color;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        ctx.save();
+        ctx.font = '9px sans-serif';
+        ctx.fillStyle = loc.color;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(loc.label, lp.x + 5, lp.y - 1);
+        ctx.restore();
+      }
+    }
+
+    // Hover crosshair
+    if(hoverPt) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(2,173,165,0.6)';
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(hoverPt.x, PAD.top);
+      ctx.lineTo(hoverPt.x, PAD.top + MH);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(PAD.left, hoverPt.y);
+      ctx.lineTo(PAD.left + MW, hoverPt.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // Coordinate bubble
+      var bubText = hoverPt.lat.toFixed(3) + '°N ' + hoverPt.lon.toFixed(3) + '°E';
+      ctx.font = '9px monospace';
+      var tw = ctx.measureText(bubText).width;
+      var bx = hoverPt.x + 6;
+      var by = hoverPt.y - 20;
+      if(bx + tw + 8 > W) bx = hoverPt.x - tw - 14;
+      if(by < 0) by = hoverPt.y + 4;
+      ctx.fillStyle = 'rgba(6,15,30,0.85)';
+      ctx.beginPath();
+      ctx.rect(bx - 3, by - 2, tw + 10, 16);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(2,173,165,0.5)';
+      ctx.lineWidth = 0.7;
+      ctx.stroke();
+      ctx.fillStyle = '#02ADA5';
+      ctx.fillText(bubText, bx + 2, by + 10);
+      ctx.restore();
+    }
+
+    // Mini compass rose top-right
+    drawMiniRose(PAD.left + MW - 16, PAD.top + 20, 20);
+
+    // Bilingual title inside canvas top center
+    ctx.save();
+    ctx.font = 'italic 10px sans-serif';
+    ctx.fillStyle = 'rgba(2,173,165,0.60)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('Peninsular Malaysia / Semenanjung Malaysia', W / 2, 8);
+    ctx.restore();
+
+    // Canvas border
+    ctx.strokeStyle = 'rgba(2,173,165,0.20)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0.5, 0.5, W - 1, H - 1);
+
+    t++;
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+
+/* ── CONTOUR TERRAIN ── */
+(function(){
+  var can = document.getElementById('contourCanvas');
+  if(!can) return;
+
+  /* Fixed terrain grid — generated once, drawn stretched to fill */
+  var GW = 440, GH = 360;
+  var terrain = new Float32Array(GW * GH);
+  for(var r=0;r<GH;r++){
+    for(var c=0;c<GW;c++){
+      var x=c/GW*6.283, y=r/GH*6.283, h=0;
+      h += Math.sin(x*0.9+0.4)*Math.cos(y*0.7+0.2)*0.45;
+      h += Math.sin(x*1.8-y*1.3+0.6)*0.22;
+      h += Math.cos(x*2.5+y*2.1+1.1)*0.14;
+      h += Math.sin(x*3.8-y*2.4+2.0)*0.07;
+      h += Math.cos(x*5.0+y*4.2+0.9)*0.03;
+      var cx2=(c/GW-0.5)*2.2, cy2=(r/GH-0.5)*2.2;
+      h -= (cx2*cx2+cy2*cy2)*0.38;
+      terrain[r*GW+c]=h;
+    }
+  }
+  var tmin=terrain[0],tmax=terrain[0];
+  for(var i=1;i<terrain.length;i++){if(terrain[i]<tmin)tmin=terrain[i];if(terrain[i]>tmax)tmax=terrain[i];}
+  var trng=tmax-tmin||1;
+  for(var i=0;i<terrain.length;i++) terrain[i]=(terrain[i]-tmin)/trng;
+
+  function elevRGB(t){
+    var r2,g2,b2;
+    if(t<0.32){var v=t/0.32;r2=0;g2=Math.floor(20+v*50);b2=Math.floor(90+v*90);}
+    else if(t<0.42){var v=(t-0.32)/0.10;r2=Math.floor(v*200);g2=Math.floor(70+v*70);b2=Math.floor(180-v*130);}
+    else if(t<0.62){var v=(t-0.42)/0.20;r2=Math.floor(20+v*55);g2=Math.floor(110+v*35);b2=20;}
+    else if(t<0.82){var v=(t-0.62)/0.20;r2=Math.floor(75+v*115);g2=Math.floor(60+v*20);b2=10;}
+    else{var v=Math.min(1,(t-0.82)/0.18);r2=Math.floor(180+v*75);g2=Math.floor(170+v*85);b2=Math.floor(155+v*100);}
+    return [r2,g2,b2];
+  }
+
+  /* Dark base for contour-lines view */
+  var darkBase=document.createElement('canvas'); darkBase.width=GW; darkBase.height=GH;
+  var dBx=darkBase.getContext('2d');
+  var dID=dBx.createImageData(GW,GH);
+  for(var idx=0,px=0;px<GW*GH;px++,idx+=4){
+    var g2=Math.floor(terrain[px]*55+8);
+    dID.data[idx]=g2;dID.data[idx+1]=Math.floor(g2*1.3);dID.data[idx+2]=g2;dID.data[idx+3]=255;
+  }
+  dBx.putImageData(dID,0,0);
+
+  /* Build offscreen canvas: bg + optional contour overlay */
+  function makeOff(bgSrc,colStr,baseAlpha){
+    var o=document.createElement('canvas'); o.width=GW; o.height=GH;
+    var ox=o.getContext('2d');
+    if(bgSrc){ox.drawImage(bgSrc,0,0);}
+    else{
+      var id2=ox.createImageData(GW,GH);
+      for(var idx2=0,px2=0;px2<GW*GH;px2++,idx2+=4){
+        var c2=elevRGB(terrain[px2]);
+        id2.data[idx2]=c2[0];id2.data[idx2+1]=c2[1];id2.data[idx2+2]=c2[2];id2.data[idx2+3]=255;
+      }
+      ox.putImageData(id2,0,0);
+    }
+    if(colStr){
+      var LEVELS=[0.32,0.42,0.52,0.60,0.68,0.76,0.83,0.90,0.96];
+      for(var li=0;li<LEVELS.length;li++){
+        var lev=LEVELS[li],alpha=(li%3===0)?baseAlpha:baseAlpha*0.45;
+        ox.fillStyle='rgba('+colStr+','+alpha+')';
+        for(var row=0;row<GH-1;row++) for(var col=0;col<GW-1;col++){
+          var h00=terrain[row*GW+col],h10=terrain[row*GW+col+1],h01=terrain[(row+1)*GW+col];
+          if((h00-lev)*(h10-lev)<0||(h00-lev)*(h01-lev)<0) ox.fillRect(col,row,1,1);
+        }
+      }
+    }
+    return o;
+  }
+  var offHeat    = makeOff(null,null,0);
+  var offContour = makeOff(darkBase,'2,173,165',0.95);
+  var offCombi   = makeOff(offHeat,'255,255,255',0.70);
+
+  var viewMode=0;
+  var VIEW_LABELS_EN=['View: Terrain Colours — Click to change','View: Contour Lines — Click to change','View: Combined — Click to change'];
+  var VIEW_LABELS_BM=['Paparan: Warna Terrain — Klik untuk tukar','Paparan: Garisan Kontur — Klik untuk tukar','Paparan: Gabungan — Klik untuk tukar'];
+  function getLabel(){var l=(typeof curLang!=='undefined')?curLang:'en';return l==='bm'?VIEW_LABELS_BM[viewMode]:VIEW_LABELS_EN[viewMode];}
+  function setReadout(txt){var el=document.getElementById('contourReadout');if(el)el.textContent=txt;}
+
+  function draw(){
+    var dpr=window.devicePixelRatio||1;
+    var W=can.offsetWidth, H=can.offsetHeight;
+    if(W<10||H<10) return;
+    if(can.width!==Math.round(W*dpr)||can.height!==Math.round(H*dpr)){
+      can.width=Math.round(W*dpr); can.height=Math.round(H*dpr);
+    }
+    var ctx=can.getContext('2d');
+    ctx.clearRect(0,0,can.width,can.height);
+    ctx.save(); ctx.scale(dpr,dpr);
+    var src=viewMode===0?offHeat:viewMode===1?offContour:offCombi;
+    ctx.drawImage(src,0,0,W,H);
+    var lx=10,ly=H-22,lw=Math.min(140,W*0.32),lh=8;
+    var lg=ctx.createLinearGradient(lx,0,lx+lw,0);
+    lg.addColorStop(0,'rgb(0,30,100)');lg.addColorStop(0.32,'rgb(30,90,190)');
+    lg.addColorStop(0.42,'rgb(200,130,50)');lg.addColorStop(0.62,'rgb(30,130,30)');
+    lg.addColorStop(0.82,'rgb(170,75,10)');lg.addColorStop(1,'rgb(240,235,245)');
+    ctx.fillStyle=lg;ctx.fillRect(lx,ly,lw,lh);
+    ctx.strokeStyle='rgba(2,173,165,0.4)';ctx.lineWidth=0.5;ctx.strokeRect(lx,ly,lw,lh);
+    ctx.font='8px sans-serif';ctx.fillStyle='rgba(255,255,255,0.8)';
+    ctx.textAlign='left';ctx.fillText('Sea',lx,ly-3);
+    ctx.textAlign='right';ctx.fillText('Peak',lx+lw,ly-3);
+    ctx.restore();
+  }
+
+  /* Defer draw until full page layout is done */
+  window.addEventListener('load',function(){draw();setReadout(getLabel());});
+
+  can.addEventListener('click',function(){viewMode=(viewMode+1)%3;draw();setReadout(getLabel());});
+  can.addEventListener('mousemove',function(e){
+    var rect=can.getBoundingClientRect();
+    var mx=Math.floor((e.clientX-rect.left)*GW/rect.width);
+    var my=Math.floor((e.clientY-rect.top)*GH/rect.height);
+    if(mx<0||mx>=GW||my<0||my>=GH) return;
+    var t=terrain[my*GW+mx];
+    var elev=Math.round(Math.max(0,(t-0.32)*3000));
+    var lang=(typeof curLang!=='undefined')?curLang:'en';
+    var types_en=[[0.32,'Sea'],[0.42,'Coastal'],[0.62,'Lowland'],[0.82,'Highland'],[2,'Peak']];
+    var types_bm=[[0.32,'Laut'],[0.42,'Pantai'],[0.62,'Rendah'],[0.82,'Tinggi'],[2,'Puncak']];
+    var tm=lang==='bm'?types_bm:types_en;
+    var type=tm[tm.length-1][1]; for(var i=0;i<tm.length;i++){if(t<tm[i][0]){type=tm[i][1];break;}}
+    var lbl=lang==='bm'?'Ketinggian':'Elevation';
+    setReadout(lbl+': '+elev+'m — '+type);
+  });
+  can.addEventListener('mouseleave',function(){setReadout(getLabel());});
+})();
+
+
+/* ── CELLULAR FOOTPRINT ── */
+(function(){
+  var can = document.getElementById('cellCanvas');
+  if(!can) return;
+  var dpr = window.devicePixelRatio || 1;
+  var W = 600, H = 400;
+  can.width = W*dpr; can.height = H*dpr;
+  can.style.width = W+'px'; can.style.height = H+'px';
+  var ctx = can.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  var CX = W/2, CY = H/2 + 10;
+  var D = 130;
+  var HR = D / Math.sqrt(3);
+
+  var towers = [];
+  towers.push({x:CX, y:CY, id:0});
+  for(var i=0; i<6; i++){
+    var a = i * Math.PI/3;
+    towers.push({x:CX + D*Math.cos(a), y:CY + D*Math.sin(a), id:i+1});
+  }
+
+  var CELL_COL = ['#02ADA5','#1a9e96','#0891a0','#147d8a','#1b8870','#0a9580','#15a08a'];
+
+  var mode = 0;
+  var locPt = null;
+  var locThree = [];
+  var tt = 0;
+  var animTt = 0;
+  var ANIM_DUR = 110;
+
+  function hexVerts(tx, ty){
+    var v = [];
+    for(var i=0; i<6; i++){
+      var a = Math.PI/6 + i*Math.PI/3;
+      v.push([tx + HR*Math.cos(a), ty + HR*Math.sin(a)]);
+    }
+    return v;
+  }
+
+  function tracePath(pts, close){
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for(var i=1; i<pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+    if(close) ctx.closePath();
+  }
+
+  function ptDist(a, b){
+    return Math.sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));
+  }
+
+  function nearest3(pt){
+    var ds = towers.map(function(t){ return {i:t.id, d:ptDist(pt,t)}; });
+    ds.sort(function(a,b){ return a.d-b.d; });
+    return [ds[0].i, ds[1].i, ds[2].i];
+  }
+
+  function drawTower(x, y, highlight, alpha){
+    ctx.save();
+    ctx.globalAlpha = alpha||1;
+    var col = highlight ? '#ff8040' : '#02ADA5';
+    ctx.strokeStyle = col; ctx.lineWidth = highlight ? 2 : 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x, y+10); ctx.lineTo(x, y-14);
+    ctx.moveTo(x-7, y-4); ctx.lineTo(x+7, y-4);
+    ctx.stroke();
+    for(var r=9; r<=21; r+=6){
+      ctx.beginPath();
+      ctx.arc(x, y-4, r, -Math.PI*0.75, -Math.PI*0.25);
+      ctx.strokeStyle = col; ctx.lineWidth=1;
+      ctx.globalAlpha = (alpha||1) * (highlight ? 0.65 : 0.3);
+      ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(x, y+10, 3, 0, Math.PI*2);
+    ctx.fillStyle = col; ctx.globalAlpha = alpha||1; ctx.fill();
+    ctx.restore();
+  }
+
+  function easeInOut(t){ return t<0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var bg = ctx.createRadialGradient(CX,CY,20,CX,CY,W*0.65);
+    bg.addColorStop(0,'#0d2a26'); bg.addColorStop(1,'#071820');
+    ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+
+    var lang = (typeof curLang !== 'undefined') ? curLang : 'en';
+
+    for(var t=0; t<towers.length; t++){
+      var tw = towers[t];
+      var v = hexVerts(tw.x, tw.y);
+      var isLoc = (mode===1 && locThree.indexOf(t) >= 0);
+
+      ctx.save();
+      ctx.globalAlpha = isLoc ? 0.18 : 0.07;
+      ctx.fillStyle = CELL_COL[t % CELL_COL.length];
+      tracePath(v, true); ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.globalAlpha = isLoc ? 0.85 : 0.38;
+      ctx.strokeStyle = isLoc ? '#ff8040' : '#02ADA5';
+      ctx.lineWidth = isLoc ? 2.2 : 1.2;
+      tracePath(v, true); ctx.stroke();
+      ctx.restore();
+
+      if(mode === 0){
+        var pulse = D*0.68 + Math.sin(tt*0.033 + t*1.05)*5;
+        ctx.save();
+        ctx.globalAlpha = 0.11 + Math.sin(tt*0.033 + t*1.05)*0.04;
+        ctx.strokeStyle = CELL_COL[t % CELL_COL.length];
+        ctx.lineWidth = 1.2; ctx.setLineDash([4,5]);
+        ctx.beginPath(); ctx.arc(tw.x, tw.y, pulse, 0, Math.PI*2); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+      }
+    }
+
+    if(mode === 1 && locPt){
+      var prog = Math.min(1, animTt / ANIM_DUR);
+      var ep = easeInOut(prog);
+
+      for(var li=0; li<locThree.length; li++){
+        var tw2 = towers[locThree[li]];
+        var td = ptDist(locPt, tw2);
+        var startR = D*1.08;
+        var r = startR - (startR - td) * ep;
+        ctx.save();
+        ctx.globalAlpha = 0.22 + ep*0.48;
+        ctx.beginPath(); ctx.arc(tw2.x, tw2.y, r, 0, Math.PI*2);
+        ctx.strokeStyle = '#ff8040'; ctx.lineWidth = 2.5; ctx.stroke();
+        ctx.globalAlpha = (0.22 + ep*0.48) * 0.1;
+        ctx.fillStyle = '#ff8040'; ctx.fill();
+        ctx.restore();
+
+        if(prog > 0.35){
+          ctx.save();
+          ctx.globalAlpha = (prog-0.35)/0.65 * 0.45;
+          ctx.strokeStyle = '#ffd060'; ctx.lineWidth=1;
+          ctx.setLineDash([3,5]);
+          ctx.beginPath(); ctx.moveTo(tw2.x,tw2.y); ctx.lineTo(locPt.x,locPt.y); ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.restore();
+        }
+      }
+
+      if(prog > 0.70){
+        var fa = (prog-0.70)/0.30;
+        var ps = 1 + Math.sin(animTt*0.18)*0.15*fa;
+        ctx.save(); ctx.globalAlpha = fa*0.30;
+        ctx.beginPath(); ctx.arc(locPt.x,locPt.y,20*ps,0,Math.PI*2);
+        ctx.fillStyle='#ffcc44'; ctx.fill(); ctx.restore();
+
+        ctx.save(); ctx.globalAlpha = fa;
+        ctx.beginPath(); ctx.arc(locPt.x,locPt.y,7,0,Math.PI*2);
+        ctx.fillStyle='#ffdd00'; ctx.fill();
+        ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+        ctx.restore();
+
+        if(fa > 0.5){
+          ctx.save(); ctx.globalAlpha = (fa-0.5)*2;
+          ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+          ctx.fillStyle='#ffdd66';
+          ctx.fillText(lang==='bm'?'Kedudukan Tetap ✓':'Position Fixed ✓', locPt.x, locPt.y-16);
+          ctx.restore();
+        }
+      }
+
+      if(prog >= 1){
+        var rd = document.getElementById('cellReadout');
+        var lng2 = (typeof curLang !== 'undefined') ? curLang : 'en';
+        if(rd && typeof TR !== 'undefined'){
+          rd.textContent = TR[lng2].s4c_readout_fix || (lng2==='bm'?'Kedudukan ditetapkan!':'Position fixed!');
+        }
+      }
+      animTt++;
+    }
+
+    for(var t3=0; t3<towers.length; t3++){
+      var tw3 = towers[t3];
+      var hl = (mode===1 && locThree.indexOf(t3)>=0);
+      drawTower(tw3.x, tw3.y, hl, 1);
+    }
+
+    ctx.font='9px sans-serif'; ctx.textAlign='center';
+    for(var t4=0; t4<towers.length; t4++){
+      var tw4 = towers[t4];
+      ctx.save(); ctx.globalAlpha=0.40; ctx.fillStyle='#7AADA8';
+      ctx.fillText((lang==='bm'?'Sel ':'Cell ')+(t4+1), tw4.x, tw4.y+28);
+      ctx.restore();
+    }
+
+    ctx.save(); ctx.globalAlpha=0.45; ctx.font='10px sans-serif';
+    ctx.textAlign='center'; ctx.fillStyle='#7AADA8';
+    var sub = mode===0
+      ? (lang==='bm'?'7 menara · sel heksagon · klik untuk mencari':'7 towers · hexagonal cells · click to locate')
+      : (lang==='bm'?'3 menara mengira jarak → kedudukan tetap':'3 towers ranging → position fix');
+    ctx.fillText(sub, CX, H-10);
+    ctx.restore();
+
+    tt++;
+  }
+
+  function frame(){ draw(); requestAnimationFrame(frame); }
+  frame();
+
+  can.addEventListener('click', function(e){
+    var rect = can.getBoundingClientRect();
+    var x = (e.clientX-rect.left)*(W/rect.width);
+    var y = (e.clientY-rect.top)*(H/rect.height);
+    locPt = {x:x, y:y};
+    locThree = nearest3(locPt);
+    mode = 1; animTt = 0;
+    var lang = (typeof curLang !== 'undefined') ? curLang : 'en';
+    var rd = document.getElementById('cellReadout');
+    if(rd) rd.textContent = lang==='bm'?'Menentukan kedudukan dari 3 menara...':'Triangulating from 3 towers...';
+    setTimeout(function(){
+      mode = 0; locPt = null;
+      var rd2 = document.getElementById('cellReadout');
+      var l2 = (typeof curLang !== 'undefined') ? curLang : 'en';
+      if(rd2 && typeof TR !== 'undefined'){
+        rd2.textContent = TR[l2].s4c_readout_default || (l2==='bm'?'Ketuk grid':'Tap the grid');
+      }
+    }, Math.round(ANIM_DUR/60*1000) + 2200);
+  });
+})();
+
+/* ── INTERACTIVE COMPASS ── */
+(function(){
+  var can = document.getElementById('compassCanvas');
+  if(!can) return;
+  var dpr = window.devicePixelRatio || 1;
+  var SIZE = 320;
+  can.width = SIZE * dpr;
+  can.height = SIZE * dpr;
+  can.style.width = SIZE + 'px';
+  can.style.height = SIZE + 'px';
+  var ctx = can.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  var cx = 160, cy = 160, R = 148;
+
+  var ABB = {
+    en: {N:'N', S:'S', E:'E', W:'W'},
+    bm: {N:'U', S:'S', E:'T', W:'B'}
+  };
+
+  var DIRS_FULL = [
+    {en:'North',     bm:'Utara',        min:337.5, max:22.5},
+    {en:'North-East',bm:'Timur Laut',   min:22.5,  max:67.5},
+    {en:'East',      bm:'Timur',        min:67.5,  max:112.5},
+    {en:'South-East',bm:'Tenggara',     min:112.5, max:157.5},
+    {en:'South',     bm:'Selatan',      min:157.5, max:202.5},
+    {en:'South-West',bm:'Barat Daya',   min:202.5, max:247.5},
+    {en:'West',      bm:'Barat',        min:247.5, max:292.5},
+    {en:'North-West',bm:'Barat Laut',   min:292.5, max:337.5}
+  ];
+
+  function bearingLabel(b) {
+    var deg = ((b % 360) + 360) % 360;
+    var label = DIRS_FULL[0];
+    if(deg >= 22.5 && deg < 67.5) label = DIRS_FULL[1];
+    else if(deg >= 67.5 && deg < 112.5) label = DIRS_FULL[2];
+    else if(deg >= 112.5 && deg < 157.5) label = DIRS_FULL[3];
+    else if(deg >= 157.5 && deg < 202.5) label = DIRS_FULL[4];
+    else if(deg >= 202.5 && deg < 247.5) label = DIRS_FULL[5];
+    else if(deg >= 247.5 && deg < 292.5) label = DIRS_FULL[6];
+    else if(deg >= 292.5 && deg < 337.5) label = DIRS_FULL[7];
+    var d3 = ('000' + Math.round(deg)).slice(-3);
+    return d3 + '° — ' + label.en + ' · ' + label.bm;
+  }
+
+  var bearing = null;
+  var preview = null;
+
+  function drawNeedle(angle, alpha, isPreview) {
+    if(angle === null) return;
+    var ang = (angle - 90) * Math.PI / 180;
+    var angS = (angle + 90) * Math.PI / 180;
+    ctx.save();
+    ctx.globalAlpha = alpha || 1;
+
+    // North needle (red)
+    var nx = cx + Math.cos(ang) * (R - 20);
+    var ny = cy + Math.sin(ang) * (R - 20);
+    var perp = ang + Math.PI / 2;
+    var baseW = isPreview ? 5 : 7;
+
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(perp) * baseW, cy + Math.sin(perp) * baseW);
+    ctx.lineTo(nx, ny);
+    ctx.lineTo(cx - Math.cos(perp) * baseW, cy - Math.sin(perp) * baseW);
+    ctx.closePath();
+
+    if(!isPreview) {
+      var needleGrad = ctx.createLinearGradient(cx, cy, nx, ny);
+      needleGrad.addColorStop(0, '#cc3333');
+      needleGrad.addColorStop(1, '#ff4444');
+      ctx.fillStyle = needleGrad;
+      ctx.shadowColor = 'rgba(255,50,50,0.4)';
+      ctx.shadowBlur = 8;
+    } else {
+      ctx.fillStyle = 'rgba(255,80,80,0.6)';
+    }
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // South needle (silver)
+    var sx = cx + Math.cos(angS) * (R - 20);
+    var sy = cy + Math.sin(angS) * (R - 20);
+
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(perp) * baseW, cy + Math.sin(perp) * baseW);
+    ctx.lineTo(sx, sy);
+    ctx.lineTo(cx - Math.cos(perp) * baseW, cy - Math.sin(perp) * baseW);
+    ctx.closePath();
+
+    if(!isPreview) {
+      var sGrad = ctx.createLinearGradient(cx, cy, sx, sy);
+      sGrad.addColorStop(0, '#8ababa');
+      sGrad.addColorStop(1, '#b0d4d2');
+      ctx.fillStyle = sGrad;
+    } else {
+      ctx.fillStyle = 'rgba(150,210,210,0.5)';
+    }
+    ctx.fill();
+
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  function drawCompass(highlightAngle) {
+    var lang = (typeof curLang !== 'undefined') ? curLang : 'en';
+    var a = ABB[lang] || ABB.en;
+
+    ctx.clearRect(0, 0, SIZE, SIZE);
+
+    // Outer bezel
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, R + 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#0a1e1c';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(2,173,165,0.7)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.restore();
+
+    // Degree ring bg
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(5,20,18,0.9)';
+    ctx.fill();
+    ctx.restore();
+
+    // Inner face
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, R - 20, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(8,30,28,0.95)';
+    ctx.fill();
+    ctx.restore();
+
+    // Tick marks
+    for(var deg = 0; deg < 360; deg++) {
+      var a2 = (deg - 90) * Math.PI / 180;
+      var cos = Math.cos(a2), sin = Math.sin(a2);
+      var len, width, color;
+
+      if(deg % 90 === 0) {
+        len = 16; width = 2; color = '#D99A10';
+      } else if(deg % 30 === 0) {
+        len = 14; width = 1.5; color = '#02ADA5';
+      } else if(deg % 10 === 0) {
+        len = 11; width = 1; color = 'rgba(2,173,165,0.70)';
+      } else if(deg % 5 === 0) {
+        len = 8; width = 0.8; color = 'rgba(2,173,165,0.50)';
+      } else {
+        len = 6; width = 0.5; color = 'rgba(2,173,165,0.30)';
+      }
+
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(cx + cos * R, cy + sin * R);
+      ctx.lineTo(cx + cos * (R - len), cy + sin * (R - len));
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Degree numbers every 30°
+    ctx.save();
+    ctx.font = 'bold 9px sans-serif';
+    ctx.fillStyle = 'rgba(2,173,165,0.85)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for(var d30 = 0; d30 < 360; d30 += 30) {
+      var a30 = (d30 - 90) * Math.PI / 180;
+      var rx = cx + Math.cos(a30) * (R - 22);
+      var ry = cy + Math.sin(a30) * (R - 22);
+      ctx.save();
+      ctx.translate(rx, ry);
+      ctx.rotate(a30 + Math.PI / 2);
+      ctx.fillText(d30 === 0 ? '360' : '' + d30, 0, 0);
+      ctx.restore();
+    }
+    ctx.restore();
+
+    // Inner decorative ring
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, R - 44, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(2,173,165,0.25)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 6]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // Cardinal labels
+    var cards = [
+      {d:0,   t:a.N, c:'#ff6b6b'},
+      {d:90,  t:a.E, c:'#02ADA5'},
+      {d:180, t:a.S, c:'#02ADA5'},
+      {d:270, t:a.W, c:'#02ADA5'}
+    ];
+    ctx.save();
+    for(var ci = 0; ci < cards.length; ci++) {
+      var ca = (cards[ci].d - 90) * Math.PI / 180;
+      var fx = cx + Math.cos(ca) * (R - 32);
+      var fy = cy + Math.sin(ca) * (R - 32);
+      ctx.font = 'bold 14px sans-serif';
+      ctx.fillStyle = cards[ci].c;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      if(cards[ci].d === 0) {
+        ctx.shadowColor = 'rgba(255,100,100,0.5)';
+        ctx.shadowBlur = 6;
+      }
+      ctx.fillText(cards[ci].t, fx, fy);
+      ctx.shadowBlur = 0;
+    }
+    ctx.restore();
+
+    // Bearing indicator line (if set)
+    if(highlightAngle !== null && highlightAngle !== undefined) {
+      var ba = (highlightAngle - 90) * Math.PI / 180;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(2,230,200,0.65)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(ba) * (R - 20), cy + Math.sin(ba) * (R - 20));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // Arrowhead
+      var ax = cx + Math.cos(ba) * (R - 22);
+      var ay = cy + Math.sin(ba) * (R - 22);
+      var aw = ba + Math.PI * 0.85;
+      var aw2 = ba - Math.PI * 0.85;
+      ctx.fillStyle = 'rgba(2,230,200,0.8)';
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(ax + Math.cos(aw) * 8, ay + Math.sin(aw) * 8);
+      ctx.lineTo(ax + Math.cos(aw2) * 8, ay + Math.sin(aw2) * 8);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Draw needle(s)
+    if(preview !== null) {
+      drawNeedle(preview, 0.45, true);
+    }
+    if(bearing !== null) {
+      drawNeedle(bearing, 1, false);
+    } else if(preview === null) {
+      // Default north-pointing
+      drawNeedle(0, 0.35, true);
+    }
+
+    // Center cap
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+    var capGrad = ctx.createRadialGradient(cx - 3, cy - 3, 1, cx, cy, 10);
+    capGrad.addColorStop(0, '#f0c040');
+    capGrad.addColorStop(1, '#D99A10');
+    ctx.fillStyle = capGrad;
+    ctx.fill();
+    ctx.strokeStyle = '#a07000';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function getAngle(e) {
+    var rect = can.getBoundingClientRect();
+    var mx = (e.clientX - rect.left);
+    var my = (e.clientY - rect.top);
+    var dx = mx - cx, dy = my - cy;
+    var ang = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+    return ((ang % 360) + 360) % 360;
+  }
+
+  can.addEventListener('mousemove', function(e) {
+    preview = getAngle(e);
+    drawCompass(bearing);
+  });
+
+  can.addEventListener('mouseleave', function() {
+    preview = null;
+    drawCompass(bearing);
+  });
+
+  can.addEventListener('click', function(e) {
+    bearing = getAngle(e);
+    preview = null;
+    drawCompass(bearing);
+    var rd = document.getElementById('bearingReadout');
+    if(rd) rd.textContent = bearingLabel(bearing);
+  });
+
+  drawCompass(null);
+})();
+
+/* ── TRIANGULATION SIMULATOR ── */
+(function(){
+  var can=document.getElementById('simCanvas');
+  if(!can) return;
+  var ctx=can.getContext('2d');
+  var W=380,H=310; can.width=W; can.height=H;
+
+  /* three fixed observer positions forming a wide triangle */
+  var OBS=[
+    {x:72,  y:252, col:'#F5A623', lbl:'A'},
+    {x:308, y:252, col:'#7ED321', lbl:'B'},
+    {x:190, y:58,  col:'#BD10E0', lbl:'C'},
+  ];
+  /* hidden fox target — students must converge bearing lines on it */
+  /* ideal bearings: A≈052°, B≈309°, C≈180° */
+  var FOX={x:192,y:160};
+  var bears=[30,285,155];   /* start off-ideal so there's something to adjust */
+  var nc=1, tt=0;
+  var lastFix=null, lastHat=null;
+
+  /* bearing → canvas direction vector */
+  function bdir(b){ var r=b*Math.PI/180; return {dx:Math.sin(r),dy:-Math.cos(r)}; }
+
+  /* intersect two bearing lines */
+  function ix2(p1,d1,p2,d2){
+    var det=d1.dy*d2.dx-d1.dx*d2.dy;
+    if(Math.abs(det)<0.04) return null;
+    var ex=p2.x-p1.x,ey=p2.y-p1.y;
+    var t2=(-ex*d2.dy+ey*d2.dx)/det;
+    return {x:p1.x+t2*d1.dx,y:p1.y+t2*d1.dy};
+  }
+
+  function triArea(p,q,r){ return Math.abs((q.x-p.x)*(r.y-p.y)-(r.x-p.x)*(q.y-p.y))/2; }
+  function ptInTri(p,a,b,c){
+    function sg(p1,p2,p3){return(p1.x-p3.x)*(p2.y-p3.y)-(p2.x-p3.x)*(p1.y-p3.y);}
+    var d1=sg(p,a,b),d2=sg(p,b,c),d3=sg(p,c,a);
+    return !((d1<0||d2<0||d3<0)&&(d1>0||d2>0||d3>0));
+  }
+  function d2(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);}
+
+  function computeFix(){
+    lastFix=null; lastHat=null;
+    var d=[bdir(bears[0]),bdir(bears[1]),bdir(bears[2])];
+    if(nc===2){
+      var p=ix2(OBS[0],d[0],OBS[1],d[1]);
+      if(p) lastFix=p;
+    } else if(nc===3){
+      var a=ix2(OBS[0],d[0],OBS[1],d[1]);
+      var b2=ix2(OBS[1],d[1],OBS[2],d[2]);
+      var c2=ix2(OBS[0],d[0],OBS[2],d[2]);
+      if(a&&b2&&c2){lastHat={a:a,b:b2,c:c2};lastFix={x:(a.x+b2.x+c2.x)/3,y:(a.y+b2.y+c2.y)/3};}
+    }
+  }
+
+  function updateReadout(){
+    computeFix();
+    var el=document.getElementById('simReadout'); if(!el) return;
+    var bm=typeof curLang!=='undefined'&&curLang==='bm';
+    if(nc===1){
+      el.textContent=bm
+        ?'1 baringan = satu garis arah. Anda tahu halatuju tetapi bukan jarak musang.'
+        :'1 bearing = a direction line only. You know the angle but not the distance.';
+    } else if(nc===2){
+      if(!lastFix){el.textContent=bm?'Garis hampir selari — tiada persilangan jelas.':'Lines nearly parallel — no clear intersection.';return;}
+      var dd=Math.round(d2(lastFix,FOX));
+      el.textContent=dd<18
+        ?(bm?'🎯 Tepat! Musang dijumpai!':'🎯 Spot on! Fox located!')
+        :(bm?'2 baringan bersilang. Laraskan untuk mendekati musang (~'+dd+'m).':'2 bearings cross. Adjust angles to move closer to the fox (~'+dd+'m away).');
+    } else {
+      if(!lastHat){el.textContent=bm?'Beberapa garis selari — laraskan baringan.':'Some lines are parallel — adjust the bearings.';return;}
+      var area=Math.round(triArea(lastHat.a,lastHat.b,lastHat.c));
+      var inside=ptInTri(FOX,lastHat.a,lastHat.b,lastHat.c);
+      el.textContent=(inside&&area<350)
+        ?(bm?'🎯 Musang dalam topi tersenget! Kawasan: '+area+'m²':'🎯 Fox is inside the cocked hat! Area: '+area+' m²')
+        :(bm?'Topi tersenget = '+area+'m². Lebih kecil = lebih tepat!':'Cocked hat area = '+area+' m². Smaller = more accurate!');
+    }
+  }
+
+  /* expose to onclick / oninput */
+  window.simSetNodes=function(n){
+    nc=n;
+    document.querySelectorAll('.node-btn').forEach(function(btn,i){btn.classList.toggle('active',i===n-1);});
+    for(var i=0;i<3;i++){var c=document.getElementById('simCtrl'+i);if(c)c.classList.toggle('dimmed',i>=n);}
+    updateReadout();
+  };
+  window.simSetBear=function(idx,val){
+    bears[idx]=+val;
+    var el=document.getElementById('bearVal'+idx);
+    if(el) el.textContent=String(+val).padStart(3,'0');
+    updateReadout();
+  };
+
+  /* ── DRAW HELPERS ── */
+  function drawBase(){
+    ctx.fillStyle='#0d2418'; ctx.fillRect(0,0,W,H);
+    for(var gx=0;gx<=W;gx+=40){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.strokeStyle='rgba(2,173,165,0.07)';ctx.lineWidth=1;ctx.stroke();}
+    for(var gy=0;gy<=H;gy+=40){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.strokeStyle='rgba(2,173,165,0.07)';ctx.lineWidth=1;ctx.stroke();}
+    /* N arrow top-right */
+    ctx.save(); ctx.translate(W-20,22);
+    ctx.beginPath(); ctx.moveTo(0,-14); ctx.lineTo(-4,4); ctx.lineTo(0,0); ctx.lineTo(4,4); ctx.closePath();
+    ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.fill();
+    ctx.font='bold 9px sans-serif'; ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillText('N',0,5);
+    ctx.restore();
+    /* scale hint */
+    ctx.font='8px sans-serif'; ctx.fillStyle='rgba(255,255,255,0.22)'; ctx.textAlign='left'; ctx.textBaseline='bottom';
+    ctx.fillText('1 px ≈ 1 m',6,H-4);
+  }
+
+  function drawBearingLine(obs,bearDeg,col){
+    var d=bdir(bearDeg);
+    /* dashed line: short behind, long forward */
+    ctx.save();
+    ctx.beginPath(); ctx.moveTo(obs.x-d.dx*55,obs.y-d.dy*55); ctx.lineTo(obs.x+d.dx*600,obs.y+d.dy*600);
+    ctx.strokeStyle=col+'99'; ctx.lineWidth=1.5; ctx.setLineDash([8,5]); ctx.stroke(); ctx.setLineDash([]);
+    /* bearing arc (mini protractor) */
+    var AR=24;
+    var startA=-Math.PI/2; /* North on canvas */
+    var endA=bearDeg*Math.PI/180-Math.PI/2;
+    if(bearDeg>1){
+      /* filled arc slice */
+      ctx.beginPath(); ctx.moveTo(obs.x,obs.y); ctx.arc(obs.x,obs.y,AR,startA,endA,false); ctx.closePath();
+      ctx.fillStyle=col+'28'; ctx.fill();
+      /* arc stroke */
+      ctx.beginPath(); ctx.arc(obs.x,obs.y,AR,startA,endA,false);
+      ctx.strokeStyle=col+'bb'; ctx.lineWidth=2; ctx.stroke();
+    }
+    /* North tick at 12-o'clock */
+    ctx.beginPath(); ctx.moveTo(obs.x,obs.y-AR); ctx.lineTo(obs.x,obs.y-AR-6);
+    ctx.strokeStyle='rgba(255,255,255,0.40)'; ctx.lineWidth=1.5; ctx.stroke();
+    /* degree label at bearing direction tip */
+    var labelAng=bearDeg*Math.PI/180-Math.PI/2;
+    var lr=AR+13;
+    ctx.font='bold 9px sans-serif'; ctx.fillStyle=col;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(String(bearDeg).padStart(3,'0')+'°',
+      obs.x+lr*Math.cos(labelAng), obs.y+lr*Math.sin(labelAng));
+    ctx.restore();
+  }
+
+  function drawObserver(obs,active){
+    ctx.save(); ctx.translate(obs.x,obs.y);
+    /* triangle marker */
+    ctx.beginPath(); ctx.moveTo(0,-11); ctx.lineTo(-7,7); ctx.lineTo(7,7); ctx.closePath();
+    ctx.fillStyle=active?obs.col:'rgba(80,80,80,0.35)';
+    ctx.strokeStyle=active?'#fff':'rgba(120,120,120,0.25)'; ctx.lineWidth=active?1.5:1;
+    ctx.fill(); ctx.stroke();
+    ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillStyle=active?'#fff':'rgba(160,160,160,0.30)';
+    ctx.fillText(obs.lbl,0,9);
+    ctx.restore();
+  }
+
+  function drawIntersectVisuals(){
+    if(nc===2&&lastFix){
+      ctx.beginPath(); ctx.arc(lastFix.x,lastFix.y,8,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,0.88)'; ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+      ctx.font='bold 10px sans-serif'; ctx.fillStyle='#111'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('✕',lastFix.x,lastFix.y);
+    }
+    if(nc===3&&lastHat){
+      var a=lastHat.a,b=lastHat.b,c=lastHat.c;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath();
+      ctx.fillStyle='rgba(255,220,60,0.16)'; ctx.fill();
+      ctx.strokeStyle='rgba(255,220,60,0.70)'; ctx.lineWidth=2; ctx.stroke();
+      [a,b,c].forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fillStyle='rgba(255,220,60,0.90)';ctx.fill();});
+    }
+  }
+
+  function drawFox(){
+    var found=lastFix&&d2(lastFix,FOX)<20;
+    var pr=6+2.5*Math.sin(tt*0.10);
+    ctx.save(); ctx.translate(FOX.x,FOX.y);
+    /* 5-point star */
+    ctx.beginPath();
+    for(var i=0;i<10;i++){
+      var ang=i*Math.PI/5-Math.PI/2;
+      var r2=(i%2===0)?pr:pr*0.42;
+      if(i===0) ctx.moveTo(Math.cos(ang)*r2,Math.sin(ang)*r2);
+      else ctx.lineTo(Math.cos(ang)*r2,Math.sin(ang)*r2);
+    }
+    ctx.closePath();
+    ctx.fillStyle=found?'#ff6b6b':'rgba(255,107,107,0.28)';
+    ctx.strokeStyle='#ff6b6b'; ctx.lineWidth=1.5; ctx.fill(); ctx.stroke();
+    /* glow ring when found */
+    if(found){
+      ctx.beginPath(); ctx.arc(0,0,pr+8+3*Math.sin(tt*0.12),0,Math.PI*2);
+      ctx.strokeStyle='rgba(255,107,107,0.45)'; ctx.lineWidth=2; ctx.stroke();
+    }
+    /* label */
+    ctx.font='bold 8px sans-serif'; ctx.fillStyle=found?'#fff':'rgba(255,107,107,0.65)';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(found?'FOX':'?',0,pr+10);
+    ctx.restore();
+  }
+
+  function frame(){
+    tt++;
+    computeFix();
+    drawBase();
+    for(var i=0;i<nc;i++) drawBearingLine(OBS[i],bears[i],OBS[i].col);
+    drawIntersectVisuals();
+    for(var i=0;i<3;i++) drawObserver(OBS[i],i<nc);
+    drawFox();
+    requestAnimationFrame(frame);
+  }
+
+  window.simSetNodes(1);
+  frame();
+})();
+
+/* ── GPS SATELLITE TRIANGULATION ── */
+(function(){
+  var canvas = document.getElementById('gpsCanvas');
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W=380, H=280;
+  canvas.width=W; canvas.height=H;
+
+  var CX=W/2, CY=H/2+18; /* Earth centre, shifted down a bit */
+  var ER=52;              /* Earth radius on canvas */
+  var ORBIT=115;          /* satellite orbit radius */
+  var use4=false;         /* toggle 3 vs 4 sats */
+  var t=0;
+
+  /* 4 satellite definitions: orbit angle offset, colour */
+  var SATS=[
+    {off:0,       col:'#F5A623', label:'SAT A'},
+    {off:Math.PI*2/3, col:'#7ED321', label:'SAT B'},
+    {off:Math.PI*4/3, col:'#BD10E0', label:'SAT C'},
+    {off:Math.PI/6,   col:'#4A90E2', label:'SAT D'},
+  ];
+  var SPEED=0.006;
+
+  /* receiver position: fixed slightly south-east of centre */
+  var RX=CX+22, RY=CY+18;
+
+  function satPos(s, time){
+    var ang = time*SPEED + s.off;
+    return { x: CX + ORBIT*Math.cos(ang), y: CY + ORBIT*Math.sin(ang)*0.38 };
+    /* 0.38 flattens the orbit to look like an inclined plane */
+  }
+
+  function dist(ax,ay,bx,by){ return Math.sqrt((ax-bx)**2+(ay-by)**2); }
+
+  function drawEarth(){
+    /* glow */
+    var grd=ctx.createRadialGradient(CX,CY,ER*0.5,CX,CY,ER*1.6);
+    grd.addColorStop(0,'rgba(2,173,165,0.10)');
+    grd.addColorStop(1,'rgba(2,173,165,0)');
+    ctx.beginPath(); ctx.arc(CX,CY,ER*1.6,0,Math.PI*2);
+    ctx.fillStyle=grd; ctx.fill();
+    /* ocean */
+    var eg=ctx.createRadialGradient(CX-ER*0.3,CY-ER*0.3,0,CX,CY,ER);
+    eg.addColorStop(0,'#1a6688'); eg.addColorStop(1,'#0a2f4e');
+    ctx.beginPath(); ctx.arc(CX,CY,ER,0,Math.PI*2);
+    ctx.fillStyle=eg; ctx.fill();
+    /* land blobs */
+    [[-14,-18,20,14],[10,-10,18,12],[-20,10,14,10],[8,14,16,10]].forEach(function(b){
+      ctx.beginPath();
+      ctx.ellipse(CX+b[0],CY+b[1],b[2],b[3],b[0]*0.03,0,Math.PI*2);
+      ctx.fillStyle='rgba(50,140,70,0.75)'; ctx.fill();
+    });
+    /* rim */
+    ctx.beginPath(); ctx.arc(CX,CY,ER,0,Math.PI*2);
+    ctx.strokeStyle='rgba(2,173,165,0.50)'; ctx.lineWidth=1.5; ctx.stroke();
+    /* label */
+    ctx.font='bold 9px sans-serif'; ctx.fillStyle='rgba(255,255,255,0.6)';
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('EARTH',CX,CY);
+  }
+
+  function drawOrbit(){
+    ctx.beginPath();
+    ctx.ellipse(CX,CY,ORBIT,ORBIT*0.38,0,0,Math.PI*2);
+    ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=1;
+    ctx.setLineDash([4,6]); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  function drawSignal(sx,sy,col,r){
+    /* dashed line from satellite to receiver */
+    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(RX,RY);
+    ctx.strokeStyle=col+'88'; ctx.lineWidth=1;
+    ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
+    /* range circle around satellite */
+    ctx.beginPath(); ctx.arc(sx,sy,r,0,Math.PI*2);
+    ctx.strokeStyle=col+'55'; ctx.lineWidth=1.5; ctx.stroke();
+  }
+
+  function drawSat(sx,sy,s){
+    /* body */
+    ctx.save(); ctx.translate(sx,sy);
+    ctx.fillStyle=s.col;
+    ctx.fillRect(-7,-4,14,8);
+    /* solar panels */
+    ctx.fillStyle='rgba(100,160,255,0.85)';
+    ctx.fillRect(-18,-3,9,6);
+    ctx.fillRect(9,-3,9,6);
+    ctx.restore();
+    /* label */
+    ctx.font='bold 8px sans-serif'; ctx.fillStyle=s.col;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(s.label,sx,sy-6);
+  }
+
+  function drawReceiver(fixQuality){
+    /* pulse ring showing fix quality: green=good, yellow=ok, red=poor */
+    var ringCol = fixQuality>0.7?'#00ff88': fixQuality>0.4?'#ffe040':'#ff6060';
+    var pulse=4+3*Math.sin(t*0.12);
+    ctx.beginPath(); ctx.arc(RX,RY,pulse+10,0,Math.PI*2);
+    ctx.strokeStyle=ringCol+'66'; ctx.lineWidth=2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(RX,RY,pulse,0,Math.PI*2);
+    ctx.strokeStyle=ringCol+'cc'; ctx.lineWidth=1.5; ctx.stroke();
+    /* dot */
+    ctx.beginPath(); ctx.arc(RX,RY,4,0,Math.PI*2);
+    ctx.fillStyle='#ffffff'; ctx.fill();
+    /* label */
+    ctx.font='bold 9px sans-serif'; ctx.fillStyle='#ffffff';
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText('YOU',RX+7,RY);
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    /* deep space background */
+    ctx.fillStyle='#060e1a'; ctx.fillRect(0,0,W,H);
+    /* star field (static, seeded by position) */
+    for(var s=0;s<60;s++){
+      var sx2=(s*137.5)%W, sy2=(s*97.3+s*s*0.1)%H;
+      ctx.fillStyle='rgba(255,255,255,'+(0.2+0.4*(s%3)/3)+')';
+      ctx.fillRect(sx2,sy2,1,1);
+    }
+
+    drawOrbit();
+    drawEarth();
+
+    var count = use4?4:3;
+    var positions=[];
+    var fixQ=0;
+
+    for(var i=0;i<count;i++){
+      var sp=satPos(SATS[i],t);
+      positions.push(sp);
+      var r=dist(sp.x,sp.y,RX,RY);
+      drawSignal(sp.x,sp.y,SATS[i].col,r);
+    }
+    for(var i=0;i<count;i++){
+      var sp=positions[i];
+      drawSat(sp.x,sp.y,SATS[i]);
+    }
+
+    /* fix quality: more sats + better geometry = better fix */
+    fixQ = use4? 0.85 : 0.55;
+
+    drawReceiver(fixQ);
+
+    /* info overlay: sat count + accuracy */
+    ctx.fillStyle='rgba(0,0,0,0.60)';
+    ctx.fillRect(6,6,175,40);
+    ctx.font='bold 10px sans-serif';
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillStyle='#02ADA5';
+    ctx.fillText('Satellites locked: '+count,10,10);
+    ctx.fillStyle= use4?'#00ff88':'#ffe040';
+    ctx.fillText('Fix accuracy: '+(use4?'~3–5 m ✓':'~8–15 m'), 10,24);
+
+    /* altitude label */
+    ctx.font='8px sans-serif'; ctx.fillStyle='rgba(255,255,255,0.35)';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillText('Orbit ~20,000 km',CX,4);
+  }
+
+  canvas.addEventListener('click',function(){
+    use4=!use4;
+    var rd=document.getElementById('gpsReadout');
+    if(rd) rd.textContent = use4
+      ? ((typeof curLang!=='undefined'&&curLang==='bm')?'4 satelit — ketepatan tinggi ✓':'4 satellites — high accuracy ✓')
+      : ((typeof curLang!=='undefined'&&curLang==='bm')?'3 satelit — ketepatan sederhana':'3 satellites — moderate accuracy');
+  });
+
+  function animate(){ t++; draw(); requestAnimationFrame(animate); }
+  animate();
+})();
+
+/* ── TRIANGULATION ANIMATION ── */
+(function(){
+  var canvas=document.getElementById('triangCanvas');
+  var ctx=canvas.getContext('2d');
+  var W=500, H=300;
+  var obs1={x:80,y:230}, obs2={x:420,y:230}, fox={x:250,y:80};
+  var progress=0, running=true;
+  function toRad(d){return d*Math.PI/180;}
+  function bearingTo(from,to){
+    var dx=to.x-from.x, dy=-(to.y-from.y);
+    var deg=Math.atan2(dx,dy)*180/Math.PI;
+    if(deg<0)deg+=360; return deg;
+  }
+  function drawScene(p){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(2,173,165,0.08)'; ctx.lineWidth=1;
+    for(var gx=0;gx<=W;gx+=50){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();}
+    for(var gy=0;gy<=H;gy+=50){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();}
+    [obs1,obs2].forEach(function(obs,i){
+      ctx.beginPath(); ctx.arc(obs.x,obs.y,7,0,Math.PI*2);
+      ctx.fillStyle='#02ADA5'; ctx.fill();
+      ctx.font='bold 12px sans-serif'; ctx.fillStyle='#02ADA5';
+      ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.fillText('Obs '+(i+1)+' ('+(Math.round(bearingTo(obs,fox)))+'°)', obs.x, obs.y-10);
+    });
+    function drawLine(from,to,prog,color){
+      ctx.beginPath(); ctx.moveTo(from.x,from.y);
+      ctx.lineTo(from.x+(to.x-from.x)*prog, from.y+(to.y-from.y)*prog);
+      ctx.strokeStyle=color; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+    drawLine(obs1,fox,Math.min(1,p*2),'#ff9f43');
+    drawLine(obs2,fox,Math.min(1,Math.max(0,p*2-0.5)*2),'#48dbfb');
+    if(p>0.85){
+      var alpha=Math.min(1,(p-0.85)/0.15);
+      ctx.globalAlpha=alpha;
+      ctx.beginPath(); ctx.arc(fox.x,fox.y,9,0,Math.PI*2);
+      ctx.fillStyle='#ff6b6b'; ctx.fill();
+      ctx.beginPath(); ctx.arc(fox.x,fox.y,18,0,Math.PI*2);
+      ctx.strokeStyle='#ff6b6b'; ctx.lineWidth=2; ctx.stroke();
+      ctx.font='bold 13px sans-serif'; ctx.fillStyle='#ff6b6b';
+      ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.fillText('🦊 Fox!', fox.x, fox.y-22);
+      ctx.globalAlpha=1;
+    }
+    ctx.font='11px sans-serif'; ctx.fillStyle='rgba(2,173,165,0.7)';
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('Triangulation Demo — 2 bearings → fox position', 8, 8);
+  }
+  function animate(){
+    if(!running)return;
+    progress+=0.006;
+    if(progress>1.2){ progress=0; setTimeout(function(){if(running)requestAnimationFrame(animate);},1500); return; }
+    drawScene(progress);
+    requestAnimationFrame(animate);
+  }
+  canvas.addEventListener('click',function(){ running=!running; if(running)animate(); });
+  animate();
+})();
+
+/* ── EASTER EGG ── */
+(function(){
+  var clicks=0, timer;
+  document.getElementById('chev-see').addEventListener('click',function(){
+    clicks++;
+    clearTimeout(timer);
+    timer=setTimeout(function(){clicks=0;},600);
+    if(clicks>=3){ clicks=0; window.location.href='teacher-2.html'; }
+  });
+})();
+</script>
+<script src="tracker.js"></script>
+</body>
+</html>
